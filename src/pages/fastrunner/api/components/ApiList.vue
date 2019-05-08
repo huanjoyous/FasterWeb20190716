@@ -134,7 +134,6 @@
                         </el-table-column>
 
                         <el-table-column
-                            min-width="450"
                             align="center"
                         >
                             <template slot-scope="scope">
@@ -183,24 +182,11 @@
                             </template>
                         </el-table-column>
 
-                        <el-table-column>
+                        <el-table-column
+                            width="200"
+                        >
                             <template slot-scope="scope">
                                 <el-row v-show="currentRow === scope.row">
-                                    <el-button
-                                        type="info"
-                                        icon="el-icon-edit"
-                                        circle size="mini"
-                                        @click="handleRowClick(scope.row)"
-                                    ></el-button>
-
-                                    <el-button
-                                        type="success"
-                                        icon="el-icon-document"
-                                        circle size="mini"
-                                        @click="handleCopyAPI(scope.row.id)"
-                                    >
-                                    </el-button>
-
                                     <el-button
                                         type="primary"
                                         icon="el-icon-caret-right"
@@ -208,12 +194,23 @@
                                         @click="handleRunAPI(scope.row.id)"
                                     ></el-button>
                                     <el-button
+                                        type="info"
+                                        icon="el-icon-edit"
+                                        circle size="mini"
+                                        @click="handleRowClick(scope.row)"
+                                    ></el-button>
+                                    <el-button
+                                        type="success"
+                                        icon="el-icon-document"
+                                        circle size="mini"
+                                        @click="handleCopyAPI(scope.row.id)"
+                                    ></el-button>
+                                    <el-button
                                         type="danger"
                                         icon="el-icon-delete"
                                         circle size="mini"
                                         @click="handleDelApi(scope.row.id)"
-                                    >
-                                    </el-button>
+                                    ></el-button>
                                 </el-row>
                             </template>
                         </el-table-column>

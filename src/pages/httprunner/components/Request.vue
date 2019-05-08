@@ -24,7 +24,7 @@
             >
                 <el-table-column
                     label="请求Key"
-                    width="250">
+                    width="200">
                     <template slot-scope="scope">
                         <el-input clearable v-model="scope.row.key" placeholder="Key"></el-input>
                     </template>
@@ -51,7 +51,7 @@
 
                 <el-table-column
                     label="请求Value"
-                    width="350">
+                >
                     <template slot-scope="scope">
                         <el-input
                             v-show="scope.row.type !== 5"
@@ -95,14 +95,15 @@
 
                 <el-table-column
                     label="描述"
-                    width="200">
+                    width="150">
                     <template slot-scope="scope">
                         <el-input clearable v-model="scope.row.desc" placeholder="参数简要描述"></el-input>
                     </template>
                 </el-table-column>
 
 
-                <el-table-column>
+                <el-table-column
+                    width="140">
                     <template slot-scope="scope">
                         <el-row v-show="scope.row === currentRow">
                             <el-button
@@ -420,7 +421,7 @@
     .ace_editor {
         position: relative;
         overflow: hidden;
-        font: 18px/normal 'Monaco', 'Menlo', 'Ubuntu Mono', 'Consolas', 'source-code-pro', monospace !important;
+        font: 14px/normal 'Monaco', 'Menlo', 'Ubuntu Mono', 'Consolas', 'source-code-pro', monospace !important;
         direction: ltr;
         text-align: left;
         -webkit-tap-highlight-color: rgba(0, 0, 0, 0);

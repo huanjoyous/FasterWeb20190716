@@ -52,7 +52,7 @@
                     </el-col>
                     <el-col :span="12">
                         <el-input
-                            style="width: 540px; text-align: center"
+                            style="width: 350px; text-align: center"
                             placeholder="请输入测试用例名称"
                             v-model="testName"
                             clearable

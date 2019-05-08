@@ -11,7 +11,7 @@
     >
         <el-table-column
             label="数据Key"
-            width="400">
+        >
             <template slot-scope="scope">
                 <el-input
                     type="textarea"
@@ -25,7 +25,7 @@
 
         <el-table-column
             label="数据内容"
-            width="700">
+        >
             <template slot-scope="scope">
                 <el-input
                     type="textarea"
@@ -39,13 +39,15 @@
 
         <el-table-column
             label="参数描述"
-            width="250">
+            width="200">
             <template slot-scope="scope">
                 <el-input clearable v-model="scope.row.desc" placeholder="参数简要描述"></el-input>
             </template>
         </el-table-column>
 
-        <el-table-column>
+        <el-table-column
+            width="130"
+        >
             <template slot-scope="scope">
                 <el-row v-show="scope.row === currentRow">
                     <el-button

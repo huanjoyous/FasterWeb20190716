@@ -12,7 +12,7 @@
     >
         <el-table-column
             label="变量名"
-            width="250">
+            width="200">
             <template slot-scope="scope">
                 <el-input clearable v-model="scope.row.key" placeholder="Key"></el-input>
             </template>
@@ -37,7 +37,7 @@
 
         <el-table-column
             label="变量值"
-            width="400">
+        >
             <template slot-scope="scope">
                 <el-input clearable v-model="scope.row.value" placeholder="Value"></el-input>
             </template>
@@ -45,13 +45,15 @@
 
         <el-table-column
             label="内容"
-            width="200">
+            width="150">
             <template slot-scope="scope">
                 <el-input clearable v-model="scope.row.desc" placeholder="变量简要描述"></el-input>
             </template>
         </el-table-column>
 
-        <el-table-column>
+        <el-table-column
+            width="130"
+        >
             <template slot-scope="scope">
                 <el-row v-show="scope.row === currentRow">
                     <el-button

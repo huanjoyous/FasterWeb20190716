@@ -96,7 +96,6 @@
                             </template>
                         </el-table-column>
                         <el-table-column
-                            width="320"
                             label="接收人"
                         >
                             <template slot-scope="scope">
@@ -104,7 +103,6 @@
                             </template>
                         </el-table-column>
                         <el-table-column
-                            width="320"
                             label="抄送人"
                         >
                             <template slot-scope="scope">

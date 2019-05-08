@@ -10,8 +10,7 @@
                             icon="el-icon-circle-check-outline"
                             @click="handleConfirm"
                             round
-                        >
-                            点击保存
+                        >点击保存
                         </el-button>
 
                         <el-button
@@ -37,7 +36,7 @@
                 <el-row>
                     <el-col :span="15">
                         <editor
-                            v-model="code.code"
+                            v-model="requestData.code"
                             @init="editorInit"
                             lang="python"
                             theme="monokai"
@@ -47,7 +46,7 @@
                                  enableSnippets:true,
                                  enableBasicAutocompletion: true,
                                  enableLiveAutocompletion: true
-                             }"
+                            }"
                         >
                         </editor>
                     </el-col>
@@ -77,9 +76,10 @@
         data() {
             return {
                 codeHeight: 500,
-                code: {
+                requestData: {
                     code: '',
-                    id: ''
+                    id: '',
+                    project: ''
                 },
                 resp: {
                     msg: ''
@@ -90,15 +90,15 @@
         methods: {
             handleRunCode() {
                 this.resp.msg = '';
-                this.$api.runDebugtalk(this.code).then(resp => {
+                this.$api.runDebugtalk(this.requestData).then(resp => {
                     this.resp = resp;
                 })
             },
 
             handleConfirm() {
-                this.$api.updateDebugtalk(this.code).then(resp => {
-                    this.getDebugTalk();
+                this.$api.updateDebugtalk(this.requestData).then(resp => {
                     this.$message.success("代码保存成功");
+                    this.getDebugTalk();
                 })
             },
             editorInit() {
@@ -109,7 +109,8 @@
             },
             getDebugTalk() {
                 this.$api.getDebugtalk(this.$route.params.id).then(res => {
-                    this.code = res;
+                    this.requestData = res;
+                    this.requestData["project"] = this.$route.params.id;
                 })
             }
         },
@@ -117,8 +118,10 @@
             editor: require('vue2-ace-editor')
         },
         mounted() {
-            this.getDebugTalk();
-            this.codeHeight = window.screen.height - 248;
+            this.$nextTick( function () {
+                this.getDebugTalk();
+                this.codeHeight = window.screen.height - 248;
+            })
         }
     }
 </script>

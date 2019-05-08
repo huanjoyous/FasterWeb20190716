@@ -11,7 +11,7 @@
     >
         <el-table-column
             label="标签"
-            width="300">
+            width="200">
             <template slot-scope="scope">
                 <el-autocomplete
                     clearable
@@ -25,7 +25,7 @@
 
         <el-table-column
             label="内容"
-            width="400">
+        >
             <template slot-scope="scope">
                 <el-input clearable v-model="scope.row.value" placeholder="头部内容"></el-input>
             </template>
@@ -33,14 +33,16 @@
 
         <el-table-column
             label="描述"
-            width="220">
+            width="150">
             <template slot-scope="scope">
                 <el-input clearable v-model="scope.row.desc" placeholder="头部信息简要描述"></el-input>
 
             </template>
         </el-table-column>
 
-        <el-table-column>
+        <el-table-column
+            width="130"
+        >
             <template slot-scope="scope">
                 <el-row v-show="scope.row === currentRow">
                     <el-button

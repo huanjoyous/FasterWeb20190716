@@ -13,6 +13,7 @@ import ReportList from '@/pages/reports/ReportList'
 import RecordConfig from '@/pages/fastrunner/config/RecordConfig'
 import Tasks from '@/pages/task/Tasks'
 import HostAddress from '@/pages/variables/HostAddress'
+import TestData from "../pages/testdata/TestData";
 
 Vue.use(Router);
 
@@ -60,7 +61,6 @@ export default new Router({
                         title: '项目预览',
                         requireAuth: true,
                     }
-
                 },
                 {
                     name: 'DebugTalk',
@@ -70,7 +70,6 @@ export default new Router({
                         title: '编辑驱动',
                         requireAuth: true,
                     }
-
                 },
                 {
                     name: 'RecordApi',
@@ -80,7 +79,6 @@ export default new Router({
                         title: '接口模板',
                         requireAuth: true
                     }
-
                 },
                 {
                     name: 'AutoTest',
@@ -90,7 +88,6 @@ export default new Router({
                         title: '自动化测试',
                         requireAuth: true
                     }
-
                 },
                 {
                     name: 'RecordConfig',
@@ -100,7 +97,6 @@ export default new Router({
                         title: '配置管理',
                         requireAuth: true
                     }
-
                 },
                 {
                     name: 'GlobalEnv',
@@ -110,7 +106,6 @@ export default new Router({
                         title: '全局变量',
                         requireAuth: true
                     }
-
                 },
                 {
                     name: 'Reports',
@@ -120,7 +115,6 @@ export default new Router({
                         title: '历史报告',
                         requireAuth: true
                     }
-
                 },
                 {
                     name: 'Task',
@@ -130,7 +124,6 @@ export default new Router({
                         title: '定时任务',
                         requireAuth: true
                     }
-
                 },
                 {
                     name: 'HostIP',
@@ -140,7 +133,15 @@ export default new Router({
                         title: 'HOST配置',
                         requireAuth: true
                     }
-
+                },
+                {
+                    name: "TestData",
+                    path: 'testdata/:id',
+                    component: TestData,
+                    meta: {
+                        title: '测试数据',
+                        requireAuth: true
+                    }
                 }
             ]
         },

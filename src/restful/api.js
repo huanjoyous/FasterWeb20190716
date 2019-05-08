@@ -101,8 +101,29 @@ export const updateTree = (url, params) => {
     return axios.patch('/api/fastrunner/tree/' + url + '/', params).then(res => res.data)
 };
 
+
 export const uploadFile = url => {
-    return baseUrl + '/api/fastrunner/file/?token=' + store.token
+    return baseUrl + '/api/fastrunner/testdata/?token=' + store.token
+};
+
+export const downloadTestdata = url => {
+    return axios.post('/api/fastrunner/testdata/' + url + '/',{},{responseType:'blob' }).then(res => res.data)
+};
+
+export const testdataList = params => {
+    return axios.get('/api/fastrunner/testdata/', params).then(res => res.data)
+};
+
+export const getTestdataListPaginationBypage = params => {
+    return axios.get('/api/fastrunner/testdata/', params).then(res => res.data)
+};
+
+export const deleteTestdata = url => {
+    return axios.delete('/api/fastrunner/testdata/' + url + '/').then(res => res.data)
+};
+
+export const delAllTestdata = params => {
+    return axios.delete('/api/fastrunner/testdata/', params).then(res => res.data)
 };
 
 export const addAPI = params => {
@@ -315,4 +336,5 @@ export const getHostPaginationBypage = params => {
 export const getAllHost = url => {
     return axios.get('/api/fastrunner/host_ip/' + url + '/').then(res => res.data)
 };
+
 

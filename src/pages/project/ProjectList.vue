@@ -72,12 +72,12 @@
                 >
                     <el-table-column
                         label="项目名称"
-                        width="250"
+                        width="200"
                         align="center"
                     >
                         <template slot-scope="scope">
                             <span
-                                style="font-size: 18px; font-weight: bold; cursor: pointer;"
+                                style="font-size: 16px; font-weight: bold; cursor: pointer;"
                                 @click="handleCellClick(scope.row)"
                             >{{ scope.row.name }}</span>
                         </template>
@@ -85,7 +85,7 @@
 
                     <el-table-column
                         label="负责人"
-                        width="200"
+                        width="150"
                         align="center"
                     >
                         <template slot-scope="scope">
@@ -95,17 +95,26 @@
 
                     <el-table-column
                         label="项目描述"
-                        width="300"
+                        min-width="200"
                         align="center"
                     >
                         <template slot-scope="scope">
                             <span>{{ scope.row.desc }}</span>
                         </template>
                     </el-table-column>
+                    <el-table-column
+                        label="测试数据根目录"
+                        width="200"
+                        align="center"
+                    >
+                        <template slot-scope="scope">
+                            <span>{{ scope.row.filePath }}</span>
+                        </template>
+                    </el-table-column>
 
                     <el-table-column
                         label="更新时间"
-                        width="260"
+                        width="200"
                         align="center"
                     >
                         <template slot-scope="scope">
@@ -116,17 +125,19 @@
 
                     <el-table-column
                         label="操作"
+                        width="230"
                         align="center"
                     >
                         <template slot-scope="scope">
                             <el-button
-                                size="medium"
+                                size="small"
                                 @click="handleCellClick(scope.row)">详情
                             </el-button>
 
                             <el-button
-                                size="medium"
+                                size="small"
                                 type="primary"
+                                style = "margin-left:0 !important;"
                                 @click="handleEdit(scope.$index, scope.row)">编辑
                             </el-button>
 
@@ -153,7 +164,7 @@
                       </span>
                             </el-dialog>
                             <el-button
-                                size="medium"
+                                size="small"
                                 type="danger"
                                 @click="handleDelete(scope.$index, scope.row)">删除
                             </el-button>
