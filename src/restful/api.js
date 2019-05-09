@@ -81,16 +81,36 @@ export const updateProject = params => {
     return axios.patch('/api/fastrunner/project/', params).then(res => res.data)
 };
 
-export const getDebugtalk = url => {
-    return axios.get('/api/fastrunner/debugtalk/' + url + '/').then(res => res.data)
+export const addPycode = params => {
+    return axios.post('/api/fastrunner/pycode/', params).then(res => res.data)
 };
 
-export const updateDebugtalk = params => {
-    return axios.patch('/api/fastrunner/debugtalk/', params).then(res => res.data)
+export const deletePycode = url => {
+    return axios.delete('/api/fastrunner/pycode/' + url + '/').then(res => res.data)
 };
 
-export const runDebugtalk = params => {
-    return axios.post('/api/fastrunner/debugtalk/', params).then(res => res.data)
+export const delAllPycode = params => {
+    return axios.delete('/api/fastrunner/pycode/', params).then(res => res.data)
+};
+
+export const getPycodeList = params => {
+    return axios.get('/api/fastrunner/pycode/', params).then(res => res.data)
+};
+
+export const getPycodeListPaginationBypage = params => {
+    return axios.get('/api/fastrunner/pycode/', params).then(res => res.data)
+};
+
+export const getPycode = url => {
+    return axios.get('/api/fastrunner/pycode/' + url + '/').then(res => res.data)
+};
+
+export const runPycode = (url, params) => {
+    return axios.post('/api/fastrunner/pycode/' + url + '/', params).then(res => res.data)
+};
+
+export const updatePycode = (url, params) => {
+    return axios.patch('/api/fastrunner/pycode/' + url + '/', params).then(res => res.data)
 };
 
 export const getTree = (url, params) => {

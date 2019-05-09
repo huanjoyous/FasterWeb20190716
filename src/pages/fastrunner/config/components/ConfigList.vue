@@ -54,10 +54,10 @@
 
                         <el-table-column
 
-                            label="基本请求地址"
+                            label="请求根地址"
                         >
                             <template slot-scope="scope">
-                                <div v-text="scope.row.base_url === '' ? '无' : scope.row.base_url"></div>
+                                <div v-text="scope.row.base_url === '' ? '未配置' : scope.row.base_url"></div>
 
                             </template>
                         </el-table-column>

@@ -1,12 +1,12 @@
 <template>
     <el-container>
-        <el-header style="background-color: #F7F7F7;; padding: 0; height: 50px;">
-            <div style="padding-top: 10px; margin-left: 10px; ">
+        <el-header style="background-color: #F7F7F7;; padding: 0; height: 40px;">
+            <div style="padding-top: 5px; margin-left: 10px; ">
                 <el-row>
                     <el-col :span="15">
                         <el-button
                             type="primary"
-                            size="small"
+                            size="mini"
                             icon="el-icon-circle-check-outline"
                             @click="handleConfirm"
                             round
@@ -16,15 +16,15 @@
                         <el-button
                             icon="el-icon-caret-right"
                             type="info"
-                            size="small"
+                            size="mini"
                             @click="handleRunCode"
                             round
                         >
                             在线运行
-                       </el-button>
+                        </el-button>
                     </el-col>
                     <el-col :span="9">
-                        <h2>调试控制台</h2>
+                        <h3>调试控制台</h3>
                     </el-col>
                 </el-row>
             </div>
@@ -32,7 +32,7 @@
         </el-header>
 
         <el-container>
-            <el-main style="padding: 0; margin-left: 10px">
+            <el-main style="padding: 0; margin-left: 8px">
                 <el-row>
                     <el-col :span="15">
                         <editor
@@ -73,6 +73,11 @@
 
 <script>
     export default {
+        props: {
+            id: {
+                require: true
+            }
+        },
         data() {
             return {
                 codeHeight: 500,
@@ -86,19 +91,19 @@
                 }
             }
         },
-        name: "DebugTalk",
+        name: "PycodeDebug",
         methods: {
             handleRunCode() {
                 this.resp.msg = '';
-                this.$api.runDebugtalk(this.requestData).then(resp => {
+                this.$api.runPycode(this.id, this.requestData).then(resp => {
                     this.resp = resp;
                 })
             },
 
             handleConfirm() {
-                this.$api.updateDebugtalk(this.requestData).then(resp => {
+                this.$api.updatePycode(this.id,this.requestData).then(resp => {
                     this.$message.success("代码保存成功");
-                    this.getDebugTalk();
+                    this.getPycode();
                 })
             },
             editorInit() {
@@ -107,8 +112,8 @@
                 require('brace/theme/monokai');
                 require('brace/snippets/python');
             },
-            getDebugTalk() {
-                this.$api.getDebugtalk(this.$route.params.id).then(res => {
+            getPycode() {
+                this.$api.getPycode(this.id).then(res => {
                     this.requestData = res;
                     this.requestData["project"] = this.$route.params.id;
                 })
@@ -119,8 +124,8 @@
         },
         mounted() {
             this.$nextTick( function () {
-                this.getDebugTalk();
-                this.codeHeight = window.screen.height - 248;
+                this.getPycode();
+                this.codeHeight = window.screen.height - 284;
             })
         }
     }

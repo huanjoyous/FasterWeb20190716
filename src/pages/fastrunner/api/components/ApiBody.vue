@@ -164,7 +164,6 @@
             Variables,
             Hooks,
             Report
-
         },
 
         props: {
