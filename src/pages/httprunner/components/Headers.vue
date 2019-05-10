@@ -18,6 +18,7 @@
                     v-model="scope.row.key"
                     :fetch-suggestions="querySearch"
                     placeholder="头部标签"
+                    size="medium"
                 >
                 </el-autocomplete>
             </template>
@@ -27,7 +28,7 @@
             label="内容"
         >
             <template slot-scope="scope">
-                <el-input clearable v-model="scope.row.value" placeholder="头部内容"></el-input>
+                <el-input clearable v-model="scope.row.value" placeholder="头部内容" size="medium"></el-input>
             </template>
         </el-table-column>
 
@@ -35,7 +36,7 @@
             label="描述"
             width="150">
             <template slot-scope="scope">
-                <el-input clearable v-model="scope.row.desc" placeholder="头部信息简要描述"></el-input>
+                <el-input clearable v-model="scope.row.desc" placeholder="头部信息简要描述" size="medium"></el-input>
 
             </template>
         </el-table-column>
@@ -56,7 +57,7 @@
                         icon="el-icon-delete"
                         size="mini"
                         type="danger"
-                        v-show="scope.$index !== 0"
+                        v-show="tableData.length > 1"
                         @click="handleDelete(scope.$index, scope.row)">
                     </el-button>
                 </el-row>

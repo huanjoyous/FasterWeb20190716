@@ -102,6 +102,8 @@
                 <el-main style="padding: 0; margin-left: 10px; margin-top: 10px;">
                     <div style="position: fixed; bottom: 0; right:0; left: 220px; top: 150px">
                         <el-table
+                            v-loading="loading"
+                            element-loading-text="正在玩命加载"
                             highlight-current-row
                             :data="hostIPData.results"
                             :show-header="hostIPData.results.length !== 0 "
@@ -209,7 +211,8 @@
                     value: [
                         {required: true, message: '请输入变量值', trigger: 'blur'}
                     ]
-                }
+                },
+                loading: true
             }
         },
         methods: {
@@ -306,6 +309,7 @@
                     }
                 }).then(resp => {
                     this.hostIPData = resp;
+                    this.loading = false;
                 })
             },
         },

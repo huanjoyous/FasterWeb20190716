@@ -1,6 +1,8 @@
 <template>
 
-    <div >
+    <div v-loading="loading"
+         element-loading-text="正在玩命加载"
+    >
         <ul class="title-project">
             <li class="title-li" title="Test API Project">
                 <b>{{projectInfo.name}}</b>
@@ -59,7 +61,8 @@
         name: "ProjectDetail",
         data() {
             return {
-                projectInfo: {}
+                projectInfo: {},
+                loading: true
             }
         },
         methods: {
@@ -81,6 +84,7 @@
                 const pk = this.$route.params.id;
                 this.$api.getProjectDetail(pk).then(res => {
                     this.projectInfo = res
+                    this.loading = false
                 })
             }
         },

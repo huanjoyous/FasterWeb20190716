@@ -42,6 +42,8 @@
             <el-main style="padding: 0; margin-left: 10px; margin-top: 10px;">
                 <div style="position: fixed; bottom: 0; right:0; left: 230px; top: 160px">
                     <el-table
+                        v-loading="loading"
+                        element-loading-text="正在玩命加载"
                         v-if="!addTasks"
                         :data="tasksData.results"
                         :show-header="tasksData.results.length !== 0 "
@@ -161,6 +163,7 @@
                     count: 0,
                     results: []
                 },
+                loading: true
             }
         },
         methods: {
@@ -194,7 +197,8 @@
             },
             getTaskList() {
                 this.$api.taskList({params: {project: this.$route.params.id}}).then(resp => {
-                    this.tasksData = resp
+                    this.tasksData = resp;
+                    this.loading = false
                 })
             },
             cellMouseEnter(row) {

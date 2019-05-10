@@ -16,6 +16,7 @@
                 <el-input clearable
                           v-model="scope.row.setup"
                           placeholder="${ setup_hooks function($request, *args, **kwargs) }"
+                          size="medium"
                 >
                 </el-input>
             </template>
@@ -28,6 +29,7 @@
                 <el-input clearable
                           v-model="scope.row.teardown"
                           placeholder="${ teardown_hooks function(response, *args, **kwargs) }"
+                          size="medium"
                 >
                 </el-input>
             </template>
@@ -50,7 +52,7 @@
                         icon="el-icon-delete"
                         size="mini"
                         type="danger"
-                        v-show="scope.$index !== 0"
+                        v-show="tableData.length > 1"
                         @click="handleDelete(scope.$index, scope.row)">
                     </el-button>
                 </el-row>

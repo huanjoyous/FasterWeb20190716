@@ -94,8 +94,8 @@
                 <div style="padding-top: 8px; padding-left: 30px; overflow: hidden">
                     <el-row :gutter="50">
                         <el-col :span="6">
-                            <el-input placeholder="请输入文件名称" v-if="pycodeData.count > 11" clearable v-model="search">
-                                <el-button slot="append" icon="el-icon-search" @click="getTestdataList"></el-button>
+                            <el-input placeholder="请输入变量名称" v-if="pycodeData.count > 11" clearable v-model="search">
+                                <el-button slot="append" icon="el-icon-search" @click="PycodeList"></el-button>
                             </el-input>
                         </el-col>
                         <el-col :span="7">
@@ -118,6 +118,8 @@
                 <el-main style="padding: 0; margin-left: 10px; margin-top: 10px;">
                     <div style="position: fixed; bottom: 0; right:0; left: 220px; top: 150px">
                         <el-table
+                            v-loading="loading"
+                            element-loading-text="正在玩命加载"
                             highlight-current-row
                             :data="pycodeData.results"
                             :show-header="pycodeData.results.length !== 0 "
@@ -169,7 +171,7 @@
                                         <el-button
                                             v-show="pycodeData.count !== 0"
                                             type="success"
-                                            icon="el-icon-document"
+                                            icon="el-icon-view"
                                             circle size="mini"
                                             @click="handleEditPycode(scope.row.id)"
                                         >
@@ -235,7 +237,8 @@
                         {min: 0, max: 100, message: '最多不超过100个字符', trigger: 'blur'}
                     ]
                 },
-                pycodeid: ''
+                pycodeid: '',
+                loading: true
             }
         },
         methods: {
@@ -296,14 +299,13 @@
                 this.$api.getPycodeListPaginationBypage({
                     params: {
                         page: this.currentPage,
-                        project: this.$route.params.id,
+                        project: this.pycodefileForm.project,
                         search: this.search
                     }
                 }).then(resp => {
                     this.pycodeData = resp;
                 })
             },
-
             handleConfirm(formName) {
                 this.$refs[formName].validate((valid) => {
                     if (valid) {
@@ -313,7 +315,7 @@
                         if (this.pycodefileForm.id === '') {
                             obj = this.$api.addPycode(this.pycodefileForm);
                         } else {
-                            obj = this.$api.updatePycode(this.pycodefileForm);
+                            obj = this.$api.updatePycode(this.pycodefileForm.id,this.pycodefileForm);
                         }
                         obj.then(resp => {
                             if (resp.success) {
@@ -353,6 +355,7 @@
                     }
                 }).then(resp => {
                     this.pycodeData = resp;
+                    this.loading = false;
                 })
             }
         },

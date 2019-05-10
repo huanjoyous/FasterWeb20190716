@@ -15,10 +15,11 @@
             <template slot-scope="scope">
                 <el-input
                     type="textarea"
-                    :autosize="{ minRows: 2, maxRows: 8}"
+                    :autosize="{ minRows: 2, maxRows: 10}"
                     clearable
                     v-model="scope.row.key"
                     placeholder="key 、 key-key1"
+                    size="medium"
                 ></el-input>
             </template>
         </el-table-column>
@@ -33,6 +34,7 @@
                     clearable
                     v-model="scope.row.value"
                     placeholder="${ fun() } 、 [ value ] 、 [ [ value1, value2 ] ]"
+                    size="medium"
                 ></el-input>
             </template>
         </el-table-column>
@@ -41,7 +43,7 @@
             label="参数描述"
             width="200">
             <template slot-scope="scope">
-                <el-input clearable v-model="scope.row.desc" placeholder="参数简要描述"></el-input>
+                <el-input clearable v-model="scope.row.desc" placeholder="参数简要描述" size="medium"></el-input>
             </template>
         </el-table-column>
 
@@ -61,7 +63,7 @@
                         icon="el-icon-delete"
                         size="mini"
                         type="danger"
-                        v-show="scope.$index !== 0"
+                        v-show="tableData.length > 1"
                         @click="handleDelete(scope.$index, scope.row)">
                     </el-button>
                 </el-row>

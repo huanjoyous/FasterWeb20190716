@@ -118,7 +118,12 @@
                         @click="del = !del"
                     ></el-button>
 
-
+                    <el-button
+                        :disabled="!addAPIFlag"
+                        type="text"
+                        style="position: absolute; right: 30px;"
+                        @click="addAPIFlag=false"
+                    >返回列表</el-button>
                 </div>
             </div>
         </el-header>

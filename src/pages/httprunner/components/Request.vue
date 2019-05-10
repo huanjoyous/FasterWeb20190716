@@ -26,7 +26,7 @@
                     label="请求Key"
                     width="200">
                     <template slot-scope="scope">
-                        <el-input clearable v-model="scope.row.key" placeholder="Key"></el-input>
+                        <el-input clearable v-model="scope.row.key" placeholder="Key" size="medium"></el-input>
                     </template>
                 </el-table-column>
 
@@ -36,7 +36,7 @@
                     width="120">
                     <template slot-scope="scope">
 
-                        <el-select v-model="scope.row.type">
+                        <el-select v-model="scope.row.type" size="medium">
                             <el-option
                                 v-for="item in dataTypeOptions"
                                 :key="item.value"
@@ -58,6 +58,7 @@
                             clearable
                             v-model="scope.row.value"
                             placeholder="Value"
+                            size="medium"
                         ></el-input>
 
                         <el-row v-show="scope.row.type === 5">
@@ -97,7 +98,7 @@
                     label="描述"
                     width="150">
                     <template slot-scope="scope">
-                        <el-input clearable v-model="scope.row.desc" placeholder="参数简要描述"></el-input>
+                        <el-input clearable v-model="scope.row.desc" placeholder="参数简要描述" size="medium"></el-input>
                     </template>
                 </el-table-column>
 
@@ -117,7 +118,7 @@
                                 icon="el-icon-delete"
                                 size="mini"
                                 type="danger"
-                                v-show="scope.$index !== 0"
+                                v-show="IsShowDel"
                                 @click="handleDelete(scope.$index, scope.row)">
                             </el-button>
                         </el-row>
@@ -243,12 +244,23 @@
                     type: 1,
                     desc: ''
                 });
+                if (data.length > 1){
+                    this.IsShowDel = true
+                }else{
+                    this.IsShowDel = false
+                }
             },
 
             handleDelete(index, row) {
                 const data = this.dataType === 'data' ? this.formData : this.paramsData;
                 data.splice(index, 1);
+                if (data.length > 1){
+                    this.IsShowDel = true
+                }else{
+                    this.IsShowDel = false
+                }
             },
+
 
             // 文件格式化
             parseFile() {
@@ -411,7 +423,8 @@
                     label: 'params',
                     value: 'params'
                 }],
-                dataType: 'json'
+                dataType: 'json',
+                IsShowDel: false
             }
         }
     }

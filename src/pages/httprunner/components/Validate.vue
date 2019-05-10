@@ -24,6 +24,7 @@
                         v-model="scope.row.comparator"
                         :fetch-suggestions="querySearch"
                         placeholder="请输入断言类型"
+                        size="medium"
                     >
                     </el-autocomplete>
                 </el-tooltip>
@@ -37,7 +38,7 @@
             label="实际返回值"
             width="250">
             <template slot-scope="scope">
-                <el-input clearable v-model="scope.row.actual" placeholder="实际返回值"></el-input>
+                <el-input clearable v-model="scope.row.actual" placeholder="实际返回值" size="medium"></el-input>
             </template>
         </el-table-column>
 
@@ -46,12 +47,14 @@
             width="120">
             <template slot-scope="scope">
 
-                <el-select v-model="scope.row.type">
+                <el-select v-model="scope.row.type" size="medium">
                     <el-option
                         v-for="item in dataTypeOptions"
                         :key="item.value"
                         :label="item.label"
-                        :value="item.value">
+                        :value="item.value"
+
+                    >
                     </el-option>
                 </el-select>
 
@@ -63,7 +66,7 @@
             label="期望返回值"
         >
             <template slot-scope="scope">
-                <el-input clearable v-model="scope.row.expect" placeholder="期望返回值"></el-input>
+                <el-input clearable v-model="scope.row.expect" placeholder="期望返回值" size="medium"></el-input>
 
             </template>
         </el-table-column>
@@ -83,7 +86,7 @@
                         icon="el-icon-delete"
                         size="mini"
                         type="danger"
-                        v-show="scope.$index !== 0"
+                        v-show="tableData.length > 1"
                         @click="handleDelete(scope.$index, scope.row)">
                     </el-button>
                 </el-row>

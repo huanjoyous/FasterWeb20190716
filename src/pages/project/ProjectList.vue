@@ -62,6 +62,9 @@
         <el-container>
             <el-main style="padding: 0; margin-left: 10px">
                 <el-table
+                    v-loading="loading"
+                    element-loading-text="正在玩命加载"
+                    fullscreenLoading=true
                     highlight-current-row
                     :data="projectData.results"
                     border
@@ -203,7 +206,8 @@
                         {required: true, message: '简要描述下该项目', trigger: 'blur'},
                         {min: 1, max: 100, message: '最多不超过100个字符', trigger: 'blur'}
                     ]
-                }
+                },
+                loading: true
             }
         },
         methods: {
@@ -285,6 +289,7 @@
             getProjectList() {
                 this.$api.getProjectList().then(resp => {
                     this.projectData = resp;
+                    this.loading = false;
                 })
             },
             getPagination(url) {

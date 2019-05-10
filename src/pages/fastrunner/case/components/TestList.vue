@@ -103,8 +103,9 @@
                   </span>
                     </el-dialog>
                     <el-table
-                        highlight-current-row
                         v-loading="loading"
+                        element-loading-text="正在玩命加载"
+                        highlight-current-row
                         ref="multipleTable"
                         :data="testData.results"
                         :show-header="testData.count !== 0 "
@@ -274,7 +275,6 @@
                 expand: '&#xe65f;',
                 dialogTreeVisible: false,
                 dataTree: {},
-                loading: false,
                 dialogTableVisible: false,
                 selectTest: [],
                 summary: {},
@@ -284,6 +284,7 @@
                     results: []
                 },
                 currentPage: 1,
+                loading: true
             }
         },
 
@@ -407,6 +408,7 @@
                     }
                 }).then(resp => {
                     this.testData = resp;
+                    this.loading = false;
                 })
             },
             cellMouseEnter(row) {

@@ -115,6 +115,8 @@
 
                 <div style="position: fixed; bottom: 0; right:0; left: 500px; top: 160px">
                     <el-table
+                        v-loading="loading"
+                        element-loading-text="正在玩命加载"
                         highlight-current-row
                         height="calc(100%)"
                         ref="multipleTable"
@@ -125,7 +127,6 @@
                         @cell-mouse-leave="cellMouseLeave"
                         style="width: 100%;"
                         @selection-change="handleSelectionChange"
-                        v-loading="loading"
                     >
                         <el-table-column
                             type="selection"
@@ -255,7 +256,7 @@
                 reportName: '',
                 asyncs: false,
                 filterText: '',
-                loading: false,
+                loading: true,
                 expand: '&#xe65f;',
                 dataTree: {},
                 dialogTreeVisible: false,
@@ -398,6 +399,7 @@
                     }
                 }).then(res => {
                     this.apiData = res;
+                    this.loading = false;
                 })
             },
 

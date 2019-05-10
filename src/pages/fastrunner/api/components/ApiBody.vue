@@ -30,7 +30,7 @@
 
             <div>
                 <el-input
-                    style="width: 600px; margin-top: 10px"
+                    style="width: 525px; margin-top: 10px"
                     placeholder="请输入接口请求地址"
                     v-model="url"
                     clearable
@@ -61,7 +61,7 @@
                         controls-position="right"
                         :min="1"
                         :max="100"
-                        style="width: 120px"
+                        style="width: 88px"
                     >
                     </el-input-number>
                 </el-tooltip>

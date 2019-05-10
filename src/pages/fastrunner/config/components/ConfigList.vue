@@ -1,5 +1,6 @@
-<template>
+<template >
     <el-container>
+
         <el-header style="padding-top: 10px; height: 50px;">
             <div>
                 <el-row :gutter="50">
@@ -24,10 +25,12 @@
             </div>
         </el-header>
 
-        <el-container>
+        <el-container >
             <el-main style="padding: 0; margin-left: 10px; margin-top: 10px;">
                 <div style="position: fixed; bottom: 0; right:0; left: 220px; top: 150px">
                     <el-table
+                        v-loading="loading"
+                        element-loading-text="正在玩命加载"
                         highlight-current-row
                         :data="configData.results"
                         :show-header="configData.results.length !== 0 "
@@ -130,7 +133,8 @@
                 configData: {
                     count: 0,
                     results: []
-                }
+                },
+                loading: true
             }
         },
         watch: {
@@ -231,6 +235,7 @@
                     }
                 }).then(resp => {
                     this.configData = resp;
+                    this.loading = false
                 })
             },
         },
@@ -242,5 +247,5 @@
 
 <style scoped>
 
-
 </style>
+
