@@ -26,13 +26,21 @@
                     @click="esc = !esc"
                 >Back
                 </el-button>
-
-               <!-- <el-button
-                    type="primary"
-                    @click="handleRun"
-                    v-loading="loading"
-                >Run
-                </el-button>-->
+                <el-tooltip
+                    effect="dark"
+                    content="循环次数"
+                    placement="bottom"
+                    style="width:100px;"
+                >
+                    <el-input-number
+                        v-model="times"
+                        controls-position="right"
+                        :min="1"
+                        :max="100"
+                        style="width: 120px"
+                    >
+                    </el-input-number>
+                </el-tooltip>
 
             </div>
             <div>
@@ -42,6 +50,7 @@
                     placeholder="请输入接口请求地址"
                     v-model="url"
                     clearable=""
+                    style="width:525px;"
                 >
                     <el-select
                         slot="prepend"
@@ -58,20 +67,14 @@
                     </el-select>
                 </el-input>
 
-                <el-tooltip
-                    effect="dark"
-                    content="循环次数"
-                    placement="bottom"
+
+                <el-input
+                    placeholder="${skipif()} or boolean"
+                    v-model="skipIf"
+                    style="width:250px"
                 >
-                    <el-input-number
-                        v-model="times"
-                        controls-position="right"
-                        :min="1"
-                        :max="100"
-                        style="width: 120px"
-                    >
-                    </el-input-number>
-                </el-tooltip>
+                    <template slot="prepend" >skipIf:</template>
+                </el-input>
             </div>
             <el-dialog
                 v-if="dialogTableVisible"
@@ -178,11 +181,6 @@
             }
         },
         methods: {
-          /*  handleRun() {
-                this.run = true;
-                this.save = !this.save;
-            },
-*/
             handleHeader(header, value) {
                 this.header = value;
                 this.tempBody.header = header;
@@ -211,6 +209,7 @@
                 this.tempBody.method = this.method;
                 this.tempBody.name = this.name;
                 this.tempBody.times = this.times;
+                this.tempBody.skipIf = this.skipIf;
 
                 if (this.validateData()) {
                     const body = {
@@ -226,7 +225,6 @@
                         times: this.times
                     };
                     this.$emit('getNewBody', body, this.tempBody);
-                    this.run = false;
                 }
 
             },
@@ -260,12 +258,11 @@
         },
         data() {
             return {
-                loading: false,
-                run: false,
                 esc: false,
                 times: this.response.body.times,
                 name: this.response.body.name,
                 url: this.response.body.url,
+                skipIf: '',
                 header: [],
                 request: [],
                 extract: [],
@@ -303,6 +300,7 @@
             this.validate = this.response.body.validate;
             this.variables = this.response.body.variables;
             this.hooks = this.response.body.hooks;
+            this.skipIf = this.response.body.skipIf;
         }
     }
 </script>

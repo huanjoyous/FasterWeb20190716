@@ -137,6 +137,7 @@
 
                             <el-table-column
                                 label="文件名"
+                                width="200"
                             >
                                 <template slot-scope="scope">
                                     <div>{{scope.row.name}}</div>
@@ -151,17 +152,20 @@
                             </el-table-column>
                             <el-table-column
                                 label="更新时间"
+                                width="250"
                             >
                                 <template slot-scope="scope">
                                     <div>{{scope.row.update_time | datetimeFormat}}</div>
 
                                 </template>
                             </el-table-column>
-                            <el-table-column>
+                            <el-table-column
+                            width="160"
+                            >
                                 <template slot-scope="scope">
                                     <el-row v-show="currentRow === scope.row">
                                         <el-button
-                                            v-show="pycodeData.count !== 0"
+                                            v-show="pycodeData.count !== 0 && scope.row.name !== 'debugtalk.py' "
                                             type="success"
                                             icon="el-icon-edit"
                                             circle size="mini"
@@ -177,7 +181,7 @@
                                         >
                                         </el-button>
                                         <el-button
-                                            v-show="pycodeData.count !== 0"
+                                            v-show="pycodeData.count !== 0 && scope.row.name !== 'debugtalk.py'"
                                             type="danger"
                                             icon="el-icon-delete"
                                             circle size="mini"
