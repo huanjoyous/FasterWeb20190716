@@ -36,7 +36,7 @@
         <el-table-column
             fixed
             label="实际返回值"
-            width="250">
+            >
             <template slot-scope="scope">
                 <el-input clearable v-model="scope.row.actual" placeholder="实际返回值" size="medium"></el-input>
             </template>

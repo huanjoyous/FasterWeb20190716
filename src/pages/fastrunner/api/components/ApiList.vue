@@ -113,7 +113,7 @@
                 </el-dialog>
 
 
-                <div style="position: fixed; bottom: 0; right:0; left: 500px; top: 160px">
+                <div style="position: fixed; bottom: 0; right:0; left: 460px; top: 160px">
                     <el-table
                         v-loading="loading"
                         element-loading-text="正在玩命加载"

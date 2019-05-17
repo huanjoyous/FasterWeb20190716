@@ -40,7 +40,7 @@
                 </div>
             </el-header>
             <el-main style="padding: 0; margin-left: 10px; margin-top: 10px;">
-                <div style="position: fixed; bottom: 0; right:0; left: 230px; top: 160px">
+                <div style="position: fixed; bottom: 0; right:0; left: 178px; top: 150px">
                     <el-table
                         v-loading="loading"
                         element-loading-text="正在玩命加载"

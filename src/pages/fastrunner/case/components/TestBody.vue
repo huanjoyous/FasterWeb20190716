@@ -262,7 +262,7 @@
                 times: this.response.body.times,
                 name: this.response.body.name,
                 url: this.response.body.url,
-                skipIf: '',
+                skipIf: false,
                 header: [],
                 request: [],
                 extract: [],

@@ -24,7 +24,7 @@
             >
                 <el-table-column
                     label="请求Key"
-                    width="200">
+                    >
                     <template slot-scope="scope">
                         <el-input clearable v-model="scope.row.key" placeholder="Key" size="medium"></el-input>
                     </template>

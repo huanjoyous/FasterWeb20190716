@@ -11,7 +11,7 @@
     >
         <el-table-column
             label="变量名"
-            width="200">
+            >
             <template slot-scope="scope">
                 <el-input clearable v-model="scope.row.key" placeholder="接收抽取值后的变量名" size="medium"></el-input>
             </template>

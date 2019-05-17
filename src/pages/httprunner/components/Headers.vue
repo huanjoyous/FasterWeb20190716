@@ -11,7 +11,7 @@
     >
         <el-table-column
             label="标签"
-            width="300">
+            >
             <template slot-scope="scope">
                 <el-autocomplete
                     clearable
@@ -27,7 +27,7 @@
 
         <el-table-column
             label="内容"
-            min-width="200"
+
         >
             <template slot-scope="scope">
                 <el-autocomplete
@@ -36,7 +36,7 @@
                     :fetch-suggestions="querySearchContent"
                     placeholder="头部内容"
                     size="medium"
-                    style="width:300px"
+                    style="width:280px"
                 >
                 </el-autocomplete>
             </template>
@@ -44,7 +44,7 @@
 
         <el-table-column
             label="描述"
-            width="150">
+            width="200">
             <template slot-scope="scope">
                 <el-input clearable v-model="scope.row.desc" placeholder="头部信息简要描述" size="medium"></el-input>
 

@@ -20,9 +20,9 @@
                 <div>
 
                     <el-row>
-                        <el-col :span="6" v-if="reportData.count > 11">
-                            <el-input placeholder="请输入报告名称" clearable v-model="search">
-                                <el-button slot="append" icon="el-icon-search" @click="getReportList"></el-button>
+                        <el-col :span="5" v-if="reportData.count > 11">
+                            <el-input placeholder="请输入报告名称" clearable v-model="search" size="small">
+                                <el-button slot="append" icon="el-icon-search" @click="getReportList" size="small"></el-button>
                             </el-input>
                         </el-col>
 
@@ -44,7 +44,7 @@
 
             <el-container>
                 <el-main style="padding: 0; margin-left: 10px; margin-top: 10px;">
-                    <div style="position: fixed; bottom: 0; right:0; left: 220px; top: 150px">
+                    <div style="position: fixed; bottom: 0px; right:0; left: 178px; top: 150px;">
                         <el-table
                             v-loading="loading"
                             element-loading-text="正在玩命加载"
@@ -68,7 +68,7 @@
                                 width="80"
                             >
                                 <template slot-scope="scope">
-                                    <el-tag color="#2C3E50" style="color: white">{{ scope.row.type }}</el-tag>
+                                    <el-tag color="#2C3E50" style="color: white" size="small">{{ scope.row.type }}</el-tag>
                                 </template>
                             </el-table-column>
 
@@ -117,7 +117,7 @@
                                 label="总计接口"
                             >
                                 <template slot-scope="scope">
-                                    <el-tag>{{ scope.row.stat.testsRun }}</el-tag>
+                                    <el-tag size="small">{{ scope.row.stat.testsRun }}</el-tag>
                                 </template>
                             </el-table-column>
 
@@ -126,7 +126,7 @@
                                 label="通过个数"
                             >
                                 <template slot-scope="scope">
-                                    <el-tag type="success"> {{ scope.row.stat.successes }}</el-tag>
+                                    <el-tag type="success" size="small"> {{ scope.row.stat.successes }}</el-tag>
                                 </template>
                             </el-table-column>
 
@@ -135,7 +135,7 @@
                                 label="失败个数"
                             >
                                 <template slot-scope="scope">
-                                    <el-tag type="danger">{{ scope.row.stat.failures }}</el-tag>
+                                    <el-tag type="danger" size="small">{{ scope.row.stat.failures }}</el-tag>
                                 </template>
                             </el-table-column>
 
@@ -144,7 +144,7 @@
                                 label="异常个数"
                             >
                                 <template slot-scope="scope">
-                                    <el-tag type="warning">{{ scope.row.stat.errors }}</el-tag>
+                                    <el-tag type="warning" size="small">{{ scope.row.stat.errors }}</el-tag>
                                 </template>
                             </el-table-column>
 
@@ -153,7 +153,7 @@
                                 label="跳过个数"
                             >
                                 <template slot-scope="scope">
-                                    <el-tag type="info">{{ scope.row.stat.skipped }}</el-tag>
+                                    <el-tag type="info" size="small">{{ scope.row.stat.skipped }}</el-tag>
                                 </template>
                             </el-table-column>
 
@@ -315,10 +315,12 @@
     .pass {
         font-weight: bold;
         color: #13ce66;
+        font-size: 12px;
     }
     .fail {
         font-weight: bold;
         color: red;
+        font-size: 12px;
     }
 
 

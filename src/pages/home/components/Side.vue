@@ -68,7 +68,7 @@
         top: 48px;
         border-right: 1px solid #ddd;
         height: 100%;
-        width: 202px;
+        width: 160px;
         background-color: #fff;
         display: inline-block;
     }

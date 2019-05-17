@@ -27,6 +27,17 @@
             >
                 <template slot="prepend">配置请求地址</template>
             </el-input>
+            <el-tooltip :content="'teststep失败后testcase是否中止: '+ failfast" placement="top">
+                <el-switch
+                    style="display: inline"
+                    v-model="failfast"
+                    active-color="#ff4949"
+                    inactive-color="#13ce66"
+                    active-value=false
+                    inactive-value=true
+                >
+                </el-switch>
+            </el-tooltip>
         </div>
 
         <div class="request">
@@ -115,6 +126,11 @@
                 this.name = this.response.body.name;
                 this.baseUrl = this.response.body.base_url;
                 this.id = this.response.id;
+                if (this.response.body.failFast){
+                    this.failfast =  this.response.body.failFast;
+                }else{
+                    this.failfast = true;
+                }
             }
         },
 
@@ -152,7 +168,7 @@
                         base_url: this.baseUrl,
                         name: this.name,
                         project: this.project,
-
+                        failFast: this.failfast
                     }).then(resp => {
                         if (resp.success) {
                             this.$emit("addSuccess");
@@ -176,6 +192,8 @@
                         hooks: this.hooks,
                         base_url: this.baseUrl,
                         name: this.name,
+                        project: this.project,
+                        failFast: this.failfast
                     }).then(resp => {
                         if (resp.success) {
                             this.$emit("addSuccess");
@@ -215,6 +233,7 @@
                 parameters: [],
                 save: false,
                 activeTag: 'third',
+                failfast: ''
             }
         },
         name: "ConfigBody"
