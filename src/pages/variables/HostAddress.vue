@@ -15,7 +15,7 @@
                     <el-dialog
                         title="添加环境"
                         :visible.sync="dialogVisible"
-                        width="35%"
+                        width="50%"
                         align="center"
                     >
                         <el-form
@@ -27,15 +27,65 @@
                             <el-form-item label="环境名" prop="name">
                                 <el-input resize v-model="variablesForm.name" clearable placeholder="请输入环境名"></el-input>
                             </el-form-item>
-                            <el-form-item label="IP列表" prop="value">
-                                <el-input
-                                    v-model="variablesForm.value"
-                                    type="textarea"
-                                    :autosize="{ minRows: 10, maxRows: 16}"
-                                    placeholder="127.0.0.1 localhost
-192.168.0.1 gateway"
-                                    clearable
-                                ></el-input>
+                            <el-form-item label="信息" prop="hostInfo">
+                                <el-table
+                                    highlight-current-row
+                                    :cell-style="{paddingTop: '2px', paddingBottom: '2px'}"
+                                    strpe
+                                    :data="tableData"
+                                    style="width: 100%;"
+                                    @cell-mouse-enter="cellMouseEnterInside"
+                                    @cell-mouse-leave="cellMouseLeaveInside"
+                                >
+                                    <el-table-column
+                                        label="变量名"
+                                    >
+                                        <template slot-scope="scope">
+                                            <el-input clearable v-model="scope.row.key" placeholder="Key" size="small"></el-input>
+                                        </template>
+                                    </el-table-column>
+
+
+                                    <el-table-column
+                                        label="变量值"
+                                    >
+                                        <template slot-scope="scope">
+                                            <el-input clearable v-model="scope.row.value" placeholder="Value" size="small"></el-input>
+                                        </template>
+                                    </el-table-column>
+
+                                    <el-table-column
+                                        label="描述"
+                                        width="150">
+                                        <template slot-scope="scope">
+                                            <el-input clearable v-model="scope.row.desc" placeholder="变量简要描述" size="small"></el-input>
+                                        </template>
+                                    </el-table-column>
+
+                                    <el-table-column
+                                        width="130"
+                                    >
+                                        <template slot-scope="scope">
+                                            <el-row v-show="scope.row === currentRowInside">
+                                                <el-button
+                                                    icon="el-icon-circle-plus-outline"
+                                                    size="mini"
+                                                    type="info"
+                                                    @click="handleEdit(scope.$index, scope.row)">
+                                                </el-button>
+
+                                                <el-button
+                                                    icon="el-icon-delete"
+                                                    size="mini"
+                                                    type="danger"
+                                                    v-show="tableData.length > 1"
+                                                    @click="handleDelete(scope.$index, scope.row)">
+                                                </el-button>
+                                            </el-row>
+
+                                        </template>
+                                    </el-table-column>
+                                </el-table>
                             </el-form-item>
                         </el-form>
                         <span slot="footer" class="dialog-footer">
@@ -47,7 +97,7 @@
                     <el-dialog
                         title="编辑环境"
                         :visible.sync="editdialogVisible"
-                        width="35%"
+                        width="50%"
                         align="center"
                     >
                         <el-form
@@ -60,15 +110,65 @@
                                 <el-input resize v-model="editVariablesForm.name" clearable
                                           placeholder="请输入环境名"></el-input>
                             </el-form-item>
-                            <el-form-item label="IP列表" prop="value">
-                                <el-input
-                                    v-model="editVariablesForm.value"
-                                    type="textarea"
-                                    :autosize="{ minRows: 10, maxRows: 16}"
-                                    placeholder="127.0.0.1 localhost
-192.168.0.1 gateway"
-                                    clearable
-                                ></el-input>
+                            <el-form-item label="信息" prop="hostInfo">
+                                <el-table
+                                    highlight-current-row
+                                    :cell-style="{paddingTop: '2px', paddingBottom: '2px'}"
+                                    strpe
+                                    :data="editVariablesForm.hostInfo"
+                                    style="width: 100%;"
+                                    @cell-mouse-enter="cellMouseEnterInside"
+                                    @cell-mouse-leave="cellMouseLeaveInside"
+                                >
+                                    <el-table-column
+                                        label="变量名"
+                                    >
+                                        <template slot-scope="scope">
+                                            <el-input clearable v-model="scope.row.key" placeholder="Key" size="small"></el-input>
+                                        </template>
+                                    </el-table-column>
+
+
+                                    <el-table-column
+                                        label="变量值"
+                                    >
+                                        <template slot-scope="scope">
+                                            <el-input clearable v-model="scope.row.value" placeholder="Value" size="small"></el-input>
+                                        </template>
+                                    </el-table-column>
+
+                                    <el-table-column
+                                        label="描述"
+                                        width="150">
+                                        <template slot-scope="scope">
+                                            <el-input clearable v-model="scope.row.desc" placeholder="变量简要描述" size="small"></el-input>
+                                        </template>
+                                    </el-table-column>
+
+                                    <el-table-column
+                                        width="130"
+                                    >
+                                        <template slot-scope="scope">
+                                            <el-row v-show="scope.row === currentRowInside">
+                                                <el-button
+                                                    icon="el-icon-circle-plus-outline"
+                                                    size="mini"
+                                                    type="info"
+                                                    @click="handleEditTableData(scope.$index, scope.row)">
+                                                </el-button>
+
+                                                <el-button
+                                                    icon="el-icon-delete"
+                                                    size="mini"
+                                                    type="danger"
+                                                    v-show="editTableData.length > 1"
+                                                    @click="handleDeleteEditTableData(scope.$index, scope.row)">
+                                                </el-button>
+                                            </el-row>
+
+                                        </template>
+                                    </el-table-column>
+                                </el-table>
                             </el-form-item>
                         </el-form>
                         <span slot="footer" class="dialog-footer">
@@ -185,6 +285,7 @@
                 search: '',
                 currentRow: '',
                 currentPage: 1,
+                currentRowInside: '',
                 hostIPData: {
                     count: 0,
                     results: []
@@ -193,29 +294,66 @@
                 dialogVisible: false,
                 variablesForm: {
                     name: '',
-                    value: '',
+                    hostInfo: [],
                     project: this.$route.params.id
                 },
 
                 editVariablesForm: {
                     name: '',
-                    value: '',
-                    id: ''
+                    hostInfo: [],
+                    id: '',
+                    project: this.$route.params.id
                 },
 
                 rules: {
                     name: [
                         {required: true, message: '请输入变量名', trigger: 'blur'},
                         {min: 1, max: 100, message: '最多不超过100个字符', trigger: 'blur'}
-                    ],
-                    value: [
-                        {required: true, message: '请输入变量值', trigger: 'blur'}
                     ]
                 },
-                loading: true
+                loading: true,
+                tableData: [{
+                    key: '',
+                    value: '',
+                    desc: ''
+                }],
+                editTableData: [{
+                    key: '',
+                    value: '',
+                    desc: ''
+                }]
             }
         },
         methods: {
+            cellMouseEnterInside(row) {
+                this.currentRowInside = row;
+            },
+
+            cellMouseLeaveInside(row) {
+                this.currentRowInside = '';
+            },
+
+            handleEdit(index, row) {
+                this.tableData.push({
+                    key: '',
+                    value: '',
+                    desc: ''
+                });
+            },
+            handleEditTableData(index, row) {
+                this.editTableData.push({
+                    key: '',
+                    value: '',
+                    desc: ''
+                });
+            },
+
+            handleDelete(index, row) {
+                this.tableData.splice(index, 1);
+            },
+            handleDeleteEditTableData(index, row) {
+                this.editTableData.splice(index, 1);
+            },
             cellMouseEnter(row) {
                 this.currentRow = row;
             },
@@ -223,28 +361,36 @@
             cellMouseLeave(row) {
                 this.currentRow = '';
             },
-
             handleEditHostIP(row) {
                 this.editVariablesForm = {
                     name: row.name,
-                    value: row.value,
-                    id: row.id
+                    hostInfo: row.hostInfo,
+                    id: row.id,
+                    project: this.$route.params.id
                 };
-
+                this.editTableData = this.editVariablesForm.hostInfo;
                 this.editdialogVisible = true;
             },
-
             handleDelHost(index) {
                 this.$confirm('此操作将永久删除该域名，是否继续?', '提示', {
                     confirmButtonText: '确定',
                     cancelButtonText: '取消',
                     type: 'warning',
                 }).then(() => {
-                    this.$api.deleteHost(index).then(resp => {
-                        if (resp.success) {
+                    this.$api.deleteHost(index,{params: {project: this.variablesForm.project}}).then(resp => {
+                        if (resp.status === 204) {
+                            this.$notify.success({
+                                title: 'success',
+                                message: '删除成功',
+                                duration: 2000
+                            })
                             this.getHostIPList();
                         } else {
-                            this.$message.error(resp.msg);
+                            this.$notify.error({
+                                title: 'error',
+                                message: resp,
+                                duration: 2000
+                            })
                         }
                     })
                 })
@@ -265,15 +411,22 @@
                 this.$refs[formName].validate((valid) => {
                     if (valid) {
                         this.dialogVisible = false;
+                        this.variablesForm.hostInfo = this.tableData;
                         this.$api.addHostIP(this.variablesForm).then(resp => {
-                            if (!resp.success) {
-                                this.$message.info({
-                                    message: resp.msg,
+                            console.log(resp);
+                            if (resp.status !== 201) {
+                                this.$notify.error({
+                                    title: 'error',
+                                    message: resp.data,
                                     duration: 1000
                                 })
                             } else {
                                 this.variablesForm.name = '';
-                                this.variablesForm.value = '';
+                                this.variablesForm.hostInfo = [{
+                                    key: '',
+                                    value: '',
+                                    desc: ''
+                                }];
                                 this.getHostIPList();
                             }
                         })
@@ -287,13 +440,20 @@
                 this.$refs[formName].validate((valid) => {
                     if (valid) {
                         this.editdialogVisible = false;
-                        this.$api.updateHost(this.editVariablesForm.id, this.editVariablesForm).then(resp => {
-                            if (!resp.success) {
-                                this.$message.info({
-                                    message: resp.msg,
+                        this.editVariablesForm.hostInfo = this.editTableData;
+                        this.$api.updateHost(this.editVariablesForm.id,this.editVariablesForm).then(resp => {
+                            if (resp.status !== 200) {
+                                this.$notify.error({
+                                    title: '提示',
+                                    message: resp,
                                     duration: 1000
                                 })
                             } else {
+                                this.$notify.success({
+                                    title: 'success',
+                                    message: '更新成功',
+                                    duration: 2000
+                                })
                                 this.getHostIPList();
                             }
                         })
@@ -303,11 +463,7 @@
             },
 
             getHostIPList() {
-                this.$api.hostList({
-                    params: {
-                        project: this.variablesForm.project
-                    }
-                }).then(resp => {
+                this.$api.hostList({params: {project: this.variablesForm.project}}).then(resp => {
                     this.hostIPData = resp;
                     this.loading = false;
                 })

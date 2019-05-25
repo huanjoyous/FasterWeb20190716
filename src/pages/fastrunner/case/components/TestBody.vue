@@ -9,7 +9,6 @@
                     clearable
                 >
                     <template slot="prepend">接口信息录入</template>
-
                     <el-button
                         slot="append"
                         type="success"
@@ -17,7 +16,6 @@
                         @click="save = !save"
                     >Save
                     </el-button>
-
                 </el-input>
 
                 <el-button
@@ -49,7 +47,7 @@
                     class="input-with-select"
                     placeholder="请输入接口请求地址"
                     v-model="url"
-                    clearable=""
+                    clearable
                     style="width:525px;"
                 >
                     <el-select
@@ -71,7 +69,8 @@
                 <el-input
                     placeholder="${skipif()} or boolean"
                     v-model="skipIf"
-                    style="width:250px"
+                    style="width:400px"
+                    clearable
                 >
                     <template slot="prepend" >skipIf:</template>
                 </el-input>
@@ -169,7 +168,6 @@
             Variables,
             Hooks,
             Report
-
         },
 
         props: {
@@ -203,7 +201,6 @@
             },
             handleHooks(hooks, value) {
                 this.hooks = value;
-
                 this.tempBody.hooks = hooks;
                 this.tempBody.url = this.url;
                 this.tempBody.method = this.method;
@@ -222,7 +219,8 @@
                         url: this.url,
                         method: this.method,
                         name: this.name,
-                        times: this.times
+                        times: this.times,
+                        skipIf: this.skipIf
                     };
                     this.$emit('getNewBody', body, this.tempBody);
                 }
@@ -262,7 +260,7 @@
                 times: this.response.body.times,
                 name: this.response.body.name,
                 url: this.response.body.url,
-                skipIf: false,
+                skipIf: this.response.body.skipIf,
                 header: [],
                 request: [],
                 extract: [],
@@ -300,7 +298,6 @@
             this.validate = this.response.body.validate;
             this.variables = this.response.body.variables;
             this.hooks = this.response.body.hooks;
-            this.skipIf = this.response.body.skipIf;
         }
     }
 </script>

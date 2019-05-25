@@ -333,8 +333,8 @@
             },
 
             getHost() {
-                this.$api.getAllHost(this.$route.params.id).then(resp => {
-                    this.hostOptions = resp;
+                this.$api.hostList({params: {project: this.$route.params.id}}).then(resp => {
+                    this.hostOptions = resp["results"];
                     this.hostOptions.push({
                         name: '请选择'
                     })

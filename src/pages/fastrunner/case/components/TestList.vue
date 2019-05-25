@@ -63,7 +63,6 @@
                                             v-model="reportName"
                                             :disabled="false">
                                         </el-input>
-
                                     </el-col>
                                 </el-row>
                             </div>
@@ -224,6 +223,12 @@
             node: {
                 require: false
             },
+            testDataExcel: {
+                require: true
+            },
+            testDataSheet: {
+                require: true
+            },
             del: Boolean
         },
 
@@ -308,15 +313,23 @@
                     this.$notify.error({
                         title: '提示',
                         message: '请至少选择一个节点',
-                        duration: 1500
+                        duration: 2000
                     });
-                } else {
+                } else if(this.testDataExcel !== '请选择' && this.testDataSheet === '') {
+                    this.$notify.error({
+                        title: '提示',
+                        message: '选择了数据，sheet名不能为空',
+                        duration: 2000
+                    });
+                }else {
                     this.$api.runSuiteTree({
                         "host":this.host,
                         "project": this.project,
                         "relation": relation,
                         "async": this.asyncs,
-                        "name": this.reportName
+                        "name": this.reportName,
+                        "testDataExcel": this.testDataExcel,
+                        "testDataSheet": this.testDataSheet
                     }).then(resp => {
                         if (resp.hasOwnProperty("status")) {
                             this.$message.info({
@@ -332,14 +345,29 @@
             },
 
             handleRunTest(id, name) {
-                this.loading = true;
-                this.$api.runTestByPk(id, {params: {project: this.project, name: name,host:this.host}}).then(resp => {
-                    this.summary = resp;
-                    this.dialogTableVisible = true;
-                    this.loading = false;
-                }).catch(resp => {
-                    this.loading = false;
-                })
+                if(this.testDataExcel !== '请选择' && this.testDataSheet === '') {
+                    this.$notify.error({
+                        title: '提示',
+                        message: '选择了数据，sheet名不能为空',
+                        duration: 2000
+                    });
+                } else{
+                    this.loading = true;
+                    this.$api.runTestByPk(id, {params: {
+                        project: this.project,
+                        name: name,
+                        host:this.host,
+                        testDataExcel: this.testDataExcel,
+                        testDataSheet: this.testDataSheet
+                    }
+                    }).then(resp => {
+                        this.summary = resp;
+                        this.dialogTableVisible = true;
+                        this.loading = false;
+                    }).catch(resp => {
+                        this.loading = false;
+                    })
+                }
             },
             handleCurrentChange(val) {
                 this.$api.getTestPaginationBypage({

@@ -13,10 +13,13 @@
             label="测试之前执行的方法"
         >
             <template slot-scope="scope">
-                <el-input clearable
-                          v-model="scope.row.setup"
-                          placeholder="${ setup_hooks function($request, *args, **kwargs) }"
-                          size="medium"
+                <el-input
+                    type="textarea"
+                    :autosize="{ minRows: 2, maxRows: 8}"
+                    clearable
+                    v-model="scope.row.setup"
+                    placeholder="${ setup_hooks function($request, *args, **kwargs) }"
+                    size="medium"
                 >
                 </el-input>
             </template>
@@ -26,10 +29,13 @@
             label="测试之后执行的方法"
         >
             <template slot-scope="scope">
-                <el-input clearable
-                          v-model="scope.row.teardown"
-                          placeholder="${ teardown_hooks function(response, *args, **kwargs) }"
-                          size="medium"
+                <el-input
+                    type="textarea"
+                    :autosize="{ minRows: 2, maxRows: 8}"
+                    clearable
+                    v-model="scope.row.teardown"
+                    placeholder="${ teardown_hooks function(response, *args, **kwargs) }"
+                    size="medium"
                 >
                 </el-input>
             </template>

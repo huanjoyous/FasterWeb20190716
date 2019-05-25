@@ -293,7 +293,13 @@
             testStepResp: {
                 require: false
             },
-            back: Boolean
+            back: Boolean,
+            testDataExcel: {
+                require: true
+            },
+            testDataSheet: {
+                require: true
+            }
         },
 
         name: "EditTest",
@@ -410,8 +416,7 @@
                     return false
                 }
 
-
-                return true;
+                    return true;
             },
 
             addTestSuite() {
@@ -477,40 +482,60 @@
 
             handleClickRun() {
                 if (this.validateData()) {
-                    this.suite_loading = true;
-                    this.$api.runSingleTestSuite({
-                        host: this.host,
-                        name: this.testName,
-                        body: this.testData,
-                        project: this.project
-                    }).then(resp => {
-                        this.suite_loading = false;
-                        this.summary = resp;
-                        this.dialogTableVisible = true;
-                    }).catch(resp => {
-                        this.suite_loading = false;
-                    })
+                    if(this.testDataExcel !== '请选择' && this.testDataSheet === '') {
+                        this.$notify.error({
+                            title: '提示',
+                            message: '选择了数据，sheet名不能为空',
+                            duration: 2000
+                        });
+                    } else{
+                        this.suite_loading = true;
+                        this.$api.runSingleTestSuite({
+                            host: this.host,
+                            name: this.testName,
+                            body: this.testData,
+                            project: this.project,
+                            testDataExcel: this.testDataExcel,
+                            testDataSheet: this.testDataSheet
+                        }).then(resp => {
+                            this.suite_loading = false;
+                            this.summary = resp;
+                            this.dialogTableVisible = true;
+                        }).catch(resp => {
+                            this.suite_loading = false;
+                        })
+                    }
                 }
             },
 
             handleSingleRun() {
-                this.loading = true;
-                var config = null;
-                if (this.testData.length > 0 && this.testData[0].body.method === "config") {
-                    config = this.testData[0].body;
+                if(this.testDataExcel !== '请选择' && this.testDataSheet === '') {
+                    this.$notify.error({
+                        title: '提示',
+                        message: '选择了数据，sheet名不能为空',
+                        duration: 2000
+                    });
+                } else {
+                    this.loading = true;
+                    var config = null;
+                    if (this.testData.length > 0 && this.testData[0].body.method === "config") {
+                        config = this.testData[0].body;
+                    }
+                    this.$api.runSingleTest({
+                        host: this.host,
+                        config: config,
+                        body: this.testData[this.currentTest],
+                        project: this.project,
+                        testDataExcel: this.testDataExcel,
+                        testDataSheet: this.testDataSheet
+                    }).then(resp => {
+                        this.loading = false;
+                        this.summary = resp;
+                        this.dialogTableVisible = true;
+                    }).catch(resp => {
+                        this.loading = false;
+                    })
                 }
-                this.$api.runSingleTest({
-                    host: this.host,
-                    config: config,
-                    body: this.testData[this.currentTest],
-                    project: this.project
-                }).then(resp => {
-                    this.loading = false;
-                    this.summary = resp;
-                    this.dialogTableVisible = true;
-                }).catch(resp => {
-                    this.loading = false;
-                })
             },
 
             handlePageChange(val) {

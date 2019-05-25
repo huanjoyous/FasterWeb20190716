@@ -334,7 +334,7 @@ export const deleteTasks = url => {
 };
 
 export const addHostIP = params => {
-    return axios.post('/api/fastrunner/host_ip/', params).then(res => res.data)
+    return axios.post('/api/fastrunner/host_ip/', params).then(res => res)
 };
 
 export const hostList = params => {
@@ -342,19 +342,13 @@ export const hostList = params => {
 };
 
 export const updateHost = (url, params) => {
-    return axios.patch('/api/fastrunner/host_ip/' + url + '/', params).then(res => res.data)
+    return axios.patch('/api/fastrunner/host_ip/' + url + '/', params).then(res => res)
 };
 
-export const deleteHost = url => {
-    return axios.delete('/api/fastrunner/host_ip/' + url + '/').then(res => res.data)
+export const deleteHost = (url, params)=> {
+    return axios.delete('/api/fastrunner/host_ip/' + url + '/', params).then(res => res)
 };
 
 export const getHostPaginationBypage = params => {
     return axios.get('/api/fastrunner/host_ip/', params).then(res => res.data)
 };
-
-export const getAllHost = url => {
-    return axios.get('/api/fastrunner/host_ip/' + url + '/').then(res => res.data)
-};
-
-

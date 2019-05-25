@@ -68,12 +68,31 @@
                         :disabled="buttonActivate"
                     >添加用例
                     </el-button>
+                    <el-button
+                        v-if="addTestActivate"
+                        style="margin-left: 30px"
+                        type="primary"
+                        icon="el-icon-caret-right"
+                        circle
+                        size="mini"
+                        @click="run = !run"
+                    ></el-button>
+
+                    <el-button
+                        v-if="addTestActivate"
+                        style="margin-left: 10px"
+                        type="danger"
+                        icon="el-icon-delete"
+                        circle
+                        size="mini"
+                        @click="del = !del"
+                    ></el-button>
                     &nbsp环境:
                     <el-select
                         placeholder="请选择"
                         size="small"
-                        tyle="margin-left: -6px"
                         v-model="currentHost"
+                        style="width: 120px"
                     >
                         <el-option
                             v-for="item in hostOptions"
@@ -86,7 +105,7 @@
                     <el-select
                         placeholder="请选择"
                         size="small"
-                        tyle="margin-left: -6px"
+                        style="width: 120px"
                         v-model="currentConfig"
                         :disabled="addTestActivate"
                     >
@@ -98,27 +117,29 @@
                         >
                         </el-option>
                     </el-select>
+                    &nbsp数据:
+                    <el-select
+                        placeholder="请选择"
+                        size="small"
+                        style="width: 120px"
+                        v-model="currentTestDataExcel"
+                    >
+                        <el-option
+                            v-for="item in testDataOptions"
+                            :key="item.id"
+                            :label="item.name"
+                            :value="item.name"
+                        >
+                        </el-option>
+                    </el-select>
+                    <el-input
+                    size="small"
+                    style="width: 120px;"
+                    v-model="currentTestDataSheet"
+                    placeholder="请输入excel中的sheet名"
+                    >
 
-
-                    <el-button
-                        v-if="addTestActivate"
-                        style="margin-left: 20px"
-                        type="primary"
-                        icon="el-icon-caret-right"
-                        circle
-                        size="mini"
-                        @click="run = !run"
-                    ></el-button>
-
-                    <el-button
-                        v-if="addTestActivate"
-                        style="margin-left: 20px"
-                        type="danger"
-                        icon="el-icon-delete"
-                        circle
-                        size="mini"
-                        @click="del = !del"
-                    ></el-button>
+                    </el-input>
 
                     <el-button
                         :disabled="addTestActivate"
@@ -183,6 +204,8 @@
                     :back="back"
                     :run="run"
                     :host="currentHost"
+                    :testDataExcel="currentTestDataExcel"
+                    :testDataSheet="currentTestDataSheet"
                 >
                 </test-list>
 
@@ -194,6 +217,8 @@
                     :testStepResp="testStepResp"
                     :config="currentConfig"
                     :host="currentHost"
+                    :testDataExcel="currentTestDataExcel"
+                    :testDataSheet="currentTestDataSheet"
                     v-on:addSuccess="handleBackList"
                 >
                 </edit-test>
@@ -249,6 +274,8 @@
                 addTestActivate: true,
                 currentConfig: '请选择',
                 currentHost:'请选择',
+                currentTestDataExcel: '请选择',
+                currentTestDataSheet: '',
                 treeId: '',
                 maxId: '',
                 dialogVisible: false,
@@ -257,7 +284,8 @@
                 filterText: '',
                 expand: '&#xe65f;',
                 dataTree: [],
-                configOptions: []
+                configOptions: [],
+                testDataOptions: []
             }
         },
         methods: {
@@ -379,20 +407,32 @@
                 data.children.push(newChild);
             },
             getHost() {
-                this.$api.getAllHost(this.$route.params.id).then(resp => {
-                    this.hostOptions = resp;
+                this.$api.hostList({params: {project: this.$route.params.id}}).then(resp => {
+                    this.hostOptions = resp["results"];
                     this.hostOptions.push({
                         name: '请选择'
                     })
                 })
             },
-
+            getTestData() {
+                this.$api.testdataList({
+                    params: {
+                        project: this.$route.params.id
+                    }
+                }).then(resp => {
+                    this.testDataOptions = resp.results;
+                    this.testDataOptions.push({
+                        name: '请选择'
+                    })
+                })
+            }
         },
         name: "AutoTest",
         mounted() {
             this.getTree();
             this.getConfig();
             this.getHost();
+            this.getTestData();
         }
     }
 </script>
