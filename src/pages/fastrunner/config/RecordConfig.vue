@@ -1,5 +1,4 @@
 <template>
-
     <el-container>
         <el-header style="background: #fff; padding: 0; height: 50px">
             <div class="nav-api-header">
@@ -11,22 +10,6 @@
                         @click="initResponse = true"
                     >新增配置
                     </el-button>
-
-                  <!--  <el-button
-                        type="primary"
-                        plain
-                        size="small"
-                        icon="el-icon-upload"
-                    >导入配置
-                    </el-button>
-
-                    <el-button
-                        type="info"
-                        plain
-                        size="small"
-                        icon="el-icon-download"
-                    >导出配置
-                    </el-button>-->
 
                     <el-button
                         style="margin-left: 20px"

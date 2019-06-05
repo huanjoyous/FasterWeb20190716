@@ -247,7 +247,13 @@
             project: {
                 require: true
             },
-            del: Boolean
+            del: Boolean,
+            testDataExcel:{
+                require: false
+            },
+            testDataSheet:{
+                require: false
+            }
         },
         data() {
             return {
@@ -309,9 +315,7 @@
                     })
                 } else {
                     this.$notify.warning({
-                        title: '提示',
-                        message: '请至少选择一个接口',
-                        duration: 1000
+                        message: '请至少选择一个接口'
                     })
                 }
             }
@@ -344,10 +348,8 @@
                 this.dialogTreeVisible = false;
                 const relation = this.$refs.tree.getCheckedKeys();
                 if (relation.length === 0) {
-                    this.$notify.error({
-                        title: '提示',
-                        message: '请至少选择一个节点',
-                        duration: 1500
+                    this.$notify.warning({
+                        message: '请至少选择一个节点'
                     });
                 } else {
                     this.$api.runAPITree({
@@ -356,7 +358,9 @@
                         "relation": relation,
                         "async": this.asyncs,
                         "name": this.reportName,
-                        "config": this.config
+                        "config": this.config,
+                        "testDataExcel": this.testDataExcel,
+                        "testDataSheet": this.testDataSheet
                     }).then(resp => {
                         if (resp.hasOwnProperty("status")) {
                             this.$message.info({
@@ -450,7 +454,9 @@
                 this.$api.runAPIByPk(id, {
                     params: {
                         host:this.host,
-                        config: this.config
+                        config: this.config,
+                        testDataExcel: this.testDataExcel,
+                        testDataSheet: this.testDataSheet
                     }
                 }).then(resp => {
                     this.summary = resp;

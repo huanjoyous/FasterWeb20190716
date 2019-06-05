@@ -39,6 +39,7 @@
                                 >
                                     <el-table-column
                                         label="变量名"
+                                        width="150"
                                     >
                                         <template slot-scope="scope">
                                             <el-input clearable v-model="scope.row.key" placeholder="Key" size="small"></el-input>
@@ -63,20 +64,20 @@
                                     </el-table-column>
 
                                     <el-table-column
-                                        width="130"
+                                        width="90"
                                     >
                                         <template slot-scope="scope">
                                             <el-row v-show="scope.row === currentRowInside">
                                                 <el-button
                                                     icon="el-icon-circle-plus-outline"
-                                                    size="mini"
+                                                    circle size="mini"
                                                     type="info"
                                                     @click="handleEdit(scope.$index, scope.row)">
                                                 </el-button>
 
                                                 <el-button
                                                     icon="el-icon-delete"
-                                                    size="mini"
+                                                    circle size="mini"
                                                     type="danger"
                                                     v-show="tableData.length > 1"
                                                     @click="handleDelete(scope.$index, scope.row)">
@@ -121,6 +122,7 @@
                                     @cell-mouse-leave="cellMouseLeaveInside"
                                 >
                                     <el-table-column
+                                        width="150"
                                         label="变量名"
                                     >
                                         <template slot-scope="scope">
@@ -146,20 +148,20 @@
                                     </el-table-column>
 
                                     <el-table-column
-                                        width="130"
+                                        width="90"
                                     >
                                         <template slot-scope="scope">
                                             <el-row v-show="scope.row === currentRowInside">
                                                 <el-button
                                                     icon="el-icon-circle-plus-outline"
-                                                    size="mini"
-                                                    type="info"
+                                                    circle size="mini"
+                                                    type="success"
                                                     @click="handleEditTableData(scope.$index, scope.row)">
                                                 </el-button>
 
                                                 <el-button
                                                     icon="el-icon-delete"
-                                                    size="mini"
+                                                    circle size="mini"
                                                     type="danger"
                                                     v-show="editTableData.length > 1"
                                                     @click="handleDeleteEditTableData(scope.$index, scope.row)">
@@ -183,7 +185,7 @@
 
         <el-container>
             <el-header style="padding: 0; height: 50px;">
-                <div style="padding-top: 8px; padding-left: 30px; overflow: hidden">
+                <div style="padding-top: 8px; padding-left: 20px; overflow: hidden">
                     <el-pagination
                         :page-size="11"
                         v-show="hostIPData.count !== 0 "
@@ -194,7 +196,6 @@
                         :total="hostIPData.count"
                     >
                     </el-pagination>
-
                 </div>
             </el-header>
 
@@ -212,37 +213,22 @@
                             @cell-mouse-enter="cellMouseEnter"
                             @cell-mouse-leave="cellMouseLeave"
                         >
-                            <el-table-column
-                                label="环境名"
-                            >
+                            <el-table-column label="环境名">
                                 <template slot-scope="scope">
                                     <div>{{scope.row.name}}</div>
                                 </template>
                             </el-table-column>
 
-                            <el-table-column
-                                label="Host列表"
-                            >
-                                <template slot-scope="scope">
-                                    <el-input
-                                        v-model="scope.row.value"
-                                        type="textarea"
-                                        :autosize="{ minRows: 1, maxRows: 5}"
-                                        clearable
-                                        disabled
-                                    ></el-input>
-                                </template>
-                            </el-table-column>
-
-                            <el-table-column
-                                label="更新时间"
-                            >
+                            <el-table-column label="更新时间">
                                 <template slot-scope="scope">
                                     <div>{{scope.row.update_time|datetimeFormat}}</div>
-
                                 </template>
                             </el-table-column>
-
+                            <el-table-column label="创建时间">
+                                <template slot-scope="scope">
+                                    <div>{{scope.row.create_time|datetimeFormat}}</div>
+                                </template>
+                            </el-table-column>
                             <el-table-column>
                                 <template slot-scope="scope">
                                     <el-row v-show="currentRow === scope.row">
@@ -252,7 +238,6 @@
                                             circle size="mini"
                                             @click="handleEditHostIP(scope.row)"
                                         ></el-button>
-
 
                                         <el-button
                                             v-show="hostIPData.count !== 0"
@@ -380,16 +365,12 @@
                     this.$api.deleteHost(index,{params: {project: this.variablesForm.project}}).then(resp => {
                         if (resp.status === 204) {
                             this.$notify.success({
-                                title: 'success',
-                                message: '删除成功',
-                                duration: 2000
+                                message: '删除成功'
                             })
                             this.getHostIPList();
                         } else {
                             this.$notify.error({
-                                title: 'error',
-                                message: resp,
-                                duration: 2000
+                                message: resp
                             })
                         }
                     })
@@ -413,24 +394,21 @@
                         this.dialogVisible = false;
                         this.variablesForm.hostInfo = this.tableData;
                         this.$api.addHostIP(this.variablesForm).then(resp => {
-                            console.log(resp);
-                            if (resp.status !== 201) {
-                                this.$notify.error({
-                                    title: 'error',
-                                    message: resp.data,
-                                    duration: 1000
-                                })
-                            } else {
-                                this.variablesForm.name = '';
-                                this.variablesForm.hostInfo = [{
-                                    key: '',
-                                    value: '',
-                                    desc: ''
-                                }];
-                                this.getHostIPList();
+                            this.variablesForm.name = '';
+                            this.variablesForm.hostInfo = [{
+                                key: '',
+                                value: '',
+                                desc: ''
+                            }];
+                            this.$notify.success('添加环境信息成功');
+                            this.getHostIPList();
+                        }).catch(function (error) {
+                            if("non_field_errors" in error){
+                                this.$notify.error(error.non_field_errors[0]);
+                            }else{
+                                this.$notify.error(error);
                             }
-                        })
-
+                        });
                     }
                 });
 
@@ -442,19 +420,15 @@
                         this.editdialogVisible = false;
                         this.editVariablesForm.hostInfo = this.editTableData;
                         this.$api.updateHost(this.editVariablesForm.id,this.editVariablesForm).then(resp => {
-                            if (resp.status !== 200) {
-                                this.$notify.error({
-                                    title: '提示',
-                                    message: resp,
-                                    duration: 1000
-                                })
-                            } else {
-                                this.$notify.success({
-                                    title: 'success',
-                                    message: '更新成功',
-                                    duration: 2000
-                                })
-                                this.getHostIPList();
+                            this.$notify.success({
+                                message: '更新成功'
+                            });
+                            this.getHostIPList();
+                        }).catch(function (error) {
+                            if("non_field_errors" in error){
+                                this.$notify.error(error.non_field_errors[0]);
+                            }else{
+                                this.$notify.error(error);
                             }
                         })
                     }

@@ -105,15 +105,6 @@
                             <span>{{ scope.row.desc }}</span>
                         </template>
                     </el-table-column>
-                    <el-table-column
-                        label="测试数据根目录"
-                        width="200"
-                        align="center"
-                    >
-                        <template slot-scope="scope">
-                            <span>{{ scope.row.filePath }}</span>
-                        </template>
-                    </el-table-column>
 
                     <el-table-column
                         label="更新时间"
@@ -276,14 +267,12 @@
             success(resp) {
                 this.$notify({
                     message: resp["msg"],
-                    type: 'success',
-                    duration: 1000
+                    type: 'success'
                 });
             },
             failure(resp) {
                 this.$notify.error({
-                    message: resp["msg"],
-                    duration: 1000
+                    message: resp["msg"]
                 });
             },
             getProjectList() {

@@ -166,7 +166,7 @@
                                     <el-row v-show="currentRow === scope.row">
                                         <el-button
                                             v-show="pycodeData.count !== 0 && scope.row.name !== 'debugtalk.py' "
-                                            type="success"
+                                            type="info"
                                             icon="el-icon-edit"
                                             circle size="mini"
                                             @click="handleEditPycodeData(scope.$index, scope.row)"
@@ -293,9 +293,7 @@
                     })
                 } else {
                     this.$notify.warning({
-                        title: '提示',
-                        message: '请至少勾选一个文件',
-                        duration: 1000
+                        message: '请至少勾选一个文件'
                     })
                 }
             },

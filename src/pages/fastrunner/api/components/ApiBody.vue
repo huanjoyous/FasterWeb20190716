@@ -181,6 +181,12 @@
             },
             response: {
                 require: false
+            },
+            testDataExcel:{
+                require: false
+            },
+            testDataSheet:{
+                require: false
             }
         },
         methods: {
@@ -222,18 +228,14 @@
             validateData() {
                 if (this.url === '') {
                     this.$notify.error({
-                        title: 'url错误',
-                        message: '接口请求地址不能为空',
-                        duration: 1500
+                        message: '接口请求地址不能为空'
                     });
                     return false;
                 }
 
                 if (this.name === '') {
                     this.$notify.error({
-                        title: 'name错误',
-                        message: '接口名称不能为空',
-                        duration: 1500
+                        message: '接口名称不能为空'
                     });
                     return false;
                 }
@@ -254,12 +256,9 @@
                         times: this.times,
                     }).then(resp => {
                         if (resp.success) {
-                            this.$emit('addSuccess');
+                            this.$notify.success(resp.msg);
                         } else {
-                            this.$message.error({
-                                message: resp.msg,
-                                duration: 1000
-                            })
+                            this.$notify.error(resp.msg)
                         }
                     })
                 }
@@ -281,7 +280,9 @@
                         times: this.times,
                         project: this.project,
                         config: this.config,
-                        host:this.host
+                        host:this.host,
+                        testDataExcel: this.testDataExcel,
+                        testDataSheet: this.testDataSheet
                     }).then(resp => {
                         this.summary = resp;
                         this.dialogTableVisible = true;
@@ -310,12 +311,9 @@
 
                     }).then(resp => {
                         if (resp.success) {
-                            this.$emit('addSuccess');
+                            this.$notify.success(resp.msg);
                         } else {
-                            this.$message.error({
-                                message: resp.msg,
-                                duration: 1000
-                            })
+                            this.$notify.error(resp.msg)
                         }
                     })
                 }

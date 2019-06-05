@@ -152,9 +152,7 @@
                             tempValue = bool[value];
                         } else {
                             this.$notify.error({
-                                title: '类型转换错误',
-                                message: msg,
-                                duration: 2000
+                                message: '类型转换错误'
                             });
                             return 'exception'
                         }
@@ -179,10 +177,7 @@
 
                 if (tempValue !== 0 && !tempValue && type !== 4 && type !== 1) {
                     this.$notify.error({
-                        title: '类型转换错误',
-                        message: msg,
-
-                        duration: 2000
+                        message: '类型转换错误'
                     });
                     return 'exception'
                 }

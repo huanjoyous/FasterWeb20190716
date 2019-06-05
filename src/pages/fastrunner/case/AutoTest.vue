@@ -10,8 +10,7 @@
                         icon="el-icon-circle-plus"
                         @click="dialogVisible = true"
                         :disabled="!addTestActivate"
-                    >
-                        新建分组
+                    >新建分组
                     </el-button>
 
                     <el-dialog
@@ -56,6 +55,7 @@
                         type="info"
                         size="small"
                         icon="el-icon-edit-outline"
+                        style="margin-left: 0px"
                         @click="renameNode"
                     >重命名
                     </el-button>
@@ -66,6 +66,7 @@
                         icon="el-icon-circle-plus-outline"
                         @click="buttonActivate=false"
                         :disabled="buttonActivate"
+                        style="margin-left: 0px"
                     >添加用例
                     </el-button>
                     <el-button
@@ -136,7 +137,7 @@
                     size="small"
                     style="width: 120px;"
                     v-model="currentTestDataSheet"
-                    placeholder="请输入excel中的sheet名"
+                    placeholder="请输入sheet名"
                     >
 
                     </el-input>
@@ -329,7 +330,7 @@
                         this.dataTree = resp['tree'];
                         this.maxId = resp['max'];
                     } else {
-                        this.$message.error(resp['msg']);
+                        this.$notify.error(resp['msg']);
                     }
                 })
             },

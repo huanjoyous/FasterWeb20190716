@@ -5,15 +5,17 @@
                 <div style="padding-top: 10px; margin-left: 20px">
                     <el-upload
                         class="upload-demo"
-                        :action="filePath"
+                        :action="fileupload"
                         :show-file-list="false"
                         accept=".xlsx, .xls, .jpg, .png"
                         multiple
                         :limit="1"
+                        :headers="uploadheader"
                         :on-exceed="handleExceed"
                         :file-list="fileList"
                         :on-error="uploadError"
                         :on-success="uploadSuccess"
+                        :before-upload="UploadBefore"
                         :data="filedata"
                         style="display: inline"
                     >
@@ -106,14 +108,14 @@
                             <el-table-column>
                                 <template slot-scope="scope">
                                     <el-row v-show="currentRow === scope.row">
-                                        <el-button
+                                        <el-link
                                             v-show="testData.count !== 0"
                                             type="success"
                                             icon="el-icon-download"
-                                            circle size="mini"
-                                            @click="handleDownTestdata(scope.row.id,scope.row.name)"
+                                            :href="scope.row.file"
+                                            style="margin: 4px"
                                         >
-                                        </el-button>
+                                        </el-link>
                                         <el-button
                                             v-show="testData.count !== 0"
                                             type="danger"
@@ -136,7 +138,7 @@
 </template>
 
 <script>
-
+    import store from '../../store/state'
     export default {
         name: "TestData",
         mounted() {
@@ -146,15 +148,18 @@
         },
         data() {
             return {
-                filePath: this.$api.uploadFile(),
+                fileupload: this.$api.uploadFile(),
                 fileList: [],
                 filedata: {
-                    project_id: this.$route.params.id,
-                    size: ''
+                    project: this.$route.params.id,
+                    name: ''
                 },
                 testData: {
                     count: 0,
                     results: []
+                },
+                uploadheader: {
+                    Authorization: `JWT ${store.token}`
                 },
                 selectTestData: [],
                 search: '',
@@ -173,25 +178,20 @@
             },
 
             handleExceed(files, fileList) {
-                this.$message.warning(`当前限制选择 1 个文件，本次选择了 ${files.length} 个文件，共选择了 ${files.length + fileList.length} 个文件`);
+                this.$notify.warning(`当前限制选择 1 个文件，本次选择了 ${files.length} 个文件，共选择了 ${files.length + fileList.length} 个文件`);
             },
 
-            uploadSuccess(response, file) {
-                let size = file.size;
-                if (size >= 1048576) {
-                    size = (size / 1048576).toFixed(2).toString() + 'MB';
-                } else if (size >= 1024) {
-                    size = (size / 1024).toFixed(2).toString() + 'KB';
-                } else {
-                    size = size.toString() + 'Byte'
-                }
-                this.filedata['size'] = size;
+            UploadBefore(file){
+                this.filedata.name = file.name;
+            },
+
+            uploadSuccess(response) {
                 this.fileList = [];
-                if (response.success){
-                    this.$message.success(response.msg)
+                if (response.id){
+                    this.$notify.success('文件上传成功')
                 }
-                if (!response.success) {
-                    this.$message.error(file.name + response.msg);
+                else {
+                    this.$notify.error('文件上传失败');
                 }
                 this.getTestdataList()
             },
@@ -202,7 +202,7 @@
                         name: 'Login'
                     })
                 } else {
-                    this.$message.error(file.name + response.msg)
+                    this.$notify.error('文件上传失败')
                 }
             },
 
@@ -213,16 +213,18 @@
                         cancelButtonText: '取消',
                         type: 'warning',
                     }).then(() => {
-                        this.$api.delAllTestdata({data: this.selectTestData}).then(resp => {
-                            this.$message.success(resp.msg);
-                            this.getTestdataList();
+                        this.$api.delAllTestdata({project:this.$route.params.id},this.selectTestData).then(resp => {
+                            if (resp.status === 204) {
+                                this.$notify.success('批量删除文件完成');
+                                this.getTestdataList();
+                            } else{
+                                this.$notify.error('文件删除失败');
+                            }
                         })
                     })
                 } else {
                     this.$notify.warning({
-                        title: '提示',
-                        message: '请至少勾选一个文件',
-                        duration: 1000
+                        message: '请至少勾选一个文件'
                     })
                 }
             },
@@ -233,40 +235,40 @@
                 this.$api.getTestdataListPaginationBypage({
                     params: {
                         page: this.currentPage,
-                        project: this.filedata.project_id,
+                        project: this.filedata.project,
                         search: this.search
                     }
                 }).then(resp => {
                     this.testData = resp;
                 })
             },
-            handleDownTestdata(index,filename){
-                this.$api.downloadTestdata(index).then( resp => {
-                    if (resp){
-                        let url = window.URL.createObjectURL(new Blob([resp]));
-                        let link = document.createElement('a');
-                        link.style.display = 'none';
-                        link.href = url;
-                        link.setAttribute('download', filename);
-                        document.body.appendChild(link);
-                        link.click()
-                    }else{
-                        this.$message.error(resp.msg)
-                    }
-                })
-            },
+            // handleDownTestdata(index,filename){
+            //     this.$api.downloadTestdata(index).then( resp => {
+            //         if (resp){
+            //             let url = window.URL.createObjectURL(new Blob([resp]));
+            //             let link = document.createElement('a');
+            //             link.style.display = 'none';
+            //             link.href = url;
+            //             link.setAttribute('download', filename);
+            //             document.body.appendChild(link);
+            //             link.click()
+            //         }else{
+            //             this.$message.error(resp.msg)
+            //         }
+            //     })
+            // },
             handleDelTestdata(index) {
                 this.$confirm('此操作将永久删除该测试文件，是否继续?', '提示', {
                     confirmButtonText: '确定',
                     cancelButtonText: '取消',
                     type: 'warning',
                 }).then(() => {
-                    this.$api.deleteTestdata(index).then(resp => {
-                        if (resp.success) {
-                            this.$message.success(resp.msg);
+                    this.$api.deleteTestdata(index,{params:{project:this.$route.params.id}}).then(resp => {
+                        if (resp.status === 204) {
+                            this.$notify.success('文件删除成功');
                             this.getTestdataList();
                         } else {
-                            this.$message.error(resp.msg);
+                            this.$notify.error('文件删除失败');
                         }
                     })
                 })
@@ -274,7 +276,7 @@
             getTestdataList(){
                 this.$api.testdataList({
                     params: {
-                        project: this.filedata.project_id,
+                        project: this.filedata.project,
                         search: this.search
                     }
                 }).then(resp => {

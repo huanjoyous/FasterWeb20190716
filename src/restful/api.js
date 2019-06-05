@@ -1,8 +1,7 @@
 import axios from 'axios'
 import store from '../store/state'
 import router from '../router'
-import {Message} from 'element-ui';
-
+import {Notification} from 'element-ui';
 
 
 export const baseUrl = "http://localhost:8000";
@@ -10,51 +9,53 @@ axios.defaults.withCredentials = true;
 axios.defaults.baseURL = baseUrl;
 
 axios.interceptors.request.use(function (config) {
-    if (config.url.indexOf("/api/fastrunner/project/?cursor=") !== -1 ) {
-    }
-    else if (!config.url.startsWith("/api/user/")) {
-        config.url = config.url + "?token=" + store.token;
+    if (store.token) {  // 判断是否存在token，如果存在的话，则每个http header都加上token
+        config.headers.Authorization = `JWT ${store.token}`;
     }
     return config;
-}, function (error) {
-    return Promise.reject(error);
-});
-
+    },function (error) {
+        return Promise.reject(error);
+    });
 axios.interceptors.response.use(function (response) {
 
     return response;
 }, function (error) {
     try {
         if (error.response.status === 401) {
+            Notification.error({
+                message: '请先登录'
+            });
             router.replace({
                 name: 'Login'
             })
         }
-
+        if (error.response.status === 403) {
+            Notification.error({
+                message: '您无权限访问，请联系管理员'
+            });
+        }
         if (error.response.status === 500) {
-            Message.error({
-                message: '服务器内部异常, 请检查',
-                duration: 1000
+            Notification.error({
+                message: '服务器内部异常, 请检查'
             })
         }
+        return Promise.reject(error.response.data)
     }
     catch (e) {
-        Message.error({
-            message: '服务器连接超时，请重试',
-            duration: 1000
+        Notification.error({
+            message: '服务器连接超时，请重试'
         })
     }
 });
 
 // user api
-export const register = params => {
-    return axios.post('/api/user/register/', params).then(res => res.data)
-};
+// export const register = params => {
+//     return axios.post('/api/user/register/', params).then(res => res.data)
+// };
 
 export const login = params => {
-    return axios.post('/api/user/login/', params).then(res => res.data)
+    return axios.post('/api/user/login/', params).then(res => res)
 };
-
 
 // fastrunner api
 export const addProject = params => {
@@ -70,7 +71,7 @@ export const getProjectList = params => {
 };
 
 export const getProjectDetail = pk => {
-    return axios.get('/api/fastrunner/project/' + pk + '/').then(res => res.data)
+    return axios.get('/api/fastrunner/dashboard/' + pk + '/').then(res => res)
 };
 
 export const getPagination = url => {
@@ -121,29 +122,28 @@ export const updateTree = (url, params) => {
     return axios.patch('/api/fastrunner/tree/' + url + '/', params).then(res => res.data)
 };
 
-
-export const uploadFile = url => {
-    return baseUrl + '/api/fastrunner/testdata/?token=' + store.token
+export const uploadFile = params => {
+    return baseUrl + '/api/fastrunner/file/'
 };
 
-export const downloadTestdata = url => {
-    return axios.post('/api/fastrunner/testdata/' + url + '/',{},{responseType:'blob' }).then(res => res.data)
-};
+// export const downloadTestdata = url => {
+//     return axios.post('/api/fastrunner/testdata/' + url + '/',{},{responseType:'blob' }).then(res => res.data)
+// };
 
 export const testdataList = params => {
-    return axios.get('/api/fastrunner/testdata/', params).then(res => res.data)
+    return axios.get('/api/fastrunner/file/', params).then(res => res.data)
 };
 
 export const getTestdataListPaginationBypage = params => {
-    return axios.get('/api/fastrunner/testdata/', params).then(res => res.data)
+    return axios.get('/api/fastrunner/file/', params).then(res => res.data)
 };
 
-export const deleteTestdata = url => {
-    return axios.delete('/api/fastrunner/testdata/' + url + '/').then(res => res.data)
+export const deleteTestdata = (url, params) => {
+    return axios.delete('/api/fastrunner/file/' + url + '/', params).then(res => res)
 };
 
-export const delAllTestdata = params => {
-    return axios.delete('/api/fastrunner/testdata/', params).then(res => res.data)
+export const delAllTestdata = (params,data) => {
+    return axios.delete('/api/fastrunner/file/-1', {params,data}).then(res => res)
 };
 
 export const addAPI = params => {

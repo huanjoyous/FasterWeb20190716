@@ -323,9 +323,7 @@
                     }
                     catch (err) {
                         this.$notify.error({
-                            title: 'json错误',
-                            message: '不是标准的json数据格式',
-                            duration: 2000
+                            message: 'json数据格式错误'
                         });
                     }
                 }
@@ -355,9 +353,7 @@
                             tempValue = bool[value];
                         } else {
                             this.$notify.error({
-                                title: '类型转换错误',
-                                message: msg,
-                                duration: 2000
+                                message: '类型转换错误'
                             });
                             return 'exception'
                         }
@@ -366,9 +362,7 @@
 
                 if (tempValue !== 0 && !tempValue && type !== 4 && type !== 1) {
                     this.$notify.error({
-                        title: '类型转换错误',
-                        message: msg,
-                        duration: 2000
+                        message: '类型转换错误'
                     });
                     return 'exception'
                 }

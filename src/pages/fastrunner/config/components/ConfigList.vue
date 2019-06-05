@@ -3,7 +3,7 @@
 
         <el-header style="padding-top: 10px; height: 50px;">
             <div>
-                <el-row :gutter="50">
+                <el-row>
                     <el-col :span="6" v-if="configData.count > 11">
                         <el-input placeholder="请输入配置名称" clearable v-model="search">
                             <el-button slot="append" icon="el-icon-search" @click="getConfigList"></el-button>
@@ -155,9 +155,7 @@
                     })
                 } else {
                     this.$notify.warning({
-                        title: '提示',
-                        message: '请至少勾选一个配置',
-                        duration: 1000
+                        message: '请至少勾选一个配置'
                     })
                 }
             }

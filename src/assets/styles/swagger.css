@@ -1,6 +1,6 @@
 .block_post {
     border: 1px solid #49cc90;
-    background-color: rgba(73, 204, 144, .1)
+    background-color: rgba(73, 204, 144, .1);
 }
 
 .block_method_post {
@@ -103,10 +103,10 @@
 }
 
 .block-method {
-    font-size: 14px;
+    font-size: 12px;
     font-weight: 600;
     min-width: 80px;
-    padding: 6px 15px;
+    padding: 4px;
     text-align: center;
     border-radius: 3px;
     text-shadow: 0 1px 0 rgba(0, 0, 0, .1);

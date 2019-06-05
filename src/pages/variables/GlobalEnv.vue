@@ -285,9 +285,7 @@
                     })
                 } else {
                     this.$notify.warning({
-                        title: '提示',
                         message: '请至少勾选一个全局变量',
-                        duration: 1000
                     })
                 }
             },

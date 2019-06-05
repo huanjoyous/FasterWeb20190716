@@ -20,14 +20,15 @@ Vue.use(Router);
 export default new Router({
     mode:'history',
     routes: [
+        // {
+        //     path: '/fastrunner/register',
+        //     name: 'Register',
+        //     component: Register,
+        //     meta: {
+        //         title: '用户注册'
+        //     }
+        // },
         {
-            path: '/fastrunner/register',
-            name: 'Register',
-            component: Register,
-            meta: {
-                title: '用户注册'
-            }
-        }, {
             path: '/fastrunner/login',
             name: 'Login',
             component: Login,
@@ -55,7 +56,7 @@ export default new Router({
                 },
                 {
                     name: 'ProjectDetail',
-                    path: 'project/:id/dashbord',
+                    path: 'dashbord/:id',
                     component: ProjectDetail,
                     meta: {
                         title: '项目预览',

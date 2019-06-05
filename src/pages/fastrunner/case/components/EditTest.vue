@@ -391,8 +391,6 @@
             validateData() {
                 if (this.testName === '' || this.testName.length > 100) {
                     this.$notify.warning({
-                        title: '提示',
-                        duration: 1000,
                         message: '用例集名称必填，不能超过100个字符'
                     });
                     return false
@@ -400,8 +398,6 @@
 
                 if (this.testData.length === 0) {
                     this.$notify.warning({
-                        title: '提示',
-                        duration: 1000,
                         message: '测试用例集至少包含一个接口'
                     });
                     return false
@@ -409,8 +405,6 @@
 
                 if (this.testData[0].body.method === "config" && this.testData.length === 1) {
                     this.$notify.warning({
-                        title: '提示',
-                        duration: 1000,
                         message: '测试用例集至少包含一个接口'
                     });
                     return false
@@ -459,13 +453,9 @@
                     relation: this.relation
                 }).then(resp => {
                     if (resp.success) {
-                        this.$emit("addSuccess");
+                        this.$notify.success(resp.msg);
                     } else {
-                        this.$message({
-                            message: resp.msg,
-                            type: 'error',
-                            duration: 1000
-                        });
+                        this.$message.error(resp.msg);
                     }
                 })
             },
@@ -484,9 +474,7 @@
                 if (this.validateData()) {
                     if(this.testDataExcel !== '请选择' && this.testDataSheet === '') {
                         this.$notify.error({
-                            title: '提示',
                             message: '选择了数据，sheet名不能为空',
-                            duration: 2000
                         });
                     } else{
                         this.suite_loading = true;
@@ -511,9 +499,7 @@
             handleSingleRun() {
                 if(this.testDataExcel !== '请选择' && this.testDataSheet === '') {
                     this.$notify.error({
-                        title: '提示',
-                        message: '选择了数据，sheet名不能为空',
-                        duration: 2000
+                        message: '选择了数据，sheet名不能为空'
                     });
                 } else {
                     this.loading = true;

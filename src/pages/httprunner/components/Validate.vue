@@ -164,7 +164,11 @@
                 const msg = value + ' => ' + this.dataTypeOptions[type - 1].label + ' 转换异常, 该数据自动剔除';
                 switch (type) {
                     case 1:
-                        tempValue = value;
+                        if (String(value).toLowerCase() === 'null' || String(value).toLowerCase() === 'none'){
+                            tempValue = null;
+                        }else {
+                            tempValue = value;
+                        }
                         break;
                     case 2:
                         tempValue = parseInt(value);
@@ -173,24 +177,24 @@
                         tempValue = parseFloat(value);
                         break;
                     case 4:
-                        if (value === 'False' || value === 'True') {
+                        if (String(value).toLowerCase() === 'false' || String(value).toLowerCase() === 'true') {
                             let bool = {
-                                'True': true,
-                                'False': false
+                                'true': true,
+                                'false': false
                             };
                             tempValue = bool[value];
                         } else {
-                            this.$notify.error({
-                                title: '类型转换错误',
-                                message: msg,
-                                duration: 2000
-                            });
+                            this.$notify.error(msg);
                             return 'exception'
                         }
                         break;
                     case 5:
                         try {
-                            tempValue = JSON.parse(value);
+                            if (value === '' || value === '[]'){
+                                tempValue = [];
+                            }else{
+                                tempValue = JSON.parse(value);
+                            }
                         }
                         catch (err) {
                             tempValue = false
@@ -198,21 +202,20 @@
                         break;
                     case 6:
                         try {
-                            tempValue = JSON.parse(value);
+                            if (value === '' || value === '{}'){
+                                tempValue = {};
+                            }else{
+                                tempValue = JSON.parse(value);
+                            }
                         }
                         catch (err) {
                             tempValue = false
                         }
                         break;
-
                 }
 
                 if (tempValue !== 0 && !tempValue && type !== 4 && type !== 1) {
-                    this.$notify.error({
-                        title: '类型转换错误',
-                        message: msg,
-                        duration: 2000
-                    });
+                    this.$notify.error(msg);
                     return 'exception'
                 }
                 return tempValue;
@@ -243,7 +246,7 @@
                 tableData: [{
                     expect: '',
                     actual: '',
-                    comparator: 'equals',
+                    comparator: 'eq',
                     type: 1
                 }],
 
@@ -268,29 +271,29 @@
                 }],
 
                 validateOptions: [{
-                    value: 'equals'
+                    value: 'eq'
                 }, {
-                    value: 'less_than'
+                    value: 'lt'
                 }, {
-                    value: 'less_than_or_equals'
+                    value: 'le'
                 }, {
-                    value: 'greater_than'
+                    value: 'gt'
                 }, {
-                    value: 'greater_than_or_equals'
+                    value: 'ge'
                 }, {
-                    value: 'not_equals'
+                    value: 'ne'
                 }, {
-                    value: 'string_equals'
+                    value: 'str_eq'
                 }, {
-                    value: 'length_equals'
+                    value: 'len_eq'
                 }, {
-                    value: 'length_greater_than'
+                    value: 'len_gt'
                 }, {
-                    value: 'length_greater_than_or_equals'
+                    value: 'len_ge'
                 }, {
-                    value: 'length_less_than'
+                    value: 'len_lt'
                 }, {
-                    value: 'length_less_than_or_equals'
+                    value: 'len_le'
                 }, {
                     value: 'contains'
                 }, {

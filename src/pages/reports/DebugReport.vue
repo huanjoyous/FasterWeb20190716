@@ -115,6 +115,7 @@
 
                 <el-table-column
                     label="名 称"
+                    width="200px"
                 >
                     <template slot-scope="scope">
                         <span>{{ scope.row.name }}</span>
@@ -131,6 +132,7 @@
 
                 <el-table-column
                     label="请求方法"
+                    width="100px"
                 >
                     <template slot-scope="scope">
                         <span
@@ -140,6 +142,7 @@
 
                 <el-table-column
                     label="响应时间 (ms)"
+                    width="150px"
                 >
                     <template slot-scope="scope">
                         <span>{{ scope.row.meta_data.response.elapsed_ms }}</span>
@@ -148,6 +151,7 @@
 
                 <el-table-column
                     label="测试结果"
+                    width="100px"
                 >
                     <template slot-scope="scope">
                         <div :class="scope.row.status">{{ scope.row.status }}</div>

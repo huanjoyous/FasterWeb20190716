@@ -47,8 +47,11 @@
                                     </div>
                                 </div>
                                 <div class="form-foot">
-                                    <span>没有账户，<router-link to="/fastrunner/register">立即注册</router-link></span>
+                                    <span>没有账户，请联系系统管理员</span>
                                 </div>
+<!--                                <div class="form-foot">-->
+<!--                                    <span>没有账户，<router-link to="/fastrunner/register">立即注册</router-link></span>-->
+<!--                                </div>-->
 
                             </div>
                         </form>
@@ -69,7 +72,7 @@
 </template>
 
 <script>
-
+    import {Notification} from "element-ui";
     export default {
         name: "Login",
 
@@ -99,28 +102,30 @@
                 }
                 return true;
             },
-            handleLoginSuccess(resp) {
-                if (resp.success) {
-                    this.$router.push({name: 'ProjectList'});
-                    this.$store.commit("isLogin", resp.token);
-                    this.$store.commit("setUser", resp.user);
-                    this.$store.commit("setRouterName",'ProjectList');
-                    this.setLocalValue("token", resp.token);
-                    this.setLocalValue("user", resp.user);
-                    this.setLocalValue("routerName", 'ProjectList');
-                } else {
-                    this.$message.error({
-                        message: resp.msg,
-                        duration: 2000,
-                        center: true
-                    })
-                }
-            },
             submitForm() {
                 if (this.validateUserName() && this.validatePassword()) {
                     this.$api.login(this.loginForm).then(resp => {
-                        this.handleLoginSuccess(resp)
-                    })
+                        this.$store.commit("isLogin", resp.data.token);
+                        this.$store.commit("setUser", this.loginForm.username);
+                        this.$store.commit("setRouterName",'ProjectList');
+                        this.setLocalValue("token", resp.data.token);
+                        this.setLocalValue("user", this.loginForm.username);
+                        this.setLocalValue("routerName", 'ProjectList');
+                        this.$router.push({name: 'ProjectList'});
+
+                    }).catch(function (error) {
+                        if("non_field_errors" in error){
+                            Notification.error({
+                                message: error.non_field_errors[0]
+                            });
+                        }
+                        if("username" in error){
+                            Notification.error(error.username[0]);
+                        }
+                        if("password" in error){
+                            Notification.error(error.password[0]);
+                        }
+                    });
                 }
             }
         }

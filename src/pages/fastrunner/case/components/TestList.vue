@@ -130,6 +130,7 @@
 
                         <el-table-column
                             label="API个数"
+                            width="80px"
                         >
                             <template slot-scope="scope">
                                 <div>{{scope.row.length}} 个</div>
@@ -138,6 +139,7 @@
 
                         <el-table-column
                             label="用例类型"
+                            width="100px"
                         >
                             <template slot-scope="scope">
                                 <el-tag v-if="scope.row.tag==='冒烟用例'">{{scope.row.tag}}</el-tag>
@@ -149,6 +151,7 @@
 
                         <el-table-column
                             label="更新时间"
+                            width="160px"
                         >
                             <template slot-scope="scope">
                                 <div>{{scope.row.update_time|datetimeFormat}}</div>
@@ -157,6 +160,7 @@
                         </el-table-column>
 
                         <el-table-column
+                            width="180px"
                         >
                             <template slot-scope="scope">
                                 <el-row v-show="currentRow === scope.row">
@@ -264,9 +268,7 @@
                     })
                 } else {
                     this.$notify.warning({
-                        title: '提示',
-                        message: '请至少选择一个用例集',
-                        duration: 1000
+                        message: '请至少选择一个用例集'
                     })
                 }
             }
@@ -311,15 +313,11 @@
                 const relation = this.$refs.tree.getCheckedKeys();
                 if (relation.length === 0) {
                     this.$notify.error({
-                        title: '提示',
-                        message: '请至少选择一个节点',
-                        duration: 2000
+                        message: '请至少选择一个节点'
                     });
                 } else if(this.testDataExcel !== '请选择' && this.testDataSheet === '') {
                     this.$notify.error({
-                        title: '提示',
-                        message: '选择了数据，sheet名不能为空',
-                        duration: 2000
+                        message: '选择了数据，sheet名不能为空'
                     });
                 }else {
                     this.$api.runSuiteTree({
@@ -347,9 +345,7 @@
             handleRunTest(id, name) {
                 if(this.testDataExcel !== '请选择' && this.testDataSheet === '') {
                     this.$notify.error({
-                        title: '提示',
-                        message: '选择了数据，sheet名不能为空',
-                        duration: 2000
+                        message: '选择了数据，sheet名不能为空'
                     });
                 } else{
                     this.loading = true;

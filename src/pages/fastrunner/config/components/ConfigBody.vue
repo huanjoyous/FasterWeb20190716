@@ -196,12 +196,9 @@
                         failFast: this.failfast
                     }).then(resp => {
                         if (resp.success) {
-                            this.$emit("addSuccess");
+                            this.$notify.success(resp.msg);
                         } else {
-                            this.$message.error({
-                                message: resp.msg,
-                                duration: 1000
-                            })
+                            this.$notify.error(resp.msg)
                         }
                     })
                 }
@@ -210,9 +207,7 @@
             validateData() {
                 if (this.name === '') {
                     this.$notify.error({
-                        title: '参数错误',
-                        message: '配置名称不能为空',
-                        duration: 1500
+                        message: '配置名称不能为空'
                     });
                     return false;
                 }

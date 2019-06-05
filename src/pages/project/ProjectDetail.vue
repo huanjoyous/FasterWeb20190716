@@ -66,25 +66,15 @@
             }
         },
         methods: {
-            success(resp) {
-                this.$notify({
-                    message: resp["msg"],
-                    type: 'success',
-                    duration: 1000
-                });
-            },
-            failure(resp) {
-                this.$notify.error({
-                    message: resp.msg,
-                    duration: 1000
-                });
-            },
-
             getProjectDetail() {
                 const pk = this.$route.params.id;
                 this.$api.getProjectDetail(pk).then(res => {
-                    this.projectInfo = res
-                    this.loading = false
+                    if (res.status === 200){
+                        this.projectInfo = res.data;
+                    }else{
+                        this.$notify.error(res);
+                    }
+                    this.loading = false;
                 })
             }
         },

@@ -230,18 +230,14 @@
             validateData() {
                 if (this.url === '') {
                     this.$notify.error({
-                        title: 'url错误',
-                        message: '接口请求地址不能为空',
-                        duration: 1500
+                        message: '接口请求地址不能为空'
                     });
                     return false;
                 }
 
                 if (this.name === '') {
                     this.$notify.error({
-                        title: 'name错误',
-                        message: '接口名称不能为空',
-                        duration: 1500
+                        message: '接口名称不能为空'
                     });
                     return false;
                 }

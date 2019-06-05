@@ -57,6 +57,7 @@
                         size="small"
                         icon="el-icon-edit-outline"
                         @click="renameNode"
+                        style="margin-left: 0px"
                     >重命名
                     </el-button>
 
@@ -67,14 +68,33 @@
                         size="small"
                         icon="el-icon-circle-plus-outline"
                         @click="initResponse = true"
+                        style="margin-left: 0px"
                     >添加接口
                     </el-button>
+                    <el-button
+                        v-if="!addAPIFlag"
+                        style="margin-left: 20px"
+                        type="primary"
+                        icon="el-icon-caret-right"
+                        circle
+                        size="mini"
+                        @click="run = !run"
+                    ></el-button>
+
+                    <el-button
+                        v-if="!addAPIFlag"
+                        type="danger"
+                        icon="el-icon-delete"
+                        circle
+                        size="mini"
+                        @click="del = !del"
+                    ></el-button>
                     &nbsp环境:
                     <el-select
                         placeholder="请选择"
                         size="small"
-                        tyle="margin-left: -6px"
                         v-model="currentHost"
+                        style="width: 120px"
                     >
                         <el-option
                             v-for="item in hostOptions"
@@ -87,36 +107,39 @@
                     <el-select
                         placeholder="请选择"
                         size="small"
-                        tyle="margin-left: -6px"
+                        style="width: 120px"
                         v-model="currentConfig"
                     >
                         <el-option
                             v-for="item in configOptions"
                             :key="item.id"
                             :label="item.name"
-                            :value="item.name">
+                            :value="item.name"
+                        >
                         </el-option>
                     </el-select>
-
-                    <el-button
-                        v-if="!addAPIFlag"
-                        style="margin-left: 20px"
-                        type="primary"
-                        icon="el-icon-caret-right"
-                        circle
-                        size="mini"
-                        @click="run = !run"
-                    ></el-button>
-
-
-                    <el-button
-                        v-if="!addAPIFlag"
-                        type="danger"
-                        icon="el-icon-delete"
-                        circle
-                        size="mini"
-                        @click="del = !del"
-                    ></el-button>
+                    &nbsp数据:
+                    <el-select
+                        placeholder="请选择"
+                        size="small"
+                        style="width: 120px"
+                        v-model="currentTestDataExcel"
+                    >
+                        <el-option
+                            v-for="item in testDataOptions"
+                            :key="item.id"
+                            :label="item.name"
+                            :value="item.name"
+                        >
+                        </el-option>
+                    </el-select>
+                    <el-input
+                        size="small"
+                        style="width: 120px;"
+                        v-model="currentTestDataSheet"
+                        placeholder="请输入sheet名"
+                    >
+                    </el-input>
 
                     <el-button
                         :disabled="!addAPIFlag"
@@ -173,6 +196,8 @@
                     v-on:addSuccess="handleAddSuccess"
                     :config="currentConfig"
                     :host="currentHost"
+                    :testDataExcel="currentTestDataExcel"
+                    :testDataSheet="currentTestDataSheet"
                 >
                 </api-body>
 
@@ -186,6 +211,8 @@
                     :del="del"
                     :back="back"
                     :run="run"
+                    :testDataExcel="currentTestDataExcel"
+                    :testDataSheet="currentTestDataSheet"
                 >
                 </api-list>
 
@@ -299,7 +326,9 @@
                 filterText: '',
                 expand: '&#xe65f;',
                 dataTree: [],
-
+                testDataOptions: [],
+                currentTestDataExcel: '请选择',
+                currentTestDataSheet: '',
             }
         },
         methods: {
@@ -373,7 +402,6 @@
                             this.updateTree(true);
                         }
                     }
-
                 })
             },
 
@@ -391,7 +419,6 @@
                     this.updateTree(false);
                 });
             },
-
 
             handleConfirm(formName) {
                 this.$refs[formName].validate((valid) => {
@@ -431,6 +458,19 @@
                     this.$set(data, 'children', []);
                 }
                 data.children.push(newChild);
+            },
+
+            getTestData() {
+                this.$api.testdataList({
+                    params: {
+                        project: this.$route.params.id
+                    }
+                }).then(resp => {
+                    this.testDataOptions = resp.results;
+                    this.testDataOptions.push({
+                        name: '请选择'
+                    })
+                })
             }
 
         },
@@ -439,6 +479,7 @@
             this.getTree();
             this.getConfig();
             this.getHost();
+            this.getTestData();
         }
     }
 </script>

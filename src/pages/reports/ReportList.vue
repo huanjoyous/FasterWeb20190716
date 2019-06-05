@@ -16,9 +16,8 @@
             </div>
         </el-header>
         <el-container>
-            <el-header style="padding-top: 10px; height: 50px;">
+            <el-header style="padding-top: 10px;margin-left: 10px;">
                 <div>
-
                     <el-row>
                         <el-col :span="5" v-if="reportData.count > 11">
                             <el-input placeholder="请输入报告名称" clearable v-model="search" size="small">
@@ -43,10 +42,11 @@
             </el-header>
 
             <el-container>
-                <el-main style="padding: 0; margin-left: 10px; margin-top: 10px;">
+                <el-main style="padding: 0; margin-left: 10px;">
                     <div style="position: fixed; bottom: 0px; right:0; left: 178px; top: 150px;">
                         <el-table
                             v-loading="loading"
+                            size="medium"
                             element-loading-text="正在玩命加载"
                             highlight-current-row
                             :data="reportData.results"
@@ -92,7 +92,6 @@
                                 </template>
                             </el-table-column>
 
-
                             <el-table-column
                                 label="测试时间"
                             >
@@ -108,7 +107,6 @@
                             >
                                 <template slot-scope="scope">
                                     <div v-text="scope.row.time.duration.toFixed(3)+' 秒'"></div>
-
                                 </template>
                             </el-table-column>
 
@@ -171,7 +169,6 @@
                                 </template>
                             </el-table-column>
 
-
                             <el-table-column
                                 width="100"
                             >
@@ -184,7 +181,6 @@
                                             @click="handleWatchReports(scope.row.id)"
                                         >
                                         </el-button>
-
                                         <el-button
                                             type="danger"
                                             icon="el-icon-delete"
@@ -194,9 +190,7 @@
                                         </el-button>
                                     </el-row>
                                 </template>
-
                             </el-table-column>
-
                         </el-table>
                     </div>
                 </el-main>
@@ -235,7 +229,6 @@
 
             handleWatchReports(index) {
                 window.open(this.$api.baseUrl + "/api/fastrunner/reports/" + index + "/")
-
             },
 
 
@@ -280,15 +273,13 @@
                         type: 'warning',
                     }).then(() => {
                         this.$api.delAllReports({data: this.selectReports}).then(resp => {
-                            this.$message.success(resp.msg);
+                            this.$notify.success(resp.msg);
                             this.getReportList();
                         })
                     })
                 } else {
                     this.$notify.warning({
-                        title: '提示',
-                        message: '请至少勾选一个测试报告',
-                        duration: 1000
+                        message: '请至少勾选一个测试报告'
                     })
                 }
             },
