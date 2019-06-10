@@ -71,8 +71,13 @@
                 this.$api.getProjectDetail(pk).then(res => {
                     if (res.status === 200){
                         this.projectInfo = res.data;
-                    }else{
-                        this.$notify.error(res);
+                    }
+                    this.loading = false;
+                }).catch(error => {
+                    if ("non_field_errors" in error) {
+                        this.$notify.error(error.non_field_errors[0]);
+                    } else {
+                        this.$notify.error(error);
                     }
                     this.loading = false;
                 })

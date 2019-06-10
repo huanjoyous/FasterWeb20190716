@@ -17,7 +17,6 @@ axios.interceptors.request.use(function (config) {
         return Promise.reject(error);
     });
 axios.interceptors.response.use(function (response) {
-
     return response;
 }, function (error) {
     try {
@@ -59,15 +58,15 @@ export const login = params => {
 
 // fastrunner api
 export const addProject = params => {
-    return axios.post('/api/fastrunner/project/', params).then(res => res.data)
+    return axios.post('/api/fastrunner/project/', params).then(res => res)
 };
 
-export const deleteProject = config => {
-    return axios.delete('/api/fastrunner/project/', config).then(res => res.data)
+export const deleteProject = url => {
+    return axios.delete('/api/fastrunner/project/'+ url + '/').then(res => res)
 };
 
 export const getProjectList = params => {
-    return axios.get('/api/fastrunner/project/').then(res => res.data)
+    return axios.get('/api/fastrunner/project/').then(res => res)
 };
 
 export const getProjectDetail = pk => {
@@ -75,11 +74,11 @@ export const getProjectDetail = pk => {
 };
 
 export const getPagination = url => {
-    return axios.get(url).then(res => res.data)
+    return axios.get(url).then(res => res)
 };
 
-export const updateProject = params => {
-    return axios.patch('/api/fastrunner/project/', params).then(res => res.data)
+export const updateProject = (url, params) => {
+    return axios.patch('/api/fastrunner/project/' + url + '/', params).then(res => res)
 };
 
 export const addPycode = params => {
