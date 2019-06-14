@@ -329,6 +329,7 @@
                     if (resp['success']) {
                         this.dataTree = resp['tree'];
                         this.maxId = resp['max'];
+                        this.$notify.success('更新成功')
                     } else {
                         this.$notify.error(resp['msg']);
                     }

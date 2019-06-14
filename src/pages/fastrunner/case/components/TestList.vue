@@ -345,7 +345,8 @@
             handleRunTest(id, name) {
                 if(this.testDataExcel !== '请选择' && this.testDataSheet === '') {
                     this.$notify.error({
-                        message: '选择了数据，sheet名不能为空'
+                      title: '提示',
+                      message: '选择了数据，sheet名不能为空'
                     });
                 } else{
                     this.loading = true;
@@ -358,8 +359,15 @@
                     }
                     }).then(resp => {
                         this.summary = resp;
-                        this.dialogTableVisible = true;
                         this.loading = false;
+                        if (this.summary.details.length <= 5){
+                            this.dialogTableVisible = true;
+                        }else{
+                            this.$notify.success({
+                                title: '提示',
+                                message: '执行结束，请在历史报告里查看结果'
+                            })
+                        }
                     }).catch(resp => {
                         this.loading = false;
                     })
@@ -409,7 +417,7 @@
             },
 
             handleDelTest(id) {
-                this.$confirm('此操作将永久删除该测试用例集，是否继续?', '提示', {
+                this.$confirm('此操作将永久删除该测试用例，是否继续?', '提示', {
                     confirmButtonText: '确定',
                     cancelButtonText: '取消',
                     type: 'warning',
@@ -417,8 +425,9 @@
                     this.$api.deleteTest(id).then(resp => {
                         if (resp.success) {
                             this.getTestList();
+                            this.$notify.success('删除成功')
                         } else {
-                            this.$message.error(resp.msg)
+                            this.$notify.error(resp.msg)
                         }
                     })
                 })

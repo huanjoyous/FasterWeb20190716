@@ -486,9 +486,16 @@
                             testDataExcel: this.testDataExcel,
                             testDataSheet: this.testDataSheet
                         }).then(resp => {
-                            this.suite_loading = false;
                             this.summary = resp;
-                            this.dialogTableVisible = true;
+                            this.suite_loading = false;
+                            if (this.summary.details.length <= 5){
+                                this.dialogTableVisible = true;
+                            }else{
+                                this.$notify.success({
+                                  title: '提示',
+                                  message: '执行结束，请在历史报告里查看结果'
+                                })
+                            }
                         }).catch(resp => {
                             this.suite_loading = false;
                         })

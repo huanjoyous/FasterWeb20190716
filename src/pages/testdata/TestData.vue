@@ -108,14 +108,14 @@
                             <el-table-column>
                                 <template slot-scope="scope">
                                     <el-row v-show="currentRow === scope.row">
-                                        <el-link
+                                        <el-button
                                             v-show="testData.count !== 0"
                                             type="success"
                                             icon="el-icon-download"
-                                            :href="scope.row.file"
-                                            style="margin: 4px"
+                                            circle size="mini"
+                                            @click="handleDownTestdata(scope.row.id,scope.row.name)"
                                         >
-                                        </el-link>
+                                        </el-button>
                                         <el-button
                                             v-show="testData.count !== 0"
                                             type="danger"
@@ -242,21 +242,19 @@
                     this.testData = resp;
                 })
             },
-            // handleDownTestdata(index,filename){
-            //     this.$api.downloadTestdata(index).then( resp => {
-            //         if (resp){
-            //             let url = window.URL.createObjectURL(new Blob([resp]));
-            //             let link = document.createElement('a');
-            //             link.style.display = 'none';
-            //             link.href = url;
-            //             link.setAttribute('download', filename);
-            //             document.body.appendChild(link);
-            //             link.click()
-            //         }else{
-            //             this.$message.error(resp.msg)
-            //         }
-            //     })
-            // },
+            handleDownTestdata(index,filename){
+                this.$api.downloadTestdata({"fileType":1,"id":index,"project":this.$route.params.id}).then( resp => {
+                    let url = window.URL.createObjectURL(new Blob([resp.data]));
+                    let link = document.createElement('a');
+                    link.style.display = 'none';
+                    link.href = url;
+                    link.setAttribute('download', filename);
+                    document.body.appendChild(link);
+                    link.click();
+                }).catch(error => {
+                    this.$notify.error('文件下载失败')
+                })
+            },
             handleDelTestdata(index) {
                 this.$confirm('此操作将永久删除该测试文件，是否继续?', '提示', {
                     confirmButtonText: '确定',

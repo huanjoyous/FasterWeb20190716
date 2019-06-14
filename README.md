@@ -10,8 +10,8 @@
 2. 修改/src/restful/api.js baseUrl地址, 即为fastrunner容器运行的宿主机地址
 3. 执行npm install, npm run build # 生成生产环境包
 3. docker build -t fasterweb:latest .    # 构建docker镜像
-4. docker run -d --name fasterweb --net=host --restart always fasterweb:latest  # 后台运行docker容器
-5. open url: http://宿主机ip:8080/fastrunner/login
+4. docker run -d --name fasterweb -p8888:8888 --restart always fasterweb:latest  # 后台运行docker容器
+5. open url: http://宿主机ip:8888/fastrunner/login
 ``` 
 
 ## 本地开发环境部署

@@ -12,15 +12,15 @@
                         </el-checkbox>
                     </el-col>
 
-                    <el-col :span="6" v-if="apiData.count > 11">
+                    <el-col :span="7" v-if="apiData.count > 11" style="margin-left: -10px">
                         <el-input placeholder="请输入接口名称" clearable v-model="search">
                             <el-button slot="append" icon="el-icon-search" @click="getAPIList"></el-button>
                         </el-input>
                     </el-col>
 
-                    <el-col :span="7">
+                    <el-col :span="7" style="margin-left: -10px">
                         <el-pagination
-                            style="margin-top: 5px"
+                            style="margin-top: 5px;"
                             :page-size="11"
                             v-show="apiData.count !== 0 "
                             background

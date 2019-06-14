@@ -362,11 +362,11 @@
                     cancelButtonText: '取消',
                     type: 'warning',
                 }).then(() => {
-                    this.$api.deleteHost(index,{params: {project: this.variablesForm.project}}).then(resp => {
+                    this.$api.deleteHost(index, {params: {project: this.$route.params.id}}).then(resp => {
                         if (resp.status === 204) {
                             this.$notify.success({
                                 message: '删除成功'
-                            })
+                            });
                             this.getHostIPList();
                         } else {
                             this.$notify.error({
@@ -381,7 +381,7 @@
                 this.$api.getHostPaginationBypage({
                     params: {
                         page: this.currentPage,
-                        project: this.variablesForm.project
+                        project: this.$route.params.id
                     }
                 }).then(resp => {
                     this.hostIPData = resp;
@@ -402,16 +402,9 @@
                             }];
                             this.$notify.success('添加环境信息成功');
                             this.getHostIPList();
-                        }).catch(function (error) {
-                            if("non_field_errors" in error){
-                                this.$notify.error(error.non_field_errors[0]);
-                            }else{
-                                this.$notify.error(error);
-                            }
-                        });
+                        })
                     }
                 });
-
             },
 
             handleEditConfirm(formName) {
@@ -419,25 +412,22 @@
                     if (valid) {
                         this.editdialogVisible = false;
                         this.editVariablesForm.hostInfo = this.editTableData;
-                        this.$api.updateHost(this.editVariablesForm.id,this.editVariablesForm).then(resp => {
+                        this.$api.updateHost(
+                            this.editVariablesForm.id,
+                            {project:this.editVariablesForm.project},
+                            this.editVariablesForm
+                        ).then(resp => {
                             this.$notify.success({
                                 message: '更新成功'
                             });
                             this.getHostIPList();
-                        }).catch(function (error) {
-                            if("non_field_errors" in error){
-                                this.$notify.error(error.non_field_errors[0]);
-                            }else{
-                                this.$notify.error(error);
-                            }
                         })
                     }
                 });
-
             },
 
             getHostIPList() {
-                this.$api.hostList({params: {project: this.variablesForm.project}}).then(resp => {
+                this.$api.hostList({params: {project: this.$route.params.id}}).then(resp => {
                     this.hostIPData = resp;
                     this.loading = false;
                 })

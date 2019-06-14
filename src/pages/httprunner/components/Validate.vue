@@ -13,23 +13,15 @@
             label="断言类型"
             width="150">
             <template slot-scope="scope">
-                <el-tooltip
-                    effect="dark"
-                    :content="scope.row.comparator"
-                    placement="bottom"
-                    :disabled="scope.row.comparator === '' ? 'disabled' : false"
-                >
-                    <el-autocomplete
-                        clearable
-                        v-model="scope.row.comparator"
-                        :fetch-suggestions="querySearch"
-                        placeholder="请输入断言类型"
-                        size="medium"
+                <el-select v-model="scope.row.comparator" size="medium">
+                    <el-option
+                        v-for="item in validateOptions"
+                        :key="item.value"
+                        :label="item.label"
+                        :value="item.value"
                     >
-                    </el-autocomplete>
-                </el-tooltip>
-
-
+                    </el-option>
+                </el-select>
             </template>
         </el-table-column>
 
@@ -46,18 +38,15 @@
             label="期望类型"
             width="120">
             <template slot-scope="scope">
-
                 <el-select v-model="scope.row.type" size="medium">
                     <el-option
                         v-for="item in dataTypeOptions"
                         :key="item.value"
                         :label="item.label"
                         :value="item.value"
-
                     >
                     </el-option>
                 </el-select>
-
             </template>
         </el-table-column>
 
@@ -67,7 +56,6 @@
         >
             <template slot-scope="scope">
                 <el-input clearable v-model="scope.row.expect" placeholder="期望返回值" size="medium"></el-input>
-
             </template>
         </el-table-column>
         <el-table-column
@@ -90,7 +78,6 @@
                         @click="handleDelete(scope.$index, scope.row)">
                     </el-button>
                 </el-row>
-
             </template>
         </el-table-column>
     </el-table>
@@ -125,18 +112,6 @@
         },
 
         methods: {
-            querySearch(queryString, cb) {
-                let validateOptions = this.validateOptions;
-                let results = queryString ? validateOptions.filter(this.createFilter(queryString)) : validateOptions;
-                cb(results);
-            },
-
-            createFilter(queryString) {
-                return (validateOptions) => {
-                    return (validateOptions.value.toLowerCase().indexOf(queryString.toLowerCase()) === 0);
-                };
-            },
-
             cellMouseEnter(row) {
                 this.currentRow = row;
             },
@@ -271,41 +246,59 @@
                 }],
 
                 validateOptions: [{
-                    value: 'eq'
+                    value: 'eq',
+                    lable: 'eq'
                 }, {
-                    value: 'lt'
+                    value: 'lt',
+                    lable: 'lt'
                 }, {
-                    value: 'le'
+                    value: 'le',
+                    lable: 'le'
                 }, {
-                    value: 'gt'
+                    value: 'gt',
+                    lable: 'gt'
                 }, {
-                    value: 'ge'
+                    value: 'ge',
+                    lable: 'ge'
                 }, {
-                    value: 'ne'
+                    value: 'ne',
+                    lable: 'ne'
                 }, {
-                    value: 'str_eq'
+                    value: 'str_eq',
+                    lable: 'str_eq'
                 }, {
-                    value: 'len_eq'
+                    value: 'len_eq',
+                    lable: 'len_eq'
                 }, {
-                    value: 'len_gt'
+                    value: 'len_gt',
+                    lable: 'len_gt'
                 }, {
-                    value: 'len_ge'
+                    value: 'len_ge',
+                    lable: 'len_ge'
                 }, {
-                    value: 'len_lt'
+                    value: 'len_lt',
+                    lable: 'len_lt'
                 }, {
-                    value: 'len_le'
+                    value: 'len_le',
+                    lable: 'len_le'
                 }, {
-                    value: 'contains'
+                    value: 'contains',
+                    lable: 'contains'
                 }, {
-                    value: 'contained_by'
+                    value: 'contained_by',
+                    lable: 'contained_by'
                 }, {
-                    value: 'type_match'
+                    value: 'type_match',
+                    lable: 'type_match'
                 }, {
-                    value: 'regex_match'
+                    value: 'regex_match',
+                    lable: 'regex_match'
                 }, {
-                    value: 'startswith'
+                    value: 'startswith',
+                    lable: 'startswith'
                 }, {
-                    value: 'endswith'
+                    value: 'endswith',
+                    lable: 'endwith'
                 }]
             }
         },

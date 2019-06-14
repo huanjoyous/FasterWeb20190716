@@ -73,13 +73,6 @@
                         this.projectInfo = res.data;
                     }
                     this.loading = false;
-                }).catch(error => {
-                    if ("non_field_errors" in error) {
-                        this.$notify.error(error.non_field_errors[0]);
-                    } else {
-                        this.$notify.error(error);
-                    }
-                    this.loading = false;
                 })
             }
         },

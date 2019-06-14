@@ -64,7 +64,7 @@
                             </el-table-column>
 
                             <el-table-column
-                                label="报告类型"
+                                label="类型"
                                 width="80"
                             >
                                 <template slot-scope="scope">
@@ -81,8 +81,8 @@
                             </el-table-column>
 
                             <el-table-column
-                                label="通过状态"
-                                width="80"
+                                label="状态"
+                                width="60"
                             >
                                 <template slot-scope="scope">
                                     <div
@@ -94,6 +94,7 @@
 
                             <el-table-column
                                 label="测试时间"
+                                width="150"
                             >
                                 <template slot-scope="scope">
                                     <div>{{scope.row.time.start_at|timestampToTime}}</div>
@@ -111,8 +112,8 @@
                             </el-table-column>
 
                             <el-table-column
-                                width="80"
-                                label="总计接口"
+                                width="60"
+                                label="总计"
                             >
                                 <template slot-scope="scope">
                                     <el-tag size="small">{{ scope.row.stat.testsRun }}</el-tag>
@@ -120,8 +121,8 @@
                             </el-table-column>
 
                             <el-table-column
-                                width="80"
-                                label="通过个数"
+                                width="60"
+                                label="通过"
                             >
                                 <template slot-scope="scope">
                                     <el-tag type="success" size="small"> {{ scope.row.stat.successes }}</el-tag>
@@ -129,8 +130,8 @@
                             </el-table-column>
 
                             <el-table-column
-                                width="80"
-                                label="失败个数"
+                                width="60"
+                                label="失败"
                             >
                                 <template slot-scope="scope">
                                     <el-tag type="danger" size="small">{{ scope.row.stat.failures }}</el-tag>
@@ -138,8 +139,8 @@
                             </el-table-column>
 
                             <el-table-column
-                                width="80"
-                                label="异常个数"
+                                width="60"
+                                label="异常"
                             >
                                 <template slot-scope="scope">
                                     <el-tag type="warning" size="small">{{ scope.row.stat.errors }}</el-tag>
@@ -147,8 +148,8 @@
                             </el-table-column>
 
                             <el-table-column
-                                width="80"
-                                label="跳过个数"
+                                width="60"
+                                label="跳过"
                             >
                                 <template slot-scope="scope">
                                     <el-tag type="info" size="small">{{ scope.row.stat.skipped }}</el-tag>
@@ -157,6 +158,7 @@
 
                             <el-table-column
                                 label="系统信息"
+                                width="135"
                             >
                                 <template slot-scope="scope">
                                     <el-popover trigger="hover" placement="top">
@@ -170,7 +172,7 @@
                             </el-table-column>
 
                             <el-table-column
-                                width="100"
+                                width="150"
                             >
                                 <template slot-scope="scope">
                                     <el-row v-show="currentRow === scope.row">
@@ -179,6 +181,13 @@
                                             icon="el-icon-view"
                                             circle size="mini"
                                             @click="handleWatchReports(scope.row.id)"
+                                        >
+                                        </el-button>
+                                        <el-button
+                                            type="success"
+                                            icon="el-icon-download"
+                                            circle size="mini"
+                                            @click="handleDownExcelReport(scope.row.id,scope.row.name)"
                                         >
                                         </el-button>
                                         <el-button
@@ -201,10 +210,8 @@
 </template>
 
 <script>
-
+    import store from '../../store/state'
     export default {
-
-
         data() {
             return {
                 search: '',
@@ -228,7 +235,12 @@
             },
 
             handleWatchReports(index) {
-                window.open(this.$api.baseUrl + "/api/fastrunner/reports/" + index + "/")
+                this.$api.watchSingleReports(index).then(resp =>{
+                    const newWin = window.open('');
+                    newWin.document.open();
+                    newWin.document.write(resp.data);
+                    newWin.document.close();
+                })
             },
 
 
@@ -282,6 +294,23 @@
                         message: '请至少勾选一个测试报告'
                     })
                 }
+            },
+            handleDownExcelReport(index,filename) {
+                this.$api.downloadTestdata({
+                    "fileType": 2,
+                    "id": index,
+                    "project": this.$route.params.id
+                }).then(resp => {
+                    let url = window.URL.createObjectURL(new Blob([resp.data]));
+                    let link = document.createElement('a');
+                    link.style.display = 'none';
+                    link.href = url;
+                    link.setAttribute('download', filename+'.xlsx');
+                    document.body.appendChild(link);
+                    link.click();
+                }).catch(error => {
+                    this.$notify.error('文件下载失败')
+                })
             },
             getReportList() {
                 this.$api.reportList({

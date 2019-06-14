@@ -224,12 +224,6 @@
                             this.$notify.success('删除项目成功');
                             this.getProjectList();
                         }
-                    }).catch(error => {
-                        if ("non_field_errors" in error) {
-                            this.$notify.error(error.non_field_errors[0]);
-                        } else {
-                            this.$notify.error(error);
-                        }
                     })
                 })
             },
@@ -246,7 +240,6 @@
                         }
                         obj.then(resp => {
                             if (String(resp.status).indexOf('2') === 0) {
-                                console.log(111);
                                 this.projectForm.name = '';
                                 this.projectForm.desc = '';
                                 this.projectForm.id = '';
@@ -258,13 +251,7 @@
                                 this.$notify.success('更新项目成功');
                                 this.getProjectList();
                             }
-                        }).catch(error => {
-                            if ("non_field_errors" in error) {
-                                this.$notify.error(error.non_field_errors[0]);
-                            } else if('detail' in error) {
-                                this.$notify.error(error.detail);
-                            }
-                        });
+                        })
                     } else {
                         if (this.projectForm.id !== '') {
                             this.editVisible = true;
@@ -280,23 +267,11 @@
                 this.$api.getProjectList().then(resp => {
                     this.projectData = resp.data;
                     this.loading = false;
-                }).catch(error => {
-                    if ("non_field_errors" in error) {
-                        this.$notify.error(error.non_field_errors[0]);
-                    } else {
-                        this.$notify.error(error);
-                    }
                 })
             },
             getPagination(url) {
                 this.$api.getPagination(url).then(resp => {
                     this.projectData = resp.data;
-                }).catch(error => {
-                    if ("non_field_errors" in error) {
-                        this.$notify.error(error.non_field_errors[0]);
-                    } else {
-                        this.$notify.error(error);
-                    }
                 })
             },
         },

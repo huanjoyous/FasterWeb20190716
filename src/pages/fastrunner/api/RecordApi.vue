@@ -380,6 +380,7 @@
                     if (resp['success']) {
                         this.dataTree = resp['tree'];
                         this.maxId = resp['max'];
+                        this.$notify.success('更新成功')
                     } else {
                         this.$message.error(resp['msg']);
                     }
@@ -393,10 +394,10 @@
                     type: 'warning'
                 }).then(() => {
                     if (this.currentNode === '') {
-                        this.$message.info('请选择一个节点');
+                        this.$notify.info('请选择一个节点');
                     } else {
                         if (this.currentNode.children.length !== 0) {
-                            this.$message.warning('此节点有子节点，不可删除！');
+                            this.$notify.error('此节点有子节点，不可删除！');
                         } else {
                             this.remove(this.currentNode, this.data);
                             this.updateTree(true);

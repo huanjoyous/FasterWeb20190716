@@ -112,20 +112,7 @@
                         this.setLocalValue("user", this.loginForm.username);
                         this.setLocalValue("routerName", 'ProjectList');
                         this.$router.push({name: 'ProjectList'});
-
-                    }).catch(function (error) {
-                        if("non_field_errors" in error){
-                            Notification.error({
-                                message: error.non_field_errors[0]
-                            });
-                        }
-                        if("username" in error){
-                            Notification.error(error.username[0]);
-                        }
-                        if("password" in error){
-                            Notification.error(error.password[0]);
-                        }
-                    });
+                    })
                 }
             }
         }

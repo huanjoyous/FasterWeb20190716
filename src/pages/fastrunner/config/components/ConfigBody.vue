@@ -172,11 +172,9 @@
                     }).then(resp => {
                         if (resp.success) {
                             this.$emit("addSuccess");
+                            this.$notify("配置添加成功")
                         } else {
-                            this.$message.error({
-                                message: resp.msg,
-                                duration: 1000
-                            })
+                            this.$message.error(resp.msg)
                         }
                     })
                 }
@@ -196,6 +194,7 @@
                         failFast: this.failfast
                     }).then(resp => {
                         if (resp.success) {
+                            this.$emit("addSuccess");
                             this.$notify.success(resp.msg);
                         } else {
                             this.$notify.error(resp.msg)

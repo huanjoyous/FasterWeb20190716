@@ -27,16 +27,28 @@ axios.interceptors.response.use(function (response) {
             router.replace({
                 name: 'Login'
             })
-        }
-        if (error.response.status === 403) {
+        }else if (error.response.status === 403) {
             Notification.error({
                 message: '您无权限访问，请联系管理员'
             });
-        }
-        if (error.response.status === 500) {
+        }else if (error.response.status === 500) {
             Notification.error({
                 message: '服务器内部异常, 请检查'
             })
+        }else{
+            for (let key in error.response.data){
+                if (error.response.data[key].constructor == Array){
+                    Notification.error({
+                        title: key,
+                        message: error.response.data[key][0]
+                        })
+                }else if (error.response.data[key].constructor == String){
+                    Notification.error({
+                        title: key,
+                        message: error.response.data[key]
+                    })
+                }
+            }
         }
         return Promise.reject(error.response.data)
     }
@@ -125,9 +137,9 @@ export const uploadFile = params => {
     return baseUrl + '/api/fastrunner/file/'
 };
 
-// export const downloadTestdata = url => {
-//     return axios.post('/api/fastrunner/testdata/' + url + '/',{},{responseType:'blob' }).then(res => res.data)
-// };
+export const downloadTestdata = params => {
+    return axios.post('/api/fastrunner/download/',params,{responseType:'blob' })
+};
 
 export const testdataList = params => {
     return axios.get('/api/fastrunner/file/', params).then(res => res.data)
@@ -316,7 +328,7 @@ export const delAllReports = params => {
 };
 
 export const watchSingleReports = url => {
-    return axios.get('/api/fastrunner/reports/' + url + '/').then(res => res.data)
+    return axios.get('/api/fastrunner/reports/' + url + '/')
 };
 
 export const addTask = params => {
@@ -332,20 +344,20 @@ export const deleteTasks = url => {
     return axios.delete('/api/fastrunner/schedule/' + url + '/').then(res => res.data)
 };
 
-export const addHostIP = params => {
-    return axios.post('/api/fastrunner/host_ip/', params).then(res => res)
+export const addHostIP = data => {
+    return axios.post('/api/fastrunner/host_ip/', data)
 };
 
 export const hostList = params => {
     return axios.get('/api/fastrunner/host_ip/', params).then(res => res.data)
 };
 
-export const updateHost = (url, params) => {
-    return axios.patch('/api/fastrunner/host_ip/' + url + '/', params).then(res => res)
+export const updateHost = (url, params,data) => {
+    return axios({url:'/api/fastrunner/host_ip/' + url + '/',method:'PATCH', params:params,data:data})
 };
 
 export const deleteHost = (url, params)=> {
-    return axios.delete('/api/fastrunner/host_ip/' + url + '/', params).then(res => res)
+    return axios.delete('/api/fastrunner/host_ip/' + url + '/',params)
 };
 
 export const getHostPaginationBypage = params => {

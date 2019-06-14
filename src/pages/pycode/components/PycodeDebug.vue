@@ -94,6 +94,7 @@
         name: "PycodeDebug",
         methods: {
             handleRunCode() {
+                this.handleConfirm();
                 this.resp.msg = '';
                 this.$api.runPycode(this.id, this.requestData).then(resp => {
                     this.resp = resp;
@@ -102,7 +103,7 @@
 
             handleConfirm() {
                 this.$api.updatePycode(this.id,this.requestData).then(resp => {
-                    this.$message.success("代码保存成功");
+                    this.$notify.success("代码保存成功");
                     this.getPycode();
                 })
             },
