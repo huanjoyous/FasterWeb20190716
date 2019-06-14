@@ -9,8 +9,8 @@
 1. 修改default.conf配置文件 server_name的ip(宿主机IP), 端口默认8080
 2. 修改/src/restful/api.js baseUrl地址, 即为fastrunner容器运行的宿主机地址
 3. 执行npm install, npm run build # 生成生产环境包
-3. docker build -t fasterweb:latest .    # 构建docker镜像
-4. docker run -d --name fasterweb -p8888:8888 --restart always fasterweb:latest  # 后台运行docker容器
+3. docker build -t fastweb:latest .    # 构建docker镜像
+4. docker run -d --name fastweb -p8888:8888 --restart always fastweb:latest  # 后台运行docker容器
 5. open url: http://宿主机ip:8888/fastrunner/login
 ``` 
 

@@ -35,6 +35,10 @@ axios.interceptors.response.use(function (response) {
             Notification.error({
                 message: '服务器内部异常, 请检查'
             })
+        }else if (error.response.status === 405) {
+          Notification.error({
+            message: 'Not Allowed'
+          })
         }else{
             for (let key in error.response.data){
                 if (error.response.data[key].constructor == Array){
