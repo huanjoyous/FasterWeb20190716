@@ -40,44 +40,27 @@
                         @cell-mouse-leave="cellMouseLeave"
                         @selection-change="handleSelectionChange"
                     >
-                        <el-table-column
-                            type="selection"
-                            width="55"
-                        >
-                        </el-table-column>
+                        <el-table-column type="selection" width="55"></el-table-column>
 
-                        <el-table-column
-                            label="配置名称"
-
-                        >
+                        <el-table-column label="配置名称">
                             <template slot-scope="scope">
                                 <div>{{scope.row.name}}</div>
                             </template>
                         </el-table-column>
 
-                        <el-table-column
-
-                            label="请求根地址"
-                        >
+                        <el-table-column label="请求根地址">
                             <template slot-scope="scope">
                                 <div v-text="scope.row.base_url === '' ? '未配置' : scope.row.base_url"></div>
-
                             </template>
                         </el-table-column>
 
-                        <el-table-column
-
-                            label="更新时间"
-                        >
+                        <el-table-column label="更新时间">
                             <template slot-scope="scope">
                                 <div>{{scope.row.update_time|datetimeFormat}}</div>
-
                             </template>
                         </el-table-column>
 
-                        <el-table-column
-
-                        >
+                        <el-table-column>
                             <template slot-scope="scope">
                                 <el-row v-show="currentRow === scope.row">
                                     <el-button
@@ -104,9 +87,7 @@
                                     </el-button>
                                 </el-row>
                             </template>
-
                         </el-table-column>
-
                     </el-table>
                 </div>
             </el-main>

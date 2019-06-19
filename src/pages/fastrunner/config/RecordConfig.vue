@@ -110,9 +110,12 @@
                             parameters: [{
                                 key: "",
                                 value: "",
-                                desc: "",
+                                desc: ""
                             }],
-
+                            outParams: [{
+                                key: "",
+                                desc: ""
+                            }]
                         }
                     };
                 }
@@ -137,10 +140,7 @@
                 this.addConfigActivate = true;
             }
         },
-        name: "RecordConfig",
-        mounted() {
-
-        }
+        name: "RecordConfig"
     }
 </script>
 

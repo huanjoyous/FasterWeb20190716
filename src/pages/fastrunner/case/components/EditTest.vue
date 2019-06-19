@@ -34,10 +34,10 @@
 
         </el-aside>
 
-        <el-main>
+        <el-main style="margin-top: -10px;">
             <div v-show="!editTestStepActivate">
                 <el-row :gutter="20">
-                    <el-col :span="12">
+                    <el-col :span="12" style="margin-left: -35px">
                         <el-pagination
                             :page-size="11"
                             v-show="apiData.count !== 0"
@@ -50,22 +50,19 @@
                         >
                         </el-pagination>
                     </el-col>
-                    <el-col :span="12">
+                    <el-col :span="12" style="margin-left: 35px">
                         <el-input
                             style="width: 350px; text-align: center"
                             placeholder="请输入测试用例名称"
                             v-model="testName"
                             clearable
-                            v-if="testData.length > 0"
                         >
                             <el-select v-model="testTag" slot="prepend" placeholder="请选择" style="width: 105px">
-
                                 <el-option
                                     v-for="value in tagOptions" :key="value"
                                     :label="value"
                                     :value="value"
                                 ></el-option>
-
                             </el-select>
 
                             <el-button
@@ -95,7 +92,7 @@
                             v-for="(item,index) in apiData.results"
                             draggable='true'
                             @dragstart="currentAPI = JSON.parse(JSON.stringify(item))"
-                            style="cursor: pointer; margin-top: 10px; overflow: auto;"
+                            style="cursor: pointer; margin-top: 5px; overflow: auto;"
                             :key="index"
 
                         >
@@ -103,7 +100,6 @@
                                 <span class="block-method block_method_post block_method_color">POST</span>
                                 <span class="block-method block_url">{{item.url}}</span>
                                 <span class="block-summary-description">{{item.name}}</span>
-
                             </div>
 
                             <div class="block block_get" v-if="item.method.toUpperCase() === 'GET' ">
@@ -160,11 +156,12 @@
                              @dragover='allowDrop($event)'
                         >
                             <div class='test-list'>
-                                <span
+                                <div
                                     v-if="testData.length ===0"
-                                    style="color: red">温馨提示：<br/>选择左侧相应API节点显示可拖拽的API<br/>从左边拖拽API至此区域组成业务用例<br/>
+                                    style="color: red;align-content: center">
+                                    温馨提示：<br/>选择左侧相应API节点显示可拖拽的API<br/>从左边拖拽API至此区域组成业务用例<br/>
                                     上下拖动此区域接口调整接口调用顺序
-                                </span>
+                                </div>
                                 <div
                                     v-if="isConfigExist"
                                     class="block block_test"
@@ -607,7 +604,7 @@
     }
 
     .block_test {
-        margin-top: 10px;
+        margin-top: 5px;
         border: 1px solid #49cc90;
         background-color: rgba(236, 248, 238, .4)
     }
@@ -623,6 +620,7 @@
     .block-test-name {
         width: 350px;
         padding-left: 10px;
+        font-size: 13px;
         -webkit-box-flex: 1;
         -ms-flex: 1;
         font-family: Open Sans, sans-serif;
@@ -630,7 +628,6 @@
         border: none;
         outline: none;
         background: rgba(236, 248, 238, .4)
-
     }
 
 

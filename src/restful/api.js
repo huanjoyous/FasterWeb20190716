@@ -154,11 +154,11 @@ export const getTestdataListPaginationBypage = params => {
 };
 
 export const deleteTestdata = (url, params) => {
-    return axios.delete('/api/fastrunner/file/' + url + '/', params).then(res => res)
+    return axios.delete('/api/fastrunner/file/' + url + '/', params)
 };
 
 export const delAllTestdata = (params,data) => {
-    return axios.delete('/api/fastrunner/file/-1', {params,data}).then(res => res)
+    return axios.delete('/api/fastrunner/file/-1', {params,data})
 };
 
 export const addAPI = params => {
@@ -185,13 +185,9 @@ export const getAPISingle = url => {
     return axios.get('/api/fastrunner/api/' + url + '/').then(res => res.data)
 };
 
-
-
 export const getPaginationBypage = params => {
     return axios.get('/api/fastrunner/api/', params).then(res => res.data)
 };
-
-
 
 export const addTestCase = params => {
     return axios.post('/api/fastrunner/test/', params).then(res => res.data)
@@ -302,7 +298,6 @@ export const getVariablesPaginationBypage = params => {
     return axios.get('/api/fastrunner/variables/', params).then(res => res.data)
 };
 
-
 export const updateVariables = (url, params) => {
     return axios.patch('/api/fastrunner/variables/' + url + '/', params).then(res => res.data)
 };
@@ -362,6 +357,10 @@ export const updateHost = (url, params,data) => {
 
 export const deleteHost = (url, params)=> {
     return axios.delete('/api/fastrunner/host_ip/' + url + '/',params)
+};
+
+export const delAllHost = (params,data) => {
+  return axios.delete('/api/fastrunner/host_ip/-1', {params,data})
 };
 
 export const getHostPaginationBypage = params => {

@@ -8,7 +8,6 @@
                 clearable
             >
                 <template slot="prepend">配置信息录入</template>
-
                 <el-button
                     slot="append"
                     type="success"
@@ -68,7 +67,6 @@
                         v-on:variables="handleVariables"
                         :variables="response ? response.body.variables : []"
                     >
-
                     </variables>
                 </el-tab-pane>
 
@@ -81,15 +79,23 @@
                     </hooks>
                 </el-tab-pane>
 
+              <el-tab-pane label="outPut" name="six">
+                <Out-params
+                  :save="save"
+                  v-on:outParams="handleOutput"
+                  :outParams="response ? response.body.outParams: []"
+                >
+                </Out-params>
+              </el-tab-pane>
+
                 <el-tab-pane label="Parameters" name="five">
                     <parameters
-                        :save="save"
-                        v-on:parameters="handleParameters"
-                        :parameters="response ? response.body.parameters: []"
+                      :save="save"
+                      v-on:parameters="handleParameters"
+                      :parameters="response ? response.body.parameters: []"
                     >
                     </parameters>
                 </el-tab-pane>
-
             </el-tabs>
         </div>
     </div>
@@ -102,6 +108,7 @@
     import Variables from '../../../httprunner/components/Variables'
     import Hooks from '../../../httprunner/components/Hooks'
     import Parameters from '../../../httprunner/components/Parameters'
+    import OutParams from '../../../httprunner/components/OutParams'
 
     export default {
         components: {
@@ -109,7 +116,8 @@
             Request,
             Variables,
             Hooks,
-            Parameters
+            Parameters,
+            OutParams
         },
 
         props: {
@@ -141,7 +149,10 @@
             handleRequest(request) {
                 this.request = request;
             },
-
+            handleOutput(outParams) {
+              console.log(outParams);
+               this.outParams = outParams;
+            },
             handleVariables(variables) {
                 this.variables = variables;
             },
@@ -168,11 +179,12 @@
                         base_url: this.baseUrl,
                         name: this.name,
                         project: this.project,
-                        failFast: this.failfast
+                        failFast: this.failfast,
+                        outParams: this.outParams
                     }).then(resp => {
                         if (resp.success) {
                             this.$emit("addSuccess");
-                            this.$notify("配置添加成功")
+                            this.$notify.success("配置添加成功")
                         } else {
                             this.$message.error(resp.msg)
                         }
@@ -191,7 +203,8 @@
                         base_url: this.baseUrl,
                         name: this.name,
                         project: this.project,
-                        failFast: this.failfast
+                        failFast: this.failfast,
+                        outParams: this.outParams
                     }).then(resp => {
                         if (resp.success) {
                             this.$emit("addSuccess");
@@ -225,6 +238,7 @@
                 variables: [],
                 hooks: [],
                 parameters: [],
+                outParams:[],
                 save: false,
                 activeTag: 'third',
                 failfast: ''

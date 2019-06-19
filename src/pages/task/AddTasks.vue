@@ -349,6 +349,7 @@
         width: 700px;
         padding-left: 10px;
         -webkit-box-flex: 1;
+        font-size: 13px;
         -ms-flex: 1;
         font-family: Open Sans, sans-serif;
         color: #3b4151;

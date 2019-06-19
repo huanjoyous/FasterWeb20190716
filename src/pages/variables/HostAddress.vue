@@ -4,13 +4,22 @@
         <el-header style="background: #fff; padding: 0; height: 50px">
             <div class="nav-api-header">
                 <div style="padding-top: 10px; margin-left: 20px">
-                    <el-button
-                        type="primary"
-                        size="small"
-                        icon="el-icon-circle-plus-outline"
-                        @click="dialogVisible=true"
-                    >新增环境
-                    </el-button>
+                  <el-button
+                      type="primary"
+                      size="small"
+                      icon="el-icon-circle-plus-outline"
+                      @click="dialogVisible=true"
+                  >新增环境
+                  </el-button>
+                  <el-button
+                    v-show="hostIPData.count !== 0"
+                    style="margin-left: 20px"
+                    type="danger"
+                    icon="el-icon-delete"
+                    circle
+                    size="mini"
+                    @click="delSelectiontestdata"
+                  ></el-button>
 
                     <el-dialog
                         title="添加环境"
@@ -184,18 +193,27 @@
         </el-header>
 
         <el-container>
-            <el-header style="padding: 0; height: 50px;">
-                <div style="padding-top: 8px; padding-left: 20px; overflow: hidden">
-                    <el-pagination
-                        :page-size="11"
-                        v-show="hostIPData.count !== 0 "
-                        background
-                        @current-change="handleCurrentChange"
-                        :current-page.sync="currentPage"
-                        layout="total, prev, pager, next, jumper"
-                        :total="hostIPData.count"
-                    >
-                    </el-pagination>
+            <el-header style="padding-top: 10px; height: 50px;">
+                <div style="padding-left: 8px;">
+                  <el-row>
+                    <el-col :span="6" v-if="hostIPData.count > 11">
+                      <el-input placeholder="请输入配置名称" clearable v-model="search">
+                        <el-button slot="append" icon="el-icon-search" @click="getHostIPList"></el-button>
+                      </el-input>
+                    </el-col>
+                    <el-col :span="7">
+                      <el-pagination
+                            :page-size="11"
+                            v-show="hostIPData.count !== 0 "
+                            background
+                            @current-change="handleCurrentChange"
+                            :current-page.sync="currentPage"
+                            layout="total, prev, pager, next, jumper"
+                            :total="hostIPData.count"
+                        >
+                        </el-pagination>
+                    </el-col>
+                  </el-row>
                 </div>
             </el-header>
 
@@ -212,7 +230,11 @@
                             height="calc(100%)"
                             @cell-mouse-enter="cellMouseEnter"
                             @cell-mouse-leave="cellMouseLeave"
+                            @selection-change="handleSelectionChange"
                         >
+
+                          <el-table-column type="selection" width="55"></el-table-column>
+
                             <el-table-column label="环境名">
                                 <template slot-scope="scope">
                                     <div>{{scope.row.name}}</div>
@@ -282,14 +304,12 @@
                     hostInfo: [],
                     project: this.$route.params.id
                 },
-
                 editVariablesForm: {
                     name: '',
                     hostInfo: [],
                     id: '',
                     project: this.$route.params.id
                 },
-
                 rules: {
                     name: [
                         {required: true, message: '请输入变量名', trigger: 'blur'},
@@ -306,7 +326,8 @@
                     key: '',
                     value: '',
                     desc: ''
-                }]
+                }],
+                selectHostInfo: [],
             }
         },
         methods: {
@@ -316,6 +337,10 @@
 
             cellMouseLeaveInside(row) {
                 this.currentRowInside = '';
+            },
+
+            handleSelectionChange(val) {
+                this.selectHostInfo = val;
             },
 
             handleEdit(index, row) {
@@ -400,6 +425,7 @@
                                 value: '',
                                 desc: ''
                             }];
+                            this.tableData = [{key: '', value: '', desc: ''}];
                             this.$notify.success('添加环境信息成功');
                             this.getHostIPList();
                         })
@@ -424,6 +450,28 @@
                         })
                     }
                 });
+            },
+            delSelectiontestdata() {
+                if (this.selectHostInfo.length !== 0) {
+                    this.$confirm('此操作将永久删除勾选的配置，是否继续?', '提示', {
+                        confirmButtonText: '确定',
+                        cancelButtonText: '取消',
+                        type: 'warning',
+                    }).then(() => {
+                    this.$api.delAllHost({project:this.$route.params.id},this.selectHostInfo).then(resp => {
+                        if (resp.status === 204) {
+                            this.$notify.success('批量删除配置成功');
+                            this.getHostIPList();
+                        } else{
+                            this.$notify.error('配置删除失败');
+                        }
+                    })
+                    })
+                } else {
+                    this.$notify.warning({
+                        message: '请至少勾选一个文件'
+                    })
+                }
             },
 
             getHostIPList() {

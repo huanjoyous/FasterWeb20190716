@@ -430,6 +430,7 @@
                 }).then(() => {
                     this.$api.delAPI(index).then(resp => {
                         if (resp.success) {
+                            this.$notify.success('删除API成功');
                             this.getAPIList();
                         } else {
                             this.$message.error(resp.msg);
