@@ -98,14 +98,10 @@
                             >
                                 <template slot-scope="scope">
                                     <div>{{scope.row.time.start_at|timestampToTime}}</div>
-
                                 </template>
                             </el-table-column>
 
-                            <el-table-column
-                                label="持续时间"
-                                width="90"
-                            >
+                            <el-table-column label="用时" width="90">
                                 <template slot-scope="scope">
                                     <div v-text="scope.row.time.duration.toFixed(3)+' 秒'"></div>
                                 </template>
@@ -243,11 +239,9 @@
                 })
             },
 
-
             handleSelectionChange(val) {
                 this.selectReports = val;
             },
-
 
             handleCurrentChange(val) {
                 this.$api.getReportsPaginationBypage({
@@ -269,9 +263,10 @@
                 }).then(() => {
                     this.$api.deleteReports(index).then(resp => {
                         if (resp.success) {
+                            this.$notify.success('删除报告成功');
                             this.getReportList();
                         } else {
-                            this.$message.error(resp.msg);
+                            this.$notify.error(resp.msg);
                         }
                     })
                 })
@@ -290,9 +285,7 @@
                         })
                     })
                 } else {
-                    this.$notify.warning({
-                        message: '请至少勾选一个测试报告'
-                    })
+                    this.$notify.warning('请至少勾选一个测试报告');
                 }
             },
             handleDownExcelReport(index,filename) {

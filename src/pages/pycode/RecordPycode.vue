@@ -64,9 +64,9 @@
                             </el-form-item>
                         </el-form>
                         <span slot="footer" class="dialog-footer">
-                                                <el-button @click="editVisible = false">取 消</el-button>
-                                                <el-button type="primary" @click="handleConfirm('pycodefileForm')">确 定</el-button>
-                                            </span>
+                            <el-button @click="editVisible = false">取 消</el-button>
+                            <el-button type="primary" @click="handleConfirm('pycodefileForm')">确 定</el-button>
+                        </span>
                     </el-dialog>
 
                     <el-button
@@ -269,13 +269,9 @@
                     cancelButtonText: '取消',
                     type: 'warning',
                 }).then(() => {
-                    this.$api.deletePycode(index).then(resp => {
-                        if (resp.success) {
-                            this.$message.success(resp.msg);
-                            this.PycodeList();
-                        } else {
-                            this.$message.error(resp.msg);
-                        }
+                    this.$api.deletePycode(index, {params:{project: this.$route.params.id}}).then(resp => {
+                        this.$notify.success('删除成功');
+                        this.PycodeList();
                     })
                 })
             },
@@ -286,8 +282,8 @@
                         cancelButtonText: '取消',
                         type: 'warning',
                     }).then(() => {
-                        this.$api.delAllPycode({data: this.selectTestData}).then(resp => {
-                            this.$message.success(resp.msg);
+                        this.$api.delAllPycode(this.selectTestData,{project: this.$route.params.id}).then(resp => {
+                            this.$notify.success('删除成功');
                             this.PycodeList();
                         })
                     })
@@ -305,7 +301,7 @@
                         search: this.search
                     }
                 }).then(resp => {
-                    this.pycodeData = resp;
+                    this.pycodeData = resp.data;
                 })
             },
             handleConfirm(formName) {
@@ -317,16 +313,15 @@
                         if (this.pycodefileForm.id === '') {
                             obj = this.$api.addPycode(this.pycodefileForm);
                         } else {
-                            obj = this.$api.updatePycode(this.pycodefileForm.id,this.pycodefileForm);
+                            obj = this.$api.updatePycode(this.pycodefileForm.id,{project: this.$route.params.id},this.pycodefileForm);
                         }
                         obj.then(resp => {
-                            if (resp.success) {
-                                this.$message.success(resp.msg);
-                                this.PycodeList();
-                            } else {
-                                this.$message.error(resp.msg);
+                            if (this.pycodefileForm.id === '') {
+                                this.$notify.success('添加成功');
+                            }else {
+                              this.$notify.success('更新成功');
                             }
-
+                            this.PycodeList();
                             this.pycodefileForm.name = '';
                             this.pycodefileForm.desc = '';
                             this.pycodefileForm.id = '';
@@ -343,10 +338,10 @@
             },
 
             handleEditPycodeData(index, row){
-                    this.editVisible = true;
-                    this.pycodefileForm.name = row['name'];
-                    this.pycodefileForm.desc = row['desc'];
-                    this.pycodefileForm.id = row['id'];
+                this.editVisible = true;
+                this.pycodefileForm.name = row['name'];
+                this.pycodefileForm.desc = row['desc'];
+                this.pycodefileForm.id = row['id'];
             },
 
             PycodeList(){
@@ -356,7 +351,7 @@
                         search: this.search
                     }
                 }).then(resp => {
-                    this.pycodeData = resp;
+                    this.pycodeData = resp.data;
                     this.loading = false;
                 })
             }

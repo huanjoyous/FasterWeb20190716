@@ -22,16 +22,14 @@
                         :filter-node-method="filterNode"
                         ref="tree2"
                     >
-                            <span class="custom-tree-node"
-                                  slot-scope="{ node, data }"
-                            >
-                                <span><i class="iconfont" v-html="expand"></i>&nbsp;&nbsp;{{ node.label }}</span>
-                            </span>
+                      <span class="custom-tree-node"
+                            slot-scope="{ node, data }"
+                      >
+                          <span><i class="iconfont" v-html="expand"></i>&nbsp;&nbsp;{{ node.label }}</span>
+                      </span>
                     </el-tree>
                 </div>
-
             </div>
-
         </el-aside>
 
         <el-main style="margin-top: -10px;">
@@ -59,9 +57,10 @@
                         >
                             <el-select v-model="testTag" slot="prepend" placeholder="请选择" style="width: 105px">
                                 <el-option
-                                    v-for="value in tagOptions" :key="value"
-                                    :label="value"
-                                    :value="value"
+                                  v-for="item in tagOptions"
+                                  :key="item.value"
+                                  :label="item.label"
+                                  :value="item.value"
                                 ></el-option>
                             </el-select>
 
@@ -94,7 +93,6 @@
                             @dragstart="currentAPI = JSON.parse(JSON.stringify(item))"
                             style="cursor: pointer; margin-top: 5px; overflow: auto;"
                             :key="index"
-
                         >
                             <div class="block block_post" v-if="item.method.toUpperCase() === 'POST' ">
                                 <span class="block-method block_method_post block_method_color">POST</span>
@@ -138,7 +136,6 @@
                                 <span class="block-method block_url">{{item.url}}</span>
                                 <span class="block-summary-description">{{item.name}}</span>
                             </div>
-
                         </div>
 
                     </el-col>
@@ -302,7 +299,6 @@
         name: "EditTest",
         watch: {
             config() {
-
                 const temp = {body: {name: this.config, method: 'config'}};
                 if ((this.testData.length === 0 || this.testData[0].body.method !== 'config') && this.config !== '请选择') {
                     this.testData.splice(0, 0, temp)
@@ -310,19 +306,15 @@
                     if (this.config !== '请选择') {
                         this.testData.splice(0, 1, temp)
                     }
-
                 }
-
             },
             back() {
                 this.editTestStepActivate = false;
             },
-
             filterText(val) {
                 this.$refs.tree2.filter(val);
             },
             testStepResp() {
-
                 try {
                     this.testName = this.testStepResp.case.name;
                     this.testId = this.testStepResp.case.id;
@@ -332,7 +324,7 @@
                 } catch (e) {
                     this.testName = '';
                     this.testId = '';
-                    this.testTag = '集成用例';
+                    this.testTag = 2;
                     this.testData = JSON.parse(JSON.stringify(this.testStepResp))
                 }
             }
@@ -340,11 +332,16 @@
 
         data() {
             return {
-                tagOptions: {
-                    1: '冒烟用例',
-                    2: '集成用例',
-                    3: '监控脚本'
-                },
+                tagOptions: [{
+                  label: '冒烟用例',
+                  value: 1
+                }, {
+                  label: '集成用例',
+                  value: 2
+                }, {
+                  label: '监控脚本',
+                  value: 3
+                }],
                 suite_loading: false,
                 loading: false,
                 dialogTableVisible: false,
@@ -354,7 +351,7 @@
                 testId: '',
                 testName: '',
                 relation: '',
-                testTag: '集成用例',
+                testTag: 2,
                 currentTest: '',
                 currentNode: '',
                 currentAPI: '',
@@ -367,12 +364,10 @@
                     count: 0,
                     results: []
                 },
-
                 testData: []
             }
         },
         methods: {
-
             handleNewBody(body, newBody) {
                 this.editTestStepActivate = false;
                 const step = this.testData[this.currentTest].case;
@@ -384,35 +379,28 @@
                     id: id
                 };
             },
-
             validateData() {
-                if (this.testName === '' || this.testName.length > 100) {
-                    this.$notify.warning({
-                        message: '用例集名称必填，不能超过100个字符'
-                    });
+                if (this.testName === '' || this.testName.length > 500) {
+                    this.$notify.warning('用例集名称必填');
                     return false
                 }
-
                 if (this.testData.length === 0) {
                     this.$notify.warning({
                         message: '测试用例集至少包含一个接口'
                     });
                     return false
                 }
-
                 if (this.testData[0].body.method === "config" && this.testData.length === 1) {
                     this.$notify.warning({
                         message: '测试用例集至少包含一个接口'
                     });
                     return false
                 }
-
                     return true;
             },
 
             addTestSuite() {
                 var length = this.testData.length;
-
                 if (this.testData[0].body.method === "config") {
                     length -= 1;
                 }
@@ -424,15 +412,8 @@
                     body: this.testData,
                     tag: this.testTag
                 }).then(resp => {
-                    if (resp.success) {
-                        this.$emit("addSuccess");
-                    } else {
-                        this.$message({
-                            message: resp.msg,
-                            type: 'error',
-                            duration: 1000
-                        });
-                    }
+                    this.$notify.success('用例添加成功');
+                    this.$emit("addSuccess");
                 })
             },
 
@@ -441,19 +422,17 @@
                 if (this.testData[0].body.method === "config") {
                     length -= 1;
                 }
-                this.$api.updateTestCase(this.testId, {
-                    length: length,
+                this.$api.updateTestCase(
+                    this.testId,
+                    {project:this.$route.params.id},
+                    {length: length,
                     name: this.testName,
                     tag: this.testTag,
                     body: this.testData,
                     project: this.project,
-                    relation: this.relation
-                }).then(resp => {
-                    if (resp.success) {
-                        this.$notify.success(resp.msg);
-                    } else {
-                        this.$message.error(resp.msg);
-                    }
+                    relation: this.relation}
+                ).then(resp => {
+                    this.$notify.success('更新测试用例成功');
                 })
             },
 
@@ -470,10 +449,8 @@
             handleClickRun() {
                 if (this.validateData()) {
                     if(this.testDataExcel !== '请选择' && this.testDataSheet === '') {
-                        this.$notify.error({
-                            message: '选择了数据，sheet名不能为空',
-                        });
-                    } else{
+                        this.$notify.warning('选择了数据，sheet名不能为空');
+                    } else {
                         this.suite_loading = true;
                         this.$api.runSingleTestSuite({
                             host: this.host,
@@ -502,9 +479,7 @@
 
             handleSingleRun() {
                 if(this.testDataExcel !== '请选择' && this.testDataSheet === '') {
-                    this.$notify.error({
-                        message: '选择了数据，sheet名不能为空'
-                    });
+                    this.$notify.warning('选择了数据，sheet名不能为空');
                 } else {
                     this.loading = true;
                     var config = null;
@@ -580,7 +555,6 @@
                     this.testData.splice(this.length, 1)
                 }
             },
-
             drop(event) {
                 event.preventDefault();
                 this.testData.push(this.currentAPI);

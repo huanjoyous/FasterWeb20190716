@@ -445,7 +445,7 @@
                     if (resp.success) {
                         this.$emit('api', resp);
                     } else {
-                        this.$message.error(resp.msg)
+                        this.$notify.error(resp.msg)
                     }
                 })
             },

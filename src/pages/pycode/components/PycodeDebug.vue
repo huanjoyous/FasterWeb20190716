@@ -84,7 +84,7 @@
                 requestData: {
                     code: '',
                     id: '',
-                    project: ''
+                    project: this.$route.params.id
                 },
                 resp: {
                     msg: ''
@@ -96,13 +96,13 @@
             handleRunCode() {
                 this.handleConfirm();
                 this.resp.msg = '';
-                this.$api.runPycode(this.id, this.requestData).then(resp => {
-                    this.resp = resp;
+                this.$api.runPycode(this.requestData.id,{params:{project:this.$route.params.id}}).then(resp => {
+                    this.resp = resp.data;
                 })
             },
 
             handleConfirm() {
-                this.$api.updatePycode(this.id,this.requestData).then(resp => {
+                this.$api.updatePycode(this.id, {project: this.$route.params.id}, this.requestData).then(resp => {
                     this.$notify.success("代码保存成功");
                     this.getPycode();
                 })
@@ -114,9 +114,8 @@
                 require('brace/snippets/python');
             },
             getPycode() {
-                this.$api.getPycode(this.id).then(res => {
-                    this.requestData = res;
-                    this.requestData["project"] = this.$route.params.id;
+                this.$api.getPycode(this.id,{params:{project: this.$route.params.id}}).then(res => {
+                    this.requestData = res.data;
                 })
             }
         },

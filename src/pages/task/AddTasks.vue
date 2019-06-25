@@ -318,7 +318,7 @@
                         search: this.search
                     }
                 }).then(resp => {
-                    this.suiteData = resp;
+                    this.suiteData = resp.data;
                 })
             }
         },

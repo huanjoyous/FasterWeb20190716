@@ -262,7 +262,8 @@
                         cancelButtonText: '取消',
                         type: 'warning',
                     }).then(() => {
-                        this.$api.delAllTest({data: this.selectTest}).then(resp => {
+                        this.$api.delAllTest({project:this.$route.params.id},this.selectTest).then(resp => {
+                            this.$notify.success('所选测试用例删除成功');
                             this.getTestList();
                         })
                     })
@@ -398,16 +399,14 @@
                     inputPattern: /^[\s\S]*.*[^\s][\s\S]*$/,
                     inputErrorMessage: '用例集不能为空'
                 }).then(({value}) => {
-                    this.$api.coptTest(id, {
+                    this.$api.coptTest({
+                        'id': id,
                         'name': value,
                         'relation': this.node,
                         'project': this.project
                     }).then(resp => {
-                        if (resp.success) {
-                            this.getTestList();
-                        } else {
-                            this.$message.error(resp.msg);
-                        }
+                        this.$notify.success('复制用例成功');
+                        this.getTestList();
                     })
                 })
             },
@@ -422,13 +421,9 @@
                     cancelButtonText: '取消',
                     type: 'warning',
                 }).then(() => {
-                    this.$api.deleteTest(id).then(resp => {
-                        if (resp.success) {
-                            this.getTestList();
-                            this.$notify.success('删除成功')
-                        } else {
-                            this.$notify.error(resp.msg)
-                        }
+                    this.$api.deleteTest(id,{params:{project: this.$route.params.id}}).then(resp => {
+                        this.getTestList();
+                        this.$notify.success('删除成功')
                     })
                 })
             },
@@ -440,7 +435,7 @@
                         search: this.search
                     }
                 }).then(resp => {
-                    this.testData = resp;
+                    this.testData = resp.data;
                     this.loading = false;
                 })
             },

@@ -39,21 +39,22 @@
                     >
                     </el-input-number>
                 </el-tooltip>
-
             </div>
-            <div>
 
+            <div>
                 <el-input
                     class="input-with-select"
                     placeholder="请输入接口请求地址"
                     v-model="url"
                     clearable
                     style="width:525px;"
+                    disabled
                 >
                     <el-select
                         slot="prepend"
                         v-model="method"
                         size="small"
+                        disabled
                     >
                         <el-option
                             v-for="item of httpOptions"
@@ -64,7 +65,6 @@
                         </el-option>
                     </el-select>
                 </el-input>
-
 
                 <el-input
                     placeholder="${skipif()} or boolean"
@@ -122,7 +122,6 @@
                         v-on:validate="handleValidate"
                         :validate="validate"
                     >
-
                     </validate>
                 </el-tab-pane>
 
@@ -132,7 +131,6 @@
                         v-on:variables="handleVariables"
                         :variables="variables"
                     >
-
                     </variables>
                 </el-tab-pane>
 
@@ -180,12 +178,12 @@
         },
         methods: {
             handleHeader(header, value) {
-                this.header = value;
-                this.tempBody.header = header;
+                //this.header = value;
+                //this.tempBody.header = header;
             },
             handleRequest(request, value) {
-                this.request = value;
-                this.tempBody.request = request;
+                //this.request = value;
+                //this.tempBody.request = request;
             },
             handleValidate(validate, value) {
                 this.validate = value;
@@ -202,29 +200,21 @@
             handleHooks(hooks, value) {
                 this.hooks = value;
                 this.tempBody.hooks = hooks;
-                this.tempBody.url = this.url;
-                this.tempBody.method = this.method;
                 this.tempBody.name = this.name;
                 this.tempBody.times = this.times;
                 this.tempBody.skipIf = this.skipIf;
-
                 if (this.validateData()) {
                     const body = {
-                        header: this.header,
-                        request: this.request,
                         extract: this.extract,
                         validate: this.validate,
                         variables: this.variables,
                         hooks: this.hooks,
-                        url: this.url,
-                        method: this.method,
                         name: this.name,
                         times: this.times,
                         skipIf: this.skipIf
                     };
                     this.$emit('getNewBody', body, this.tempBody);
                 }
-
             },
 
             validateData() {
