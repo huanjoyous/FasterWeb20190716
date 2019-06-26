@@ -353,7 +353,7 @@ export const addHostIP = data => {
 };
 
 export const hostList = params => {
-    return axios.get('/api/fastrunner/host_ip/', params).then(res => res.data)
+    return axios.get('/api/fastrunner/host_ip/', params)
 };
 
 export const updateHost = (url, params, data) => {
@@ -365,7 +365,11 @@ export const deleteHost = (url, params)=> {
 };
 
 export const delAllHost = (params,data) => {
-  return axios.delete('/api/fastrunner/host_ip/-1', {params,data})
+    return axios.delete('/api/fastrunner/host_ip/-1', {params,data})
+};
+
+export const copyHost = data => {
+    return axios.post('/api/fastrunner/copyhost/', data)
 };
 
 export const getHostPaginationBypage = params => {

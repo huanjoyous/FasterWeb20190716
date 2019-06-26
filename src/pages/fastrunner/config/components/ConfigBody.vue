@@ -150,7 +150,6 @@
                 this.request = request;
             },
             handleOutput(outParams) {
-              console.log(outParams);
                this.outParams = outParams;
             },
             handleVariables(variables) {
@@ -218,9 +217,7 @@
 
             validateData() {
                 if (this.name === '') {
-                    this.$notify.error({
-                        message: '配置名称不能为空'
-                    });
+                    this.$notify.error('配置名称不能为空');
                     return false;
                 }
                 return true

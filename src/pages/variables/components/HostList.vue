@@ -1,22 +1,17 @@
-<template >
+<template>
     <el-container>
         <el-header style="padding-top: 10px; height: 50px;">
-            <div>
+            <div style="padding-left: 8px;">
                 <el-row>
-                    <el-col :span="6" v-if="configData.count > 11">
-                        <el-input placeholder="请输入配置名称" clearable v-model="search">
-                            <el-button slot="append" icon="el-icon-search" @click="getConfigList"></el-button>
-                        </el-input>
-                    </el-col>
                     <el-col :span="7">
                         <el-pagination
                             :page-size="11"
-                            v-show="configData.count !== 0 "
+                            v-show="hostIPData.count !== 0 "
                             background
                             @current-change="handleCurrentChange"
                             :current-page.sync="currentPage"
                             layout="total, prev, pager, next, jumper"
-                            :total="configData.count"
+                            :total="hostIPData.count"
                         >
                         </el-pagination>
                     </el-col>
@@ -24,15 +19,15 @@
             </div>
         </el-header>
 
-        <el-container >
+        <el-container>
             <el-main style="padding: 0; margin-left: 10px; margin-top: 10px;">
                 <div style="position: fixed; bottom: 0; right:0; left: 178px; top: 150px">
                     <el-table
                         v-loading="loading"
                         element-loading-text="正在玩命加载"
                         highlight-current-row
-                        :data="configData.results"
-                        :show-header="configData.results.length !== 0 "
+                        :data="hostIPData.results"
+                        :show-header="hostIPData.results.length !== 0 "
                         stripe
                         height="calc(100%)"
                         @cell-mouse-enter="cellMouseEnter"
@@ -41,21 +36,21 @@
                     >
                         <el-table-column type="selection" width="55"></el-table-column>
 
-                        <el-table-column label="配置名称">
+                        <el-table-column label="环境名">
                             <template slot-scope="scope">
                                 <div>{{scope.row.name}}</div>
-                            </template>
-                        </el-table-column>
-
-                        <el-table-column label="请求根地址">
-                            <template slot-scope="scope">
-                                <div v-text="scope.row.base_url === '' ? '未配置' : scope.row.base_url"></div>
                             </template>
                         </el-table-column>
 
                         <el-table-column label="更新时间">
                             <template slot-scope="scope">
                                 <div>{{scope.row.update_time|datetimeFormat}}</div>
+                            </template>
+                        </el-table-column>
+
+                        <el-table-column label="创建时间">
+                            <template slot-scope="scope">
+                                <div>{{scope.row.create_time|datetimeFormat}}</div>
                             </template>
                         </el-table-column>
 
@@ -66,22 +61,23 @@
                                         type="info"
                                         icon="el-icon-edit"
                                         circle size="mini"
-                                        @click="handleEditConfig(scope.row)"
+                                        @click="handleEditHostIP(scope.row)"
                                     ></el-button>
 
                                     <el-button
                                         type="success"
                                         icon="el-icon-document"
                                         circle size="mini"
-                                        @click="handleCopyConfig(scope.row.id)"
+                                        @click="handleCopyHost(scope.row.id)"
                                     >
                                     </el-button>
 
                                     <el-button
+                                        v-show="hostIPData.count !== 0"
                                         type="danger"
                                         icon="el-icon-delete"
                                         circle size="mini"
-                                        @click="handleDelConfig(scope.row.id)"
+                                        @click="handleDelHost(scope.row.id)"
                                     >
                                     </el-button>
                                 </el-row>
@@ -96,134 +92,114 @@
 
 <script>
     export default {
-        name: "ConfigList",
-        props: {
-            back: Boolean,
+        name: "HostList",
+        props:{
             project: {
                 require: true
             },
-            del: Boolean
+            del: Boolean,
+            back: Boolean
         },
         data() {
             return {
-                search: '',
-                selectConfig: [],
                 currentRow: '',
                 currentPage: 1,
-                configData: {
+                currentRowInside: '',
+                hostIPData: {
                     count: 0,
                     results: []
                 },
-                loading: true
+                loading: true,
+                selectHostInfo: [],
             }
         },
         watch: {
             back() {
-                this.getConfigList();
+                this.getHostIPList();
             },
-
-            del() {
-                if (this.selectConfig.length !== 0) {
-                    this.$confirm('此操作将永久删除配置，是否继续?', '提示', {
+            del(){
+                if (this.selectHostInfo.length !== 0) {
+                    this.$confirm('此操作将永久删除勾选的域名信息，是否继续?', '提示', {
                         confirmButtonText: '确定',
                         cancelButtonText: '取消',
                         type: 'warning',
                     }).then(() => {
-                        this.$api.delAllConfig({data: this.selectConfig}).then(resp => {
-                            this.getConfigList();
+                        this.$api.delAllHost({project:this.$route.params.id},this.selectHostInfo).then(resp => {
+                            this.$notify.success('批量删除域名信息成功');
+                            this.getHostIPList();
                         })
                     })
                 } else {
-                    this.$notify.warning({
-                        message: '请至少勾选一个配置'
-                    })
+                    this.$notify.warning('没有勾选域名信息')
                 }
             }
         },
-
         methods: {
+            cellMouseEnter(row) {
+                this.currentRow = row;
+            },
+            cellMouseLeave(row) {
+                this.currentRow = '';
+            },
             handleSelectionChange(val) {
-                this.selectConfig = val;
+                this.selectHostInfo = val;
             },
-
-            handleCurrentChange(val) {
-                this.$api.getConfigPaginationBypage({
-                    params: {
-                        page: this.currentPage,
-                        project: this.project,
-                        search: this.search
-                    }
-                }).then(resp => {
-                    this.configData = resp;
-                })
-            },
-
-            //删除api
-            handleDelConfig(index) {
-                this.$confirm('此操作将永久删除该配置，是否继续?', '提示', {
+            handleDelHost(index) {
+                this.$confirm('此操作将永久删除该域名，是否继续?', '提示', {
                     confirmButtonText: '确定',
                     cancelButtonText: '取消',
                     type: 'warning',
                 }).then(() => {
-                    this.$api.deleteConfig(index).then(resp => {
-                        if (resp.success) {
-                            this.getConfigList();
-                        } else {
-                            this.$message.error(resp.msg);
-                        }
+                    this.$api.deleteHost(index, {params: {project: this.$route.params.id}}).then(resp => {
+                        this.$notify.success('删除成功');
+                        this.getHostIPList();
                     })
                 })
             },
-
-            handleEditConfig(row) {
-                this.$emit('respConfig', row);
-            },
-
-            handleCopyConfig(id) {
-                this.$prompt('请输入配置名称', '提示', {
-                    confirmButtonText: '确定',
-                    inputPattern: /^[\s\S]*.*[^\s][\s\S]*$/,
-                    inputErrorMessage: '配置名称不能为空'
-                }).then(({value}) => {
-                    this.$api.copyConfig(id, {
-                        'name': value
-                    }).then(resp => {
-                        if (resp.success) {
-                            this.getConfigList();
-                        } else {
-                            this.$notify.error(resp.msg);
-                        }
-                    })
-                })
-            },
-
-            cellMouseEnter(row) {
-                this.currentRow = row;
-            },
-
-            cellMouseLeave(row) {
-                this.currentRow = '';
-            },
-
-            getConfigList() {
-                this.$api.configList({
+            handleCurrentChange(val) {
+                this.$api.getHostPaginationBypage({
                     params: {
-                        project: this.project,
-                        search: this.search
+                        page: this.currentPage,
+                        project: this.$route.params.id
                     }
                 }).then(resp => {
-                    this.configData = resp;
-                    this.loading = false
+                    this.hostIPData = resp.data;
                 })
             },
+            handleCopyHost(id){
+                this.$prompt('请输入域名名称', '提示', {
+                    confirmButtonText: '确定',
+                    inputPattern: /^[\s\S]*.*[^\s][\s\S]*$/,
+                    inputErrorMessage: '域名名称不能为空'
+                }).then(({value}) => {
+                    this.$api.copyHost({
+                        name: value,
+                        id: id
+                    }).then(resp => {
+                        this.$notify.success('复制成功');
+                        this.getHostIPList();
+                    })
+                })
+            },
+            getHostIPList() {
+                this.$api.hostList({params: {project: this.$route.params.id}}).then(resp => {
+                    this.hostIPData = resp.data;
+                    this.loading = false;
+                })
+            },
+            handleEditHostIP(row) {
+                this.$emit('respHostInfo', row);
+            }
         },
         mounted() {
-            this.getConfigList();
+            this.$nextTick( function () {
+                this.getHostIPList();
+            })
         }
     }
+
 </script>
 
 <style scoped>
 
 </style>
-

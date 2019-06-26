@@ -178,12 +178,10 @@
         },
         methods: {
             handleHeader(header, value) {
-                //this.header = value;
-                //this.tempBody.header = header;
+              this.header = value;
             },
             handleRequest(request, value) {
-                //this.request = value;
-                //this.tempBody.request = request;
+              this.request = value;
             },
             handleValidate(validate, value) {
                 this.validate = value;
@@ -247,6 +245,7 @@
                 name: this.response.body.name,
                 url: this.response.body.url,
                 skipIf: this.response.body.skipIf,
+                method: this.response.body.method,
                 header: [],
                 request: [],
                 extract: [],
@@ -254,7 +253,6 @@
                 variables: [],
                 hooks: [],
                 tempBody: {},
-                method: this.response.body.method,
                 save: false,
                 summary: {},
                 dialogTableVisible: false,

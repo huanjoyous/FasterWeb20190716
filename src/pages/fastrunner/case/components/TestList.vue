@@ -142,13 +142,12 @@
                             width="100px"
                         >
                             <template slot-scope="scope">
-                                <el-tag v-if="scope.row.tag==='冒烟用例'">{{scope.row.tag}}</el-tag>
-                                <el-tag v-if="scope.row.tag==='集成用例'" type="success">{{scope.row.tag}}</el-tag>
-                                <el-tag v-if="scope.row.tag==='监控脚本'" type="danger">{{scope.row.tag}}</el-tag>
+                                <el-tag v-if="scope.row.tag=== 1">冒烟用例</el-tag>
+                                <el-tag v-if="scope.row.tag=== 2" type="success">集成用例</el-tag>
+                                <el-tag v-if="scope.row.tag=== 3" type="danger">监控脚本</el-tag>
                             </template>
                         </el-table-column>
-
-
+                        
                         <el-table-column
                             label="更新时间"
                             width="160px"
