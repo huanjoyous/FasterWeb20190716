@@ -47,9 +47,9 @@
                 </el-dialog>
 
                 <el-dialog
-                    title="Run API"
+                    title="Run API Tree"
                     :visible.sync="dialogTreeVisible"
-                    width="45%"
+                    width="40%"
                 >
                     <div>
                         <div>
@@ -66,13 +66,13 @@
                                 </el-col>
                                 <el-col :span="10">
                                     <el-input
+                                        size="small"
                                         v-show="asyncs"
                                         clearable
                                         placeholder="请输入报告名称"
                                         v-model="reportName"
                                         :disabled="false">
                                     </el-input>
-
                                 </el-col>
                             </el-row>
                         </div>
@@ -107,8 +107,8 @@
 
                     </div>
                     <span slot="footer" class="dialog-footer">
-                    <el-button @click="dialogTreeVisible = false">取 消</el-button>
-                    <el-button type="primary" @click="runTree">确 定</el-button>
+                    <el-button size="small" @click="dialogTreeVisible = false">取 消</el-button>
+                    <el-button size="small" type="primary" @click="runTree">确 定</el-button>
                   </span>
                 </el-dialog>
 
@@ -118,7 +118,7 @@
                         v-loading="loading"
                         element-loading-text="正在玩命加载"
                         highlight-current-row
-                        height="calc(100%)"
+                        height="600px"
                         ref="multipleTable"
                         :data="apiData.results"
                         :show-header="false"
@@ -189,28 +189,32 @@
                             <template slot-scope="scope">
                                 <el-row v-show="currentRow === scope.row">
                                     <el-button
-                                        type="primary"
-                                        icon="el-icon-caret-right"
-                                        circle size="mini"
-                                        @click="handleRunAPI(scope.row.id)"
-                                    ></el-button>
-                                    <el-button
                                         type="info"
                                         icon="el-icon-edit"
                                         circle size="mini"
                                         @click="handleRowClick(scope.row)"
+                                        title="编辑"
+                                    ></el-button>
+                                    <el-button
+                                        type="primary"
+                                        icon="el-icon-caret-right"
+                                        circle size="mini"
+                                        @click="handleRunAPI(scope.row.id)"
+                                        title="运行"
                                     ></el-button>
                                     <el-button
                                         type="success"
                                         icon="el-icon-document"
                                         circle size="mini"
                                         @click="handleCopyAPI(scope.row.id)"
+                                        title="复制"
                                     ></el-button>
                                     <el-button
                                         type="danger"
                                         icon="el-icon-delete"
                                         circle size="mini"
                                         @click="handleDelApi(scope.row.id)"
+                                        title="删除"
                                     ></el-button>
                                 </el-row>
                             </template>

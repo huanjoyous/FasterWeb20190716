@@ -71,7 +71,8 @@
                     </el-button>
                     <el-button
                         v-if="addTestActivate"
-                        style="margin-left: 30px"
+                        style="margin-left: 30px;"
+                        title="运行用例"
                         type="primary"
                         icon="el-icon-caret-right"
                         circle
@@ -83,6 +84,7 @@
                         v-if="addTestActivate"
                         style="margin-left: 10px"
                         type="danger"
+                        title="批量删除"
                         icon="el-icon-delete"
                         circle
                         size="mini"
@@ -139,7 +141,6 @@
                     v-model="currentTestDataSheet"
                     placeholder="请输入sheet名"
                     >
-
                     </el-input>
 
                     <el-button
@@ -149,7 +150,6 @@
                         @click="handleBackList"
                     >返回列表
                     </el-button>
-
                 </div>
             </div>
         </el-header>

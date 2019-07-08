@@ -34,7 +34,7 @@
                         :data="configData.results"
                         :show-header="configData.results.length !== 0 "
                         stripe
-                        height="calc(100%)"
+                        height="600px"
                         @cell-mouse-enter="cellMouseEnter"
                         @cell-mouse-leave="cellMouseLeave"
                         @selection-change="handleSelectionChange"
@@ -67,6 +67,7 @@
                                         icon="el-icon-edit"
                                         circle size="mini"
                                         @click="handleEditConfig(scope.row)"
+                                        title="编辑"
                                     ></el-button>
 
                                     <el-button
@@ -74,6 +75,7 @@
                                         icon="el-icon-document"
                                         circle size="mini"
                                         @click="handleCopyConfig(scope.row.id)"
+                                        title="复制"
                                     >
                                     </el-button>
 
@@ -82,6 +84,7 @@
                                         icon="el-icon-delete"
                                         circle size="mini"
                                         @click="handleDelConfig(scope.row.id)"
+                                        title="删除"
                                     >
                                     </el-button>
                                 </el-row>
@@ -189,6 +192,7 @@
                         'name': value
                     }).then(resp => {
                         if (resp.success) {
+                            this.$notify.success('配置复制成功');
                             this.getConfigList();
                         } else {
                             this.$notify.error(resp.msg);

@@ -152,7 +152,8 @@
                     delete request[item];
                 });
                 try {
-                    request["body"] = JSON.parse(request["body"])
+                    //request["body"] = JSON.parse(request["body"])
+                    delete request["body"]
                 } catch (e) {
                 }
                 return request

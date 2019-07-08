@@ -111,7 +111,7 @@
                             :data="variablesData.results"
                             :show-header="variablesData.results.length !== 0 "
                             stripe
-                            height="calc(100%)"
+                            height="600px"
                             @cell-mouse-enter="cellMouseEnter"
                             @cell-mouse-leave="cellMouseLeave"
                             @selection-change="handleSelectionChange"

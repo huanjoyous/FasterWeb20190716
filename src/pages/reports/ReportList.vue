@@ -11,6 +11,7 @@
                         circle
                         size="mini"
                         @click="delSelectionReports"
+                        title="批量删除"
                     ></el-button>
                 </div>
             </div>
@@ -21,7 +22,7 @@
                     <el-row>
                         <el-col :span="5" v-if="reportData.count > 11">
                             <el-input placeholder="请输入报告名称" clearable v-model="search" size="small">
-                                <el-button slot="append" icon="el-icon-search" @click="getReportList" size="small"></el-button>
+                                <el-button slot="append" icon="el-icon-search" @click="getReportList" size="small" title="搜索"></el-button>
                             </el-input>
                         </el-col>
 
@@ -52,38 +53,26 @@
                             :data="reportData.results"
                             :show-header="reportData.results.length !== 0 "
                             stripe
-                            height="calc(100%)"
+                            height="600px"
                             @cell-mouse-enter="cellMouseEnter"
                             @cell-mouse-leave="cellMouseLeave"
                             @selection-change="handleSelectionChange"
                         >
-                            <el-table-column
-                                type="selection"
-                                width="40"
-                            >
-                            </el-table-column>
+                            <el-table-column type="selection" width="40"></el-table-column>
 
-                            <el-table-column
-                                label="类型"
-                                width="80"
-                            >
+                            <el-table-column label="类型" width="80" align="center">
                                 <template slot-scope="scope">
                                     <el-tag color="#2C3E50" style="color: white" size="small">{{ scope.row.type }}</el-tag>
                                 </template>
                             </el-table-column>
 
-                            <el-table-column
-                                label="报告名称"
-                            >
+                            <el-table-column label="报告名称">
                                 <template slot-scope="scope">
                                     <div>{{scope.row.name}}</div>
                                 </template>
                             </el-table-column>
 
-                            <el-table-column
-                                label="状态"
-                                width="60"
-                            >
+                            <el-table-column label="状态" width="60" align="center">
                                 <template slot-scope="scope">
                                     <div
                                         :class="{'pass': scope.row.success, 'fail':!scope.row.success}"
@@ -92,70 +81,49 @@
                                 </template>
                             </el-table-column>
 
-                            <el-table-column
-                                label="测试时间"
-                                width="150"
-                            >
+                            <el-table-column label="测试时间" width="150" align="center">
                                 <template slot-scope="scope">
                                     <div>{{scope.row.time.start_at|timestampToTime}}</div>
                                 </template>
                             </el-table-column>
 
-                            <el-table-column label="用时" width="90">
+                            <el-table-column label="用时" width="90" align="center">
                                 <template slot-scope="scope">
                                     <div v-text="scope.row.time.duration.toFixed(3)+' 秒'"></div>
                                 </template>
                             </el-table-column>
 
-                            <el-table-column
-                                width="60"
-                                label="总计"
-                            >
+                            <el-table-column width="60" label="总计" align="center">
                                 <template slot-scope="scope">
                                     <el-tag size="small">{{ scope.row.stat.testsRun }}</el-tag>
                                 </template>
                             </el-table-column>
 
-                            <el-table-column
-                                width="60"
-                                label="通过"
-                            >
+                            <el-table-column width="60" label="通过" align="center">
                                 <template slot-scope="scope">
                                     <el-tag type="success" size="small"> {{ scope.row.stat.successes }}</el-tag>
                                 </template>
                             </el-table-column>
 
-                            <el-table-column
-                                width="60"
-                                label="失败"
-                            >
+                            <el-table-column width="60" label="失败" align="center">
                                 <template slot-scope="scope">
                                     <el-tag type="danger" size="small">{{ scope.row.stat.failures }}</el-tag>
                                 </template>
                             </el-table-column>
 
-                            <el-table-column
-                                width="60"
-                                label="异常"
-                            >
+                            <el-table-column width="60" label="异常" align="center">
                                 <template slot-scope="scope">
                                     <el-tag type="warning" size="small">{{ scope.row.stat.errors }}</el-tag>
                                 </template>
                             </el-table-column>
 
-                            <el-table-column
-                                width="60"
-                                label="跳过"
-                            >
+                            <el-table-column width="60" label="跳过" align="center">
                                 <template slot-scope="scope">
                                     <el-tag type="info" size="small">{{ scope.row.stat.skipped }}</el-tag>
                                 </template>
                             </el-table-column>
 
-                            <el-table-column
-                                label="系统信息"
-                                width="135"
-                            >
+                            <el-table-column label="系统信息" width="135" align="center">
                                 <template slot-scope="scope">
                                     <el-popover trigger="hover" placement="top">
                                         <p>{{ scope.row.platform.python_version}}</p>
@@ -167,9 +135,7 @@
                                 </template>
                             </el-table-column>
 
-                            <el-table-column
-                                width="150"
-                            >
+                            <el-table-column width="150" align="center">
                                 <template slot-scope="scope">
                                     <el-row v-show="currentRow === scope.row">
                                         <el-button
@@ -177,6 +143,7 @@
                                             icon="el-icon-view"
                                             circle size="mini"
                                             @click="handleWatchReports(scope.row.id)"
+                                            title="查看"
                                         >
                                         </el-button>
                                         <el-button
@@ -184,6 +151,7 @@
                                             icon="el-icon-download"
                                             circle size="mini"
                                             @click="handleDownExcelReport(scope.row.id,scope.row.name)"
+                                            title="下载"
                                         >
                                         </el-button>
                                         <el-button
@@ -191,6 +159,7 @@
                                             icon="el-icon-delete"
                                             circle size="mini"
                                             @click="handleDelReports(scope.row.id)"
+                                            title="删除"
                                         >
                                         </el-button>
                                     </el-row>

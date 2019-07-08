@@ -22,11 +22,9 @@
                 @cell-mouse-leave="cellMouseLeave"
                 v-show="dataType !== 'json' "
             >
-                <el-table-column
-                    label="请求Key"
-                    >
+                <el-table-column label="请求Key">
                     <template slot-scope="scope">
-                        <el-input clearable v-model="scope.row.key" placeholder="Key" size="medium"></el-input>
+                        <el-input clearable v-model="scope.row.key" placeholder="Key" size="medium" :disabled="isDisabled"></el-input>
                     </template>
                 </el-table-column>
 
@@ -35,8 +33,7 @@
                     label="类型"
                     width="120">
                     <template slot-scope="scope">
-
-                        <el-select v-model="scope.row.type" size="medium">
+                        <el-select v-model="scope.row.type" size="medium" :disabled="isDisabled">
                             <el-option
                                 v-for="item in dataTypeOptions"
                                 :key="item.value"
@@ -45,7 +42,6 @@
                             >
                             </el-option>
                         </el-select>
-
                     </template>
                 </el-table-column>
 
@@ -59,6 +55,7 @@
                             v-model="scope.row.value"
                             placeholder="Value"
                             size="medium"
+                            :disabled="isDisabled"
                         ></el-input>
 
                         <el-row v-show="scope.row.type === 5">
@@ -98,13 +95,13 @@
                     label="描述"
                     width="150">
                     <template slot-scope="scope">
-                        <el-input clearable v-model="scope.row.desc" placeholder="参数简要描述" size="medium"></el-input>
+                        <el-input clearable v-model="scope.row.desc" placeholder="参数简要描述" size="medium" :disabled="isDisabled"></el-input>
                     </template>
                 </el-table-column>
 
-
                 <el-table-column
-                    width="140">
+                    width="140"
+                    :disabled="isDisabled">
                     <template slot-scope="scope">
                         <el-row v-show="scope.row === currentRow">
                             <el-button
@@ -122,11 +119,9 @@
                                 @click="handleDelete(scope.$index, scope.row)">
                             </el-button>
                         </el-row>
-
                     </template>
                 </el-table-column>
             </el-table>
-
 
             <editor v-model="jsonData"
                     @init="editorInit"
@@ -137,12 +132,8 @@
                     v-show="dataType === 'json' "
             >
             </editor>
-
         </div>
-
     </div>
-
-
 </template>
 
 <script>
@@ -151,20 +142,18 @@
             save: Boolean,
             request: {
                 require: false
-            }
+            },
+            isDisabled:Boolean
         },
         computed:{
             height() {
                 return window.screen.height - 464
             }
         },
-
         name: "Request",
         components: {
             editor: require('vue2-ace-editor'),
         },
-
-
         watch: {
             save: function () {
                 this.$emit('request', {
@@ -187,7 +176,6 @@
                 }
             }
         },
-
         methods: {
             editorInit() {
                 require('brace/ext/language_tools');
@@ -260,7 +248,6 @@
                     this.IsShowDel = false
                 }
             },
-
 
             // 文件格式化
             parseFile() {
@@ -389,7 +376,6 @@
                     type: '',
                     desc: ''
                 }],
-
                 dataTypeOptions: [{
                     label: 'String',
                     value: 1
@@ -406,7 +392,6 @@
                     label: 'File',
                     value: 5
                 }],
-
                 dataOptions: [{
                     label: 'data',
                     value: '表单',

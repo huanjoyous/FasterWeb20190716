@@ -32,13 +32,13 @@ axios.interceptors.response.use(function (response) {
             router.replace({
                 name: 'Login'
             })
-        }else if (error.response.status === 403) {
-            Notification.error({
-                message: '您无权限访问，请联系管理员'
-            });
         }else if (error.response.status === 500) {
             Notification.error({
                 message: '服务器内部异常, 请检查'
+            })
+        }else if (error.response.status === 504) {
+            Notification.error({
+                message: '请求超时,请联系系统管理员'
             })
         }else if (error.response.status === 405) {
           Notification.error({
@@ -46,12 +46,12 @@ axios.interceptors.response.use(function (response) {
           })
         }else{
             for (let key in error.response.data){
-                if (error.response.data[key].constructor == Array){
+                if (error.response.data[key].constructor === Array){
                     Notification.error({
                         title: key,
                         message: error.response.data[key][0]
                         })
-                }else if (error.response.data[key].constructor == String){
+                }else if (error.response.data[key].constructor === String){
                     Notification.error({
                         title: key,
                         message: error.response.data[key]
@@ -194,8 +194,8 @@ export const getPaginationBypage = params => {
     return axios.get('/api/fastrunner/api/', params).then(res => res.data)
 };
 
-export const addTestCase = params => {
-    return axios.post('/api/fastrunner/testcase/', params)
+export const addTestCase = (params, data) => {
+    return axios({url:'/api/fastrunner/testcase/', method: 'POST', params:params, data:data})
 };
 
 export const updateTestCase = (url, params, data) => {
@@ -214,12 +214,12 @@ export const delAllTest = (params,data) => {
     return axios.delete('/api/fastrunner/testcase/-1', {params,data})
 };
 
-export const coptTest = params => {
-    return axios.post('/api/fastrunner/testcasecopy/', params)
+export const coptTest = (params, data) => {
+    return axios({url:'/api/fastrunner/testcase/', method: 'POST', params:params, data:data})
 };
 
-export const editTest = url => {
-    return axios.get('/api/fastrunner/teststep/' + url + '/').then(res => res.data)
+export const editTest = (url,params) => {
+    return axios.get('/api/fastrunner/testcase/' + url + '/', params)
 };
 
 export const getTestPaginationBypage = params => {
@@ -275,16 +275,8 @@ export const runAPITree = params => {
     return axios.post('/api/fastrunner/run_api_tree/', params).then(res => res.data)
 };
 
-export const runSingleTestSuite = params => {
-    return axios.post('/api/fastrunner/run_testsuite/', params).then(res => res.data)
-};
-
-export const runSingleTest = params => {
-    return axios.post('/api/fastrunner/run_test/', params).then(res => res.data)
-};
-
-export const runTestByPk = (url, params) => {
-    return axios.get('/api/fastrunner/run_testsuite_pk/' + url + '/', params).then(res => res.data)
+export const runTestByPk = (url, data) => {
+    return axios.post('/api/fastrunner/run_testsuite_pk/' + url + '/', data).then(res => res.data)
 };
 
 export const runSuiteTree = params => {
@@ -348,8 +340,8 @@ export const deleteTasks = url => {
     return axios.delete('/api/fastrunner/schedule/' + url + '/').then(res => res.data)
 };
 
-export const addHostIP = data => {
-    return axios.post('/api/fastrunner/host_ip/', data)
+export const addHostIP = (params, data) => {
+    return axios({url:'/api/fastrunner/host_ip/', method: 'POST', params:params, data:data})
 };
 
 export const hostList = params => {
@@ -368,8 +360,8 @@ export const delAllHost = (params,data) => {
     return axios.delete('/api/fastrunner/host_ip/-1', {params,data})
 };
 
-export const copyHost = data => {
-    return axios.post('/api/fastrunner/copyhost/', data)
+export const copyHost = (params, data)  => {
+    return axios({url:'/api/fastrunner/host_ip/', method: 'POST', params:params, data:data})
 };
 
 export const getHostPaginationBypage = params => {

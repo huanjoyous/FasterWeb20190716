@@ -1,72 +1,28 @@
 <template>
     <el-container>
-        <el-header style="background-color: #F7F7F7;; padding: 0; height: 40px;">
-            <div style="padding-top: 5px; margin-left: 10px; ">
-                <el-row>
-                    <el-col :span="15">
-                        <el-button
-                            type="primary"
-                            size="mini"
-                            icon="el-icon-circle-check-outline"
-                            @click="handleConfirm"
-                            round
-                        >点击保存
-                        </el-button>
-
-                        <el-button
-                            icon="el-icon-caret-right"
-                            type="info"
-                            size="mini"
-                            @click="handleRunCode"
-                            round
-                        >
-                            在线运行
-                        </el-button>
-                    </el-col>
-                    <el-col :span="9">
-                        <h3>调试控制台</h3>
-                    </el-col>
-                </el-row>
-            </div>
-
-        </el-header>
-
-        <el-container>
-            <el-main style="padding: 0; margin-left: 8px">
-                <el-row>
-                    <el-col :span="15">
-                        <editor
-                            v-model="requestData.code"
-                            @init="editorInit"
-                            lang="python"
-                            theme="monokai"
-                            width="100%"
-                            :height="codeHeight"
-                            :options="{
-                                 enableSnippets:true,
-                                 enableBasicAutocompletion: true,
-                                 enableLiveAutocompletion: true
-                            }"
-                        >
-                        </editor>
-                    </el-col>
-
-                    <el-col :span="9">
-                        <editor
-                            v-model="resp.msg"
-                            lang="text"
-                            theme="monokai"
-                            width="100%"
-                            :height="codeHeight"
-                        >
-                        </editor>
-                    </el-col>
-
-
-                </el-row>
-
-            </el-main>
-        </el-container>
+        <el-main style="height: 600px">
+            <editor
+                v-model="requestData.code"
+                @init="editorInit"
+                lang="python"
+                theme="monokai"
+                :options="{
+                     enableSnippets:true,
+                     enableBasicAutocompletion: true,
+                     enableLiveAutocompletion: true
+                }"
+            >
+            </editor>
+        </el-main>
+        <el-footer style="height: 50px">
+            <editor
+                v-model="resp.msg"
+                lang="text"
+                theme="monokai"
+                :height="codeHeight"
+            >
+            </editor>
+        </el-footer>
     </el-container>
 
 </template>
@@ -76,6 +32,16 @@
         props: {
             id: {
                 require: true
+            },
+            save: Boolean,
+            run: Boolean
+        },
+        watch: {
+            save(){
+                this.handleConfirm();
+            },
+            run(){
+                this.handleRunCode();
             }
         },
         data() {

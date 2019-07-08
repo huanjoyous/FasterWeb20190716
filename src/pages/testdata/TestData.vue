@@ -31,6 +31,7 @@
                         circle
                         size="mini"
                         @click="delSelectiontestdata"
+                        title="批量删除"
                     ></el-button></div>
 
                 </div>
@@ -71,7 +72,7 @@
                             :data="testData.results"
                             :show-header="testData.results.length !== 0 "
                             stripe
-                            height="calc(100%)"
+                            height="600px"
                             @cell-mouse-enter="cellMouseEnter"
                             @cell-mouse-leave="cellMouseLeave"
                             @selection-change="handleSelectionChange"
@@ -114,6 +115,7 @@
                                             icon="el-icon-download"
                                             circle size="mini"
                                             @click="handleDownTestdata(scope.row.id,scope.row.name)"
+                                            title="下载"
                                         >
                                         </el-button>
                                         <el-button
@@ -122,6 +124,7 @@
                                             icon="el-icon-delete"
                                             circle size="mini"
                                             @click="handleDelTestdata(scope.row.id)"
+                                            title="删除"
                                         >
                                         </el-button>
                                     </el-row>

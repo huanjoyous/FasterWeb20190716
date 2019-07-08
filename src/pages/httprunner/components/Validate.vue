@@ -123,7 +123,7 @@
                 this.tableData.push({
                     expect: '',
                     actual: '',
-                    comparator: 'equals',
+                    comparator: 'eq',
                     type: 1
                 });
             },

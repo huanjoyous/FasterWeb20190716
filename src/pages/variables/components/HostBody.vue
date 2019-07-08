@@ -75,12 +75,15 @@
             },
             addHostIP(){
                 if (this.validateData()) {
-                    this.$api.addHostIP({
-                        name: this.name,
-                        hostInfo: this.variables,
-                        project: this.$route.params.id,
-                        base_url: this.base_url
-                    }).then(resp => {
+                    this.$api.addHostIP(
+                        {project: this.$route.params.id},
+                        {
+                            name: this.name,
+                            hostInfo: this.variables,
+                            project: this.$route.params.id,
+                            base_url: this.base_url
+                        }
+                        ).then(resp => {
                         this.$notify.success('添加环境信息成功');
                         this.$emit("addSuccess");
                     })

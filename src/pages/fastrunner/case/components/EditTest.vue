@@ -50,7 +50,7 @@
                     </el-col>
                     <el-col :span="12" style="margin-left: 35px">
                         <el-input
-                            style="width: 350px; text-align: center"
+                            style="width: 460px; text-align: center"
                             placeholder="请输入测试用例名称"
                             v-model="testName"
                             clearable
@@ -63,7 +63,6 @@
                                   :value="item.value"
                                 ></el-option>
                             </el-select>
-
                             <el-button
                                 slot="append"
                                 type="success"
@@ -71,15 +70,7 @@
                                 @click="handleClickSave"
                             >Save
                             </el-button>
-
                         </el-input>
-
-                        <el-button
-                            type="primary"
-                            v-loading="suite_loading"
-                            @click="handleClickRun"
-                        >Send
-                        </el-button>
                     </el-col>
                 </el-row>
             </div>
@@ -174,6 +165,7 @@
                                         icon="el-icon-delete"
                                         circle size="mini"
                                         @click="testData.splice(index, 1)"
+                                        title="删除"
                                     >
                                     </el-button>
                                 </div>
@@ -197,22 +189,13 @@
                                         />
 
                                         <el-button
-                                            style="position: absolute; right: 84px; top: 8px"
+                                            style="position: absolute; right: 48px; top: 8px"
                                             v-show="currentTest === index"
                                             type="info"
                                             icon="el-icon-edit"
                                             circle size="mini"
                                             @click="editTestStepActivate = true"
-                                        >
-                                        </el-button>
-
-                                        <el-button
-                                            style="position: absolute; right: 48px; top: 8px"
-                                            v-show="currentTest === index"
-                                            type="success"
-                                            icon="el-icon-caret-right"
-                                            circle size="mini"
-                                            @click="handleSingleRun"
+                                            title="编辑"
                                         >
                                         </el-button>
 
@@ -223,6 +206,7 @@
                                             icon="el-icon-delete"
                                             circle size="mini"
                                             @click="testData.splice(index, 1)"
+                                            title="删除"
                                         >
                                         </el-button>
                                     </div>
@@ -404,14 +388,17 @@
                 if (this.testData[0].body.method === "config") {
                     length -= 1;
                 }
-                this.$api.addTestCase({
-                    length: length,
-                    project: this.project,
-                    relation: this.node,
-                    name: this.testName,
-                    body: this.testData,
-                    tag: this.testTag
-                }).then(resp => {
+                this.$api.addTestCase(
+                    {project: this.$route.params.id},
+                    {
+                        length: length,
+                        project: this.project,
+                        relation: this.node,
+                        name: this.testName,
+                        body: this.testData,
+                        tag: this.testTag
+                    }
+                ).then(resp => {
                     this.$notify.success('用例添加成功');
                     this.$emit("addSuccess");
                 })
@@ -433,6 +420,7 @@
                     relation: this.relation}
                 ).then(resp => {
                     this.$notify.success('更新测试用例成功');
+                    this.$emit("addSuccess");
                 })
             },
 
@@ -443,63 +431,6 @@
                     } else {
                         this.updateTestSuite();
                     }
-                }
-            },
-
-            handleClickRun() {
-                if (this.validateData()) {
-                    if(this.testDataExcel !== '请选择' && this.testDataSheet === '') {
-                        this.$notify.warning('选择了数据，sheet名不能为空');
-                    } else {
-                        this.suite_loading = true;
-                        this.$api.runSingleTestSuite({
-                            host: this.host,
-                            name: this.testName,
-                            body: this.testData,
-                            project: this.project,
-                            testDataExcel: this.testDataExcel,
-                            testDataSheet: this.testDataSheet
-                        }).then(resp => {
-                            this.summary = resp;
-                            this.suite_loading = false;
-                            if (this.summary.details.length <= 5){
-                                this.dialogTableVisible = true;
-                            }else{
-                                this.$notify.success({
-                                  title: '提示',
-                                  message: '执行结束，请在历史报告里查看结果'
-                                })
-                            }
-                        }).catch(resp => {
-                            this.suite_loading = false;
-                        })
-                    }
-                }
-            },
-
-            handleSingleRun() {
-                if(this.testDataExcel !== '请选择' && this.testDataSheet === '') {
-                    this.$notify.warning('选择了数据，sheet名不能为空');
-                } else {
-                    this.loading = true;
-                    var config = null;
-                    if (this.testData.length > 0 && this.testData[0].body.method === "config") {
-                        config = this.testData[0].body;
-                    }
-                    this.$api.runSingleTest({
-                        host: this.host,
-                        config: config,
-                        body: this.testData[this.currentTest],
-                        project: this.project,
-                        testDataExcel: this.testDataExcel,
-                        testDataSheet: this.testDataSheet
-                    }).then(resp => {
-                        this.loading = false;
-                        this.summary = resp;
-                        this.dialogTableVisible = true;
-                    }).catch(resp => {
-                        this.loading = false;
-                    })
                 }
             },
 

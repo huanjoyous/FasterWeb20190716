@@ -21,7 +21,28 @@
                         circle
                         size="mini"
                         @click="delSelectionPycodefile"
+                        title="批量删除"
                     ></el-button>
+
+                    <el-button
+                        v-show="PycodedebugActivate"
+                        type="primary"
+                        size="mini"
+                        icon="el-icon-lock"
+                        @click="save = !save"
+                        round
+                    >保存
+                    </el-button>
+
+                    <el-button
+                        v-show="PycodedebugActivate"
+                        icon="el-icon-caret-right"
+                        type="success"
+                        size="mini"
+                        @click="run = !run"
+                        round
+                    >运行
+                    </el-button>
 
                     <el-dialog
                         title="添加文件"
@@ -64,7 +85,7 @@
                             </el-form-item>
                         </el-form>
                         <span slot="footer" class="dialog-footer">
-                            <el-button @click="editVisible = false">取 消</el-button>
+                            <el-button @click="handlecancle">取 消</el-button>
                             <el-button type="primary" @click="handleConfirm('pycodefileForm')">确 定</el-button>
                         </span>
                     </el-dialog>
@@ -84,6 +105,8 @@
             <el-main style="padding: 0; margin-left: 10px" v-if="PycodedebugActivate">
                 <PycodeDebug
                     :id="pycodeid"
+                    :save = "save"
+                    :run="run"
                 >
                 </PycodeDebug>
             </el-main>
@@ -124,7 +147,7 @@
                             :data="pycodeData.results"
                             :show-header="pycodeData.results.length !== 0 "
                             stripe
-                            height="calc(100%)"
+                            height="600px"
                             @cell-mouse-enter="cellMouseEnter"
                             @cell-mouse-leave="cellMouseLeave"
                             @selection-change="handleSelectionChange"
@@ -170,6 +193,7 @@
                                             icon="el-icon-edit"
                                             circle size="mini"
                                             @click="handleEditPycodeData(scope.$index, scope.row)"
+                                            title="编辑基本信息"
                                         >
                                         </el-button>
                                         <el-button
@@ -178,6 +202,7 @@
                                             icon="el-icon-view"
                                             circle size="mini"
                                             @click="handleEditPycode(scope.row.id)"
+                                            title="编辑主要内容"
                                         >
                                         </el-button>
                                         <el-button
@@ -186,6 +211,7 @@
                                             icon="el-icon-delete"
                                             circle size="mini"
                                             @click="handleDelPycode(scope.row.id)"
+                                            title="删除"
                                         >
                                         </el-button>
 
@@ -213,6 +239,8 @@
             return {
                 back: false,
                 del: false,
+                save: false,
+                run: false,
                 PycodedebugActivate: false,
                 respConfig: '',
                 dialogVisible: false,
@@ -262,7 +290,12 @@
                 this.PycodedebugActivate = true;
                 this.pycodeid = index;
             },
-
+            handlecancle(){
+                this.editVisible = false;
+                this.pycodefileForm.name = '';
+                this.pycodefileForm.desc = '';
+                this.pycodefileForm.id = '';
+            },
             handleDelPycode(index){
                 this.$confirm('此操作将永久删除该测试文件，是否继续?', '提示', {
                     confirmButtonText: '确定',

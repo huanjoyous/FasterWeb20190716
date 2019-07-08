@@ -79,6 +79,7 @@
                         circle
                         size="mini"
                         @click="run = !run"
+                        title="批量运行"
                     ></el-button>
 
                     <el-button
@@ -88,6 +89,7 @@
                         circle
                         size="mini"
                         @click="del = !del"
+                        title="批量删除"
                     ></el-button>
                     &nbsp环境:
                     <el-select

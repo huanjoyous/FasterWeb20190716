@@ -20,15 +20,13 @@
                     placeholder="头部标签"
                     size="medium"
                     style="width:280px"
+                    :disabled="isDisabled"
                 >
                 </el-autocomplete>
             </template>
         </el-table-column>
 
-        <el-table-column
-            label="内容"
-
-        >
+        <el-table-column label="内容">
             <template slot-scope="scope">
                 <el-autocomplete
                     clearable
@@ -37,6 +35,7 @@
                     placeholder="头部内容"
                     size="medium"
                     style="width:280px"
+                    :disabled="isDisabled"
                 >
                 </el-autocomplete>
             </template>
@@ -44,15 +43,16 @@
 
         <el-table-column
             label="描述"
-            width="200">
+            width="200"
+            :disabled="isDisabled">
             <template slot-scope="scope">
                 <el-input clearable v-model="scope.row.desc" placeholder="头部信息简要描述" size="medium"></el-input>
-
             </template>
         </el-table-column>
 
         <el-table-column
             width="130"
+            :disabled="isDisabled"
         >
             <template slot-scope="scope">
                 <el-row v-show="scope.row === currentRow">
@@ -85,7 +85,8 @@
             save: Boolean,
             header: {
                 require: false
-            }
+            },
+            isDisabled: Boolean
         },
         methods: {
             querySearch(queryString, cb) {

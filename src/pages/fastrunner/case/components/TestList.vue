@@ -39,34 +39,28 @@
                     <el-dialog
                         title="Run Case"
                         :visible.sync="dialogTreeVisible"
-                        width="45%"
+                        width="35%"
                         :modal-append-to-body="false"
                     >
                         <div>
-                            <div>
-                                <el-row :gutter="2">
-                                    <el-col :span="8">
-                                        <el-switch
-                                            style="margin-top: 10px"
-                                            v-model="asyncs"
-                                            active-color="#13ce66"
-                                            inactive-color="#ff4949"
-                                            active-text="异步执行"
-                                            inactive-text="同步执行">
-                                        </el-switch>
-                                    </el-col>
-                                    <el-col :span="10">
-                                        <el-input
-                                            v-show="asyncs"
-                                            clearable
-                                            placeholder="请输入报告名称"
-                                            v-model="reportName"
-                                            :disabled="false">
-                                        </el-input>
-                                    </el-col>
-                                </el-row>
-                            </div>
-                            <div style="margin-top: 20px">
+                            <el-switch
+                            style="margin-top: 10px"
+                            v-model="asyncs"
+                            v-show="isSingleTest"
+                            active-color="#13ce66"
+                            inactive-color="#ff4949"
+                            active-text="异步执行"
+                            inactive-text="同步执行">
+                            </el-switch>
+                            <el-input
+                                size="small"
+                                style="margin-top: 20px"
+                                clearable
+                                placeholder="报告名称,不填默认当前时间"
+                                v-model="reportName"
+                                :disabled="false">
+                            </el-input>
+                            <div style="margin-top: 20px" v-show="!isSingleTest">
                                 <el-input
                                     placeholder="输入关键字进行过滤"
                                     v-model="filterText"
@@ -87,20 +81,17 @@
                                     :highlight-current="true"
                                     ref="tree"
                                 >
-                            <span class="custom-tree-node"
-                                  slot-scope="{ node, data }"
-                            >
-                                <span><i class="iconfont" v-html="expand"></i>&nbsp;&nbsp;{{ node.label }}</span>
-                            </span>
+                                    <span class="custom-tree-node" slot-scope="{ node, data }">
+                                        <span><i class="iconfont" v-html="expand"></i>&nbsp;&nbsp;{{ node.label }}</span>
+                                    </span>
                                 </el-tree>
                             </div>
-
                         </div>
                         <span slot="footer" class="dialog-footer">
-                    <el-button @click="dialogTreeVisible = false">取 消</el-button>
-                    <el-button type="primary" @click="runTree">确 定</el-button>
+                    <el-button size="small" @click="dialogTreeVisible = false">取 消</el-button>
+                    <el-button size="small" type="primary" @click="runTestcase">确 定</el-button>
                   </span>
-                    </el-dialog>
+                </el-dialog>
                     <el-table
                         v-loading="loading"
                         element-loading-text="正在玩命加载"
@@ -109,63 +100,47 @@
                         :data="testData.results"
                         :show-header="testData.count !== 0 "
                         stripe
-                        height="calc(100%)"
+                        max-height="600"
+                        size="medium"
                         @cell-mouse-enter="cellMouseEnter"
                         @cell-mouse-leave="cellMouseLeave"
                         @selection-change="handleSelectionChange"
                     >
-                        <el-table-column
-                            type="selection"
-                            width="55"
-                        >
-                        </el-table-column>
+                        <el-table-column type="selection" width="55"></el-table-column>
 
-                        <el-table-column
-                            label="用例名称"
-                        >
+                        <el-table-column label="用例名称" show-overflow-tooltip >
                             <template slot-scope="scope">
                                 <div>{{scope.row.name}}</div>
                             </template>
                         </el-table-column>
 
-                        <el-table-column
-                            label="API个数"
-                            width="80px"
-                        >
+                        <el-table-column label="API个数" width="80px" align="center">
                             <template slot-scope="scope">
                                 <div>{{scope.row.length}} 个</div>
                             </template>
                         </el-table-column>
 
-                        <el-table-column
-                            label="用例类型"
-                            width="100px"
-                        >
+                        <el-table-column label="用例类型" width="100px" align="center">
                             <template slot-scope="scope">
                                 <el-tag v-if="scope.row.tag=== 1">冒烟用例</el-tag>
                                 <el-tag v-if="scope.row.tag=== 2" type="success">集成用例</el-tag>
                                 <el-tag v-if="scope.row.tag=== 3" type="danger">监控脚本</el-tag>
                             </template>
                         </el-table-column>
-                        
-                        <el-table-column
-                            label="更新时间"
-                            width="160px"
-                        >
+
+                        <el-table-column label="更新时间" width="160px" align="center">
                             <template slot-scope="scope">
                                 <div>{{scope.row.update_time|datetimeFormat}}</div>
-
                             </template>
                         </el-table-column>
 
-                        <el-table-column
-                            width="180px"
-                        >
+                        <el-table-column width="180px">
                             <template slot-scope="scope">
                                 <el-row v-show="currentRow === scope.row">
                                     <el-button
                                         type="info"
                                         icon="el-icon-edit"
+                                        title="编辑"
                                         circle size="mini"
                                         @click="handleEditTest(scope.row.id)"
                                     ></el-button>
@@ -174,6 +149,7 @@
                                         type="primary"
                                         icon="el-icon-caret-right"
                                         circle size="mini"
+                                        title="运行"
                                         @click="handleRunTest(scope.row.id, scope.row.name)"
                                     ></el-button>
 
@@ -181,6 +157,7 @@
                                         type="success"
                                         icon="el-icon-document"
                                         circle size="mini"
+                                        title="复制"
                                         @click="handleCopyTest(scope.row.id)"
                                     >
                                     </el-button>
@@ -189,6 +166,7 @@
                                         type="danger"
                                         icon="el-icon-delete"
                                         circle size="mini"
+                                        title="删除"
                                         @click="handleDelTest(scope.row.id)"
                                     >
                                     </el-button>
@@ -242,6 +220,7 @@
 
             run() {
                 this.asyncs = false;
+                this.isSingleTest = false;
                 this.reportName = "";
                 this.getTree();
             },
@@ -277,11 +256,12 @@
             return {
                 search: '',
                 reportName: '',
-                asyncs: false,
+                asyncs: true,
+                isSingleTest: false,
                 filterText: '',
                 expand: '&#xe65f;',
                 dialogTreeVisible: false,
-                dataTree: {},
+                dataTree: [],
                 dialogTableVisible: false,
                 selectTest: [],
                 summary: {},
@@ -291,7 +271,9 @@
                     results: []
                 },
                 currentPage: 1,
-                loading: true
+                loading: true,
+                runtestcaseId: '',
+                runtestcaseName: ''
             }
         },
 
@@ -307,9 +289,16 @@
                 if (!value) return true;
                 return data.label.indexOf(value) !== -1;
             },
-
+            runTestcase(){
+                if(this.isSingleTest === true){
+                    this.runTesecase();
+                }else{
+                    this.runTree();
+                }
+            },
             runTree() {
                 this.dialogTreeVisible = false;
+                this.isSingleTest = false;
                 const relation = this.$refs.tree.getCheckedKeys();
                 if (relation.length === 0) {
                     this.$notify.error({
@@ -324,51 +313,60 @@
                         "host":this.host,
                         "project": this.project,
                         "relation": relation,
-                        "async": this.asyncs,
                         "name": this.reportName,
                         "testDataExcel": this.testDataExcel,
                         "testDataSheet": this.testDataSheet
                     }).then(resp => {
                         if (resp.hasOwnProperty("status")) {
-                            this.$message.info({
-                                message: resp.msg,
-                                duration: 1500
-                            });
-                        } else {
-                            this.summary = resp;
-                            this.dialogTableVisible = true;
+                            this.$notify.info(resp.msg);
                         }
                     })
                 }
             },
 
             handleRunTest(id, name) {
+                this.runtestcaseId = id;
+                this.runtestcsaeName = name;
+                this.isSingleTest = true;
+                this.dialogTreeVisible = true;
+            },
+            runTesecase(){
+                this.dialogTreeVisible = false;
                 if(this.testDataExcel !== '请选择' && this.testDataSheet === '') {
                     this.$notify.error({
-                      title: '提示',
-                      message: '选择了数据，sheet名不能为空'
+                        title: '提示',
+                        message: '选择了数据，sheet名不能为空'
                     });
                 } else{
                     this.loading = true;
-                    this.$api.runTestByPk(id, {params: {
+                    this.$api.runTestByPk(
+                        this.runtestcaseId,
+                        {
                         project: this.project,
-                        name: name,
+                        name: this.runtestcsaeName,
                         host:this.host,
+                        reportName: this.reportName,
+                        async: this.asyncs,
                         testDataExcel: this.testDataExcel,
                         testDataSheet: this.testDataSheet
-                    }
-                    }).then(resp => {
-                        this.summary = resp;
-                        this.loading = false;
-                        if (this.summary.details.length <= 5){
-                            this.dialogTableVisible = true;
-                        }else{
-                            this.$notify.success({
-                                title: '提示',
-                                message: '执行结束，请在历史报告里查看结果'
-                            })
                         }
-                    }).catch(resp => {
+                    ).then(resp => {
+                        if (resp.hasOwnProperty("status")) {
+                            this.loading = false;
+                            this.$notify.info(resp.msg);
+                        } else {
+                            this.loading = false;
+                            this.summary = resp;
+                            if (this.summary.details.length <= 5) {
+                                this.dialogTableVisible = true;
+                            } else {
+                                this.$notify.success({
+                                    title: '提示',
+                                    message: '执行结束，请在历史报告里查看结果'
+                                })
+                            }
+                        }
+                    }).catch(error =>{
                         this.loading = false;
                     })
                 }
@@ -387,8 +385,8 @@
             },
 
             handleEditTest(id) {
-                this.$api.editTest(id).then(resp => {
-                    this.$emit('testStep', resp);
+                this.$api.editTest(id,{params:{project:this.$route.params.id}}).then(resp => {
+                    this.$emit('testStep', resp.data);
                 })
             },
 
@@ -398,12 +396,15 @@
                     inputPattern: /^[\s\S]*.*[^\s][\s\S]*$/,
                     inputErrorMessage: '用例集不能为空'
                 }).then(({value}) => {
-                    this.$api.coptTest({
-                        'id': id,
-                        'name': value,
-                        'relation': this.node,
-                        'project': this.project
-                    }).then(resp => {
+                    this.$api.coptTest(
+                        {project: this.$route.params.id},
+                        {
+                            'id': id,
+                            'name': value,
+                            'relation': this.node,
+                            'project': this.project
+                        }
+                    ).then(resp => {
                         this.$notify.success('复制用例成功');
                         this.getTestList();
                     })

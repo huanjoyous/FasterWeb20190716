@@ -49,7 +49,7 @@
                         :show-header="tasksData.results.length !== 0 "
                         stripe
                         highlight-current-row
-                        height="calc(100%)"
+                        height="600px"
                         @cell-mouse-enter="cellMouseEnter"
                         @cell-mouse-leave="cellMouseLeave"
                     >

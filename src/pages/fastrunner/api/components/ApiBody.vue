@@ -257,6 +257,7 @@
                     }).then(resp => {
                         if (resp.success) {
                             this.$notify.success(resp.msg);
+                            this.$emit("addSuccess");
                         } else {
                             this.$notify.error(resp.msg)
                         }
@@ -312,6 +313,7 @@
                     }).then(resp => {
                         if (resp.success) {
                             this.$notify.success(resp.msg);
+                            this.$emit("addSuccess");
                         } else {
                             this.$notify.error(resp.msg)
                         }

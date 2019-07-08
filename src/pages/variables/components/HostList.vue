@@ -29,7 +29,7 @@
                         :data="hostIPData.results"
                         :show-header="hostIPData.results.length !== 0 "
                         stripe
-                        height="calc(100%)"
+                        height="600px"
                         @cell-mouse-enter="cellMouseEnter"
                         @cell-mouse-leave="cellMouseLeave"
                         @selection-change="handleSelectionChange"
@@ -62,6 +62,7 @@
                                         icon="el-icon-edit"
                                         circle size="mini"
                                         @click="handleEditHostIP(scope.row)"
+                                        title="编辑"
                                     ></el-button>
 
                                     <el-button
@@ -69,6 +70,7 @@
                                         icon="el-icon-document"
                                         circle size="mini"
                                         @click="handleCopyHost(scope.row.id)"
+                                        title="复制"
                                     >
                                     </el-button>
 
@@ -78,6 +80,7 @@
                                         icon="el-icon-delete"
                                         circle size="mini"
                                         @click="handleDelHost(scope.row.id)"
+                                        title="删除"
                                     >
                                     </el-button>
                                 </el-row>
@@ -172,10 +175,13 @@
                     inputPattern: /^[\s\S]*.*[^\s][\s\S]*$/,
                     inputErrorMessage: '域名名称不能为空'
                 }).then(({value}) => {
-                    this.$api.copyHost({
-                        name: value,
-                        id: id
-                    }).then(resp => {
+                    this.$api.copyHost(
+                        {project: this.$route.params.id},
+                        {
+                            name: value,
+                            id: id
+                        }
+                        ).then(resp => {
                         this.$notify.success('复制成功');
                         this.getHostIPList();
                     })

@@ -94,6 +94,7 @@
                         :save="save"
                         v-on:header="handleHeader"
                         :header="header"
+                        :isDisabled="isDisabled"
                     >
                     </headers>
                 </el-tab-pane>
@@ -103,6 +104,7 @@
                         :save="save"
                         v-on:request="handleRequest"
                         :request="request"
+                        :isDisabled="isDisabled"
                     >
                     </request>
                 </el-tab-pane>
@@ -253,6 +255,7 @@
                 variables: [],
                 hooks: [],
                 tempBody: {},
+                isDisabled: true,
                 save: false,
                 summary: {},
                 dialogTableVisible: false,

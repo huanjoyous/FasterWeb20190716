@@ -18,6 +18,7 @@
                         circle
                         size="mini"
                         @click="del= !del"
+                        title="批量删除"
                     ></el-button>
 
                     <el-button
