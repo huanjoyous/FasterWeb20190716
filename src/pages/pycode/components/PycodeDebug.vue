@@ -60,7 +60,6 @@
         name: "PycodeDebug",
         methods: {
             handleRunCode() {
-                this.handleConfirm();
                 this.resp.msg = '';
                 this.$api.runPycode(this.requestData.id,{params:{project:this.$route.params.id}}).then(resp => {
                     this.resp = resp.data;

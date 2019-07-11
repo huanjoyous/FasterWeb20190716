@@ -3,8 +3,7 @@
 ![LICENSE](https://img.shields.io/github/license/yinquanwang/FasterRunner.svg)
 > FasterWeb depend on FasterRunner
 
-## Docker 部署 nginx模式
---------------
+## Docker 部署nginx模式
 ``` 
 1. 修改default.conf配置文件 server_name的ip(宿主机IP), 端口默认8080
 2. 修改/src/restful/api.js baseUrl地址, 即为fastrunner容器运行的宿主机地址
@@ -23,3 +22,5 @@
 4. open url: http://localhost:8080/fastrunner/login
 ```
 
+### 其他注意点：
+- npm 安装太慢时参考：http://npm.taobao.org/

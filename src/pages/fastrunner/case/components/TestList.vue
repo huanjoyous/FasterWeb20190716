@@ -301,13 +301,11 @@
                 this.isSingleTest = false;
                 const relation = this.$refs.tree.getCheckedKeys();
                 if (relation.length === 0) {
-                    this.$notify.error({
-                        message: '请至少选择一个节点'
-                    });
+                    this.$notify.error('请至少选择一个节点');
+                } else if (this.host === '请选择'){
+                    this.$notify.error('请选择环境参数');
                 } else if(this.testDataExcel !== '请选择' && this.testDataSheet === '') {
-                    this.$notify.error({
-                        message: '选择了数据，sheet名不能为空'
-                    });
+                    this.$notify.error('选择了数据，sheet名不能为空');
                 }else {
                     this.$api.runSuiteTree({
                         "host":this.host,
@@ -332,11 +330,10 @@
             },
             runTesecase(){
                 this.dialogTreeVisible = false;
-                if(this.testDataExcel !== '请选择' && this.testDataSheet === '') {
-                    this.$notify.error({
-                        title: '提示',
-                        message: '选择了数据，sheet名不能为空'
-                    });
+                if (this.host === '请选择'){
+                    this.$notify.error('请选择环境参数');
+                } else if(this.testDataExcel !== '请选择' && this.testDataSheet === '') {
+                    this.$notify.error('选择了数据，sheet名不能为空');
                 } else{
                     this.loading = true;
                     this.$api.runTestByPk(

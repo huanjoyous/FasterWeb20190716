@@ -188,11 +188,8 @@
                                 <span><i class="iconfont" v-html="expand"></i>&nbsp;&nbsp;{{ node.label }}</span>
                             </span>
                         </el-tree>
-
                     </div>
                 </div>
-
-
             </el-aside>
 
             <el-main style="padding: 0;">

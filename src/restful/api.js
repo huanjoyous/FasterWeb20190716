@@ -311,20 +311,20 @@ export const reportList = params => {
     return axios.get('/api/fastrunner/reports/', params).then(res => res.data)
 };
 
-export const deleteReports = url => {
-    return axios.delete('/api/fastrunner/reports/' + url + '/').then(res => res.data)
+export const deleteReports = (url,params) => {
+    return axios.delete('/api/fastrunner/reports/' + url + '/',params)
 };
 
 export const getReportsPaginationBypage = params => {
     return axios.get('/api/fastrunner/reports/', params).then(res => res.data)
 };
 
-export const delAllReports = params => {
-    return axios.delete('/api/fastrunner/reports/', params).then(res => res.data)
+export const delAllReports = (data,params) => {
+    return axios({url:'/api/fastrunner/reports/-1', method:'delete', params:params, data:data})
 };
 
-export const watchSingleReports = url => {
-    return axios.get('/api/fastrunner/reports/' + url + '/')
+export const watchSingleReports = (url,params) => {
+    return axios.get('/api/fastrunner/reports/' + url + '/',params)
 };
 
 export const addTask = params => {

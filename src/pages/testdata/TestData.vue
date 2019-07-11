@@ -145,7 +145,7 @@
     export default {
         name: "TestData",
         mounted() {
-            this.$nextTick( function () {
+            this.$nextTick(function () {
                 this.getTestdataList();
             })
         },
@@ -184,25 +184,26 @@
                 this.$notify.warning(`当前限制选择 1 个文件，本次选择了 ${files.length} 个文件，共选择了 ${files.length + fileList.length} 个文件`);
             },
 
-            UploadBefore(file){
+            UploadBefore(file) {
                 this.filedata.name = file.name;
             },
 
             uploadSuccess(response) {
                 this.fileList = [];
-                if (response.id){
-                    this.$notify.success('文件上传成功')
-                }
-                else {
-                    this.$notify.error('文件上传失败');
-                }
+                this.$notify.success('文件上传成功')
                 this.getTestdataList()
             },
 
             uploadError(error) {
                 if (error.status === 401) {
+                    this.$notify.error('请先登录');
                     this.$router.replace({
                         name: 'Login'
+                    })
+                } else if (error.status === 403) {
+                    this.$notify.error({
+                        title: 'detail',
+                        message: '您没有执行该操作的权限。'
                     })
                 } else {
                     this.$notify.error('文件上传失败')
@@ -216,19 +217,13 @@
                         cancelButtonText: '取消',
                         type: 'warning',
                     }).then(() => {
-                        this.$api.delAllTestdata({project:this.$route.params.id},this.selectTestData).then(resp => {
-                            if (resp.status === 204) {
-                                this.$notify.success('批量删除文件完成');
-                                this.getTestdataList();
-                            } else{
-                                this.$notify.error('文件删除失败');
-                            }
+                        this.$api.delAllTestdata({project: this.$route.params.id}, this.selectTestData).then(resp => {
+                            this.$notify.success('批量删除文件完成');
+                            this.getTestdataList();
                         })
                     })
                 } else {
-                    this.$notify.warning({
-                        message: '请至少勾选一个文件'
-                    })
+                    this.$notify.warning('请至少勾选一个文件')
                 }
             },
             handleSelectionChange(val) {
@@ -245,8 +240,12 @@
                     this.testData = resp;
                 })
             },
-            handleDownTestdata(index,filename){
-                this.$api.downloadTestdata({"fileType":1,"id":index,"project":this.$route.params.id}).then( resp => {
+            handleDownTestdata(index, filename) {
+                this.$api.downloadTestdata({
+                    "fileType": 1,
+                    "id": index,
+                    "project": this.$route.params.id
+                }).then(resp => {
                     let url = window.URL.createObjectURL(new Blob([resp.data]));
                     let link = document.createElement('a');
                     link.style.display = 'none';
@@ -264,17 +263,12 @@
                     cancelButtonText: '取消',
                     type: 'warning',
                 }).then(() => {
-                    this.$api.deleteTestdata(index,{params:{project:this.$route.params.id}}).then(resp => {
-                        if (resp.status === 204) {
-                            this.$notify.success('文件删除成功');
-                            this.getTestdataList();
-                        } else {
-                            this.$notify.error('文件删除失败');
-                        }
+                    this.$api.deleteTestdata(index, {params: {project: this.$route.params.id}}).then(resp => {
+                        this.getTestdataList();
                     })
                 })
             },
-            getTestdataList(){
+            getTestdataList() {
                 this.$api.testdataList({
                     params: {
                         project: this.filedata.project,

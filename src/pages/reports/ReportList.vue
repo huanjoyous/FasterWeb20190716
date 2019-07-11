@@ -75,7 +75,7 @@
                             <el-table-column label="状态" width="60" align="center">
                                 <template slot-scope="scope">
                                     <div
-                                        :class="{'pass': scope.row.success, 'fail':!scope.row.success}"
+                                        :class="{'pass': scope.row.summary.success, 'fail':!scope.row.summary.success}"
                                         v-text="scope.row.success === true ? 'Pass' :'Fail'"
                                     ></div>
                                 </template>
@@ -83,53 +83,53 @@
 
                             <el-table-column label="测试时间" width="150" align="center">
                                 <template slot-scope="scope">
-                                    <div>{{scope.row.time.start_at|timestampToTime}}</div>
+                                    <div>{{scope.row.summary.time.start_at|timestampToTime}}</div>
                                 </template>
                             </el-table-column>
 
                             <el-table-column label="用时" width="90" align="center">
                                 <template slot-scope="scope">
-                                    <div v-text="scope.row.time.duration.toFixed(3)+' 秒'"></div>
+                                    <div v-text="scope.row.summary.time.duration.toFixed(3)+' 秒'"></div>
                                 </template>
                             </el-table-column>
 
                             <el-table-column width="60" label="总计" align="center">
                                 <template slot-scope="scope">
-                                    <el-tag size="small">{{ scope.row.stat.testsRun }}</el-tag>
+                                    <el-tag size="small">{{ scope.row.summary.stat.testsRun }}</el-tag>
                                 </template>
                             </el-table-column>
 
                             <el-table-column width="60" label="通过" align="center">
                                 <template slot-scope="scope">
-                                    <el-tag type="success" size="small"> {{ scope.row.stat.successes }}</el-tag>
+                                    <el-tag type="success" size="small"> {{ scope.row.summary.stat.successes }}</el-tag>
                                 </template>
                             </el-table-column>
 
                             <el-table-column width="60" label="失败" align="center">
                                 <template slot-scope="scope">
-                                    <el-tag type="danger" size="small">{{ scope.row.stat.failures }}</el-tag>
+                                    <el-tag type="danger" size="small">{{ scope.row.summary.stat.failures }}</el-tag>
                                 </template>
                             </el-table-column>
 
                             <el-table-column width="60" label="异常" align="center">
                                 <template slot-scope="scope">
-                                    <el-tag type="warning" size="small">{{ scope.row.stat.errors }}</el-tag>
+                                    <el-tag type="warning" size="small">{{ scope.row.summary.stat.errors }}</el-tag>
                                 </template>
                             </el-table-column>
 
                             <el-table-column width="60" label="跳过" align="center">
                                 <template slot-scope="scope">
-                                    <el-tag type="info" size="small">{{ scope.row.stat.skipped }}</el-tag>
+                                    <el-tag type="info" size="small">{{ scope.row.summary.stat.skipped }}</el-tag>
                                 </template>
                             </el-table-column>
 
                             <el-table-column label="系统信息" width="135" align="center">
                                 <template slot-scope="scope">
                                     <el-popover trigger="hover" placement="top">
-                                        <p>{{ scope.row.platform.python_version}}</p>
-                                        <p>Platform: {{ scope.row.platform.platform }}</p>
+                                        <p>{{ scope.row.summary.platform.python_version}}</p>
+                                        <p>Platform: {{ scope.row.summary.platform.platform }}</p>
                                         <div slot="reference" class="name-wrapper">
-                                            <el-tag size="medium">HttpRunner: {{ scope.row.platform.httprunner_version }}</el-tag>
+                                            <el-tag size="medium">HttpRunner: {{ scope.row.summary.platform.httprunner_version }}</el-tag>
                                         </div>
                                     </el-popover>
                                 </template>
@@ -200,7 +200,7 @@
             },
 
             handleWatchReports(index) {
-                this.$api.watchSingleReports(index).then(resp =>{
+                this.$api.watchSingleReports(index,{params:{project:this.$route.params.id}}).then(resp =>{
                     const newWin = window.open('');
                     newWin.document.open();
                     newWin.document.write(resp.data);
@@ -230,13 +230,9 @@
                     cancelButtonText: '取消',
                     type: 'warning',
                 }).then(() => {
-                    this.$api.deleteReports(index).then(resp => {
-                        if (resp.success) {
-                            this.$notify.success('删除报告成功');
-                            this.getReportList();
-                        } else {
-                            this.$notify.error(resp.msg);
-                        }
+                    this.$api.deleteReports(index,{params:{project:this.$route.params.id}}).then(resp => {
+                        this.$notify.success('删除报告成功');
+                        this.getReportList();
                     })
                 })
             },
@@ -248,8 +244,8 @@
                         cancelButtonText: '取消',
                         type: 'warning',
                     }).then(() => {
-                        this.$api.delAllReports({data: this.selectReports}).then(resp => {
-                            this.$notify.success(resp.msg);
+                        this.$api.delAllReports(this.selectReports,{project:this.$route.params.id}).then(resp => {
+                            this.$notify.success('批量删除报告成功');
                             this.getReportList();
                         })
                     })
