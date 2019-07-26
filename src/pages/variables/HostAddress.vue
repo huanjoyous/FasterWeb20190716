@@ -8,6 +8,7 @@
                         size="small"
                         icon="el-icon-circle-plus-outline"
                         @click="initResponse = true"
+                        :disabled="addHostActivate"
                       >新增环境
                     </el-button>
                     <el-button
@@ -18,6 +19,7 @@
                         size="mini"
                         @click="del= !del"
                         title="批量删除"
+                        :disabled="addHostActivate"
                     ></el-button>
                     <el-button
                         :disabled="!addHostActivate"

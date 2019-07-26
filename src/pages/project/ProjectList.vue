@@ -49,6 +49,9 @@
                             <el-form-item label="项目描述" prop="desc">
                                 <el-input v-model="projectForm.desc" clearable></el-input>
                             </el-form-item>
+                            <el-form-item label="项目主管" prop="desc">
+                                <el-input v-model="projectForm.responsible" clearable></el-input>
+                            </el-form-item>
                         </el-form>
                         <span slot="footer" class="dialog-footer">
                         <el-button @click="dialogVisible = false">取 消</el-button>
@@ -125,14 +128,15 @@
                         <template slot-scope="scope">
                             <el-button
                                 size="small"
-                                @click="handleCellClick(scope.row)">详情
+                                type="success"
+                                @click="handleCellClick(scope.row)">查看
                             </el-button>
 
                             <el-button
                                 size="small"
-                                type="primary"
+                                type="info"
                                 style = "margin-left:0 !important;"
-                                @click="handleEdit(scope.$index, scope.row)">编辑
+                                @click="handleEdit(scope.$index, scope.row)">修改
                             </el-button>
 
                             <el-dialog
@@ -150,6 +154,9 @@
                                     </el-form-item>
                                     <el-form-item label="项目描述" prop="desc">
                                         <el-input v-model="projectForm.desc" clearable></el-input>
+                                    </el-form-item>
+                                    <el-form-item label="项目主管" prop="desc">
+                                        <el-input v-model="projectForm.responsible" clearable></el-input>
                                     </el-form-item>
                                 </el-form>
                                 <span slot="footer" class="dialog-footer">
@@ -185,7 +192,7 @@
                 projectForm: {
                     name: '',
                     desc: '',
-                    responsible: this.$store.state.user,
+                    responsible: '',
                     id: ''
                 },
                 rules: {
@@ -212,6 +219,7 @@
                 this.projectForm.name = row['name'];
                 this.projectForm.desc = row['desc'];
                 this.projectForm.id = row['id'];
+                this.projectForm.responsible = row['responsible']
             },
             handleDelete(index, row) {
                 this.$confirm('此操作将永久删除该项目, 是否继续?', '提示', {
@@ -243,6 +251,7 @@
                                 this.projectForm.name = '';
                                 this.projectForm.desc = '';
                                 this.projectForm.id = '';
+                                this.projectForm.responsible = '';
                             }
                             if (resp.status === 201) {
                                 this.$notify.success('增加项目成功');

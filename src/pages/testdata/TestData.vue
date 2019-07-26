@@ -264,6 +264,7 @@
                     type: 'warning',
                 }).then(() => {
                     this.$api.deleteTestdata(index, {params: {project: this.$route.params.id}}).then(resp => {
+                        this.$notify.success('文件删除成功');
                         this.getTestdataList();
                     })
                 })

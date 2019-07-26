@@ -84,6 +84,7 @@
 }
 
 .block_name {
+    font-size: 13px;
     padding-left: 5px;
     word-break: normal;
     width: auto;

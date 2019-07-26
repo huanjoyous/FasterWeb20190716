@@ -3,7 +3,7 @@ import store from '../store/state'
 import router from '../router'
 import {Notification} from 'element-ui';
 
-if (window.location.hostname == 'localhost'){
+if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'){
     var base_Url = window.location.protocol + '//' + window.location.hostname + ':' +'8000';
 }else{
     var base_Url = window.location.protocol + '//' + window.location.host ;
@@ -102,8 +102,8 @@ export const updateProject = (url, params) => {
     return axios.patch('/api/fastrunner/project/' + url + '/', params).then(res => res)
 };
 
-export const addPycode = params => {
-    return axios.post('/api/fastrunner/pycode/', params)
+export const addPycode = (data,params) => {
+    return axios({url:'/api/fastrunner/pycode/', method:'POST', data:data, params:params})
 };
 
 export const deletePycode = (url, params) => {
@@ -283,6 +283,10 @@ export const runSuiteTree = params => {
     return axios.post('/api/fastrunner/run_suite_tree/', params).then(res => res.data)
 };
 
+export const runScheduleTest = url => {
+    return axios.get('/api/fastrunner/run_schedule_test/' + url + '/')
+};
+
 export const addVariables = params => {
     return axios.post('/api/fastrunner/variables/', params).then(res => res.data)
 };
@@ -324,20 +328,25 @@ export const delAllReports = (data,params) => {
 };
 
 export const watchSingleReports = (url,params) => {
-    return axios.get('/api/fastrunner/reports/' + url + '/',params)
+    return axios.get('/api/fastrunner/reports/' + url + '/', params)
 };
 
-export const addTask = params => {
-    return axios.post('/api/fastrunner/schedule/', params).then(res => res.data)
+export const addTask = (params, data) => {
+    return axios({url:'/api/fastrunner/schedule/', method: 'POST', params:params, data:data})
 };
+
+export const updateTask = (url, params, data) => {
+    return axios({url:'/api/fastrunner/schedule/' + url + '/', method: 'PATCH', params:params, data:data})
+};
+
 export const taskList = params => {
     return axios.get('/api/fastrunner/schedule/', params).then(res => res.data)
 };
 export const getTaskPaginationBypage = params => {
     return axios.get('/api/fastrunner/schedule/', params).then(res => res.data)
 };
-export const deleteTasks = url => {
-    return axios.delete('/api/fastrunner/schedule/' + url + '/').then(res => res.data)
+export const deleteTasks = (url,params) => {
+    return axios.delete('/api/fastrunner/schedule/' + url + '/',params)
 };
 
 export const addHostIP = (params, data) => {

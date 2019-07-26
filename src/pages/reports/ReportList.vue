@@ -200,11 +200,13 @@
             },
 
             handleWatchReports(index) {
-                this.$api.watchSingleReports(index,{params:{project:this.$route.params.id}}).then(resp =>{
-                    const newWin = window.open('');
-                    newWin.document.open();
-                    newWin.document.write(resp.data);
-                    newWin.document.close();
+                var newwindow = window.open('');
+                window.focus();
+                this.$api.watchSingleReports(index, {params:{project:this.$route.params.id}}).then(resp => {
+                    newwindow.focus();
+                    newwindow.document.open();
+                    newwindow.document.write(resp.data);
+                    newwindow.document.close();
                 })
             },
 

@@ -75,13 +75,6 @@
                     <template slot="prepend" >skipIf:</template>
                 </el-input>
             </div>
-            <el-dialog
-                v-if="dialogTableVisible"
-                :visible.sync="dialogTableVisible"
-                width="70%"
-            >
-                <report :summary="summary"></report>
-            </el-dialog>
         </div>
 
         <div class="request">
@@ -157,7 +150,6 @@
     import Validate from '../../../httprunner/components/Validate'
     import Variables from '../../../httprunner/components/Variables'
     import Hooks from '../../../httprunner/components/Hooks'
-    import Report from '../../../reports/DebugReport'
 
     export default {
         components: {
@@ -166,8 +158,7 @@
             Extract,
             Validate,
             Variables,
-            Hooks,
-            Report
+            Hooks
         },
 
         props: {
@@ -257,7 +248,6 @@
                 tempBody: {},
                 isDisabled: true,
                 save: false,
-                summary: {},
                 dialogTableVisible: false,
                 activeTag: 'second',
                 httpOptions: [{

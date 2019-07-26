@@ -7,43 +7,32 @@
                     :span="4"
                     :offset="1"
                 >
-                    <div>
-
-                    </div>
                 </el-col>
             </el-row>
         </el-header>
-        <el-main style="padding: 0px">
+        <el-main style="padding: 100px">
             <el-row>
                 <el-col :span="7">
                     <div class="bottom-left">
                         <img src="~@/assets/images/bottom-left.png">
                     </div>
-
                 </el-col>
                 <el-col :span="24">
-                    <div>
-                        <div id="form-title">FasterRunner</div>
+                    <div >
                         <form id="submit-form">
-                            <div id="form-content">
-                                <div id="form-msg">登录账号</div>
+                            <div id="form-content" style="border-radius: 450px!important;">
+                                <div id="form-msg" style="text-align: center;"><h4 style="font-weight: normal">FasterRunner</h4></div>
                                 <div id="form-inputs">
                                     <div class="form-input-div">
-                                        <i class="iconfont"
-                                           style="position: absolute; bottom: 250px; padding-left: 10px">&#xe61c;</i>
-                                        <input placeholder="用户名" type="text" id="email" v-model="loginForm.username">
+                                        <el-input prefix-icon="el-icon-s-custom" placeholder="请输入用户名" v-model="loginForm.username" id="email" type="text" maxlength="20" clearable></el-input>
                                         <div class="err_msg" id="email_err" v-html="usernameInvalid" @mouseover="usernameInvalid=''"></div>
                                     </div>
                                     <div class="form-input-div">
-                                        <i class="iconfont"
-                                           style="position: absolute; bottom: 190px; padding-left: 10px">&#xe652;</i>
-                                        <input placeholder="密码" type="password" id="pwd" v-model="loginForm.password">
+                                        <el-input prefix-icon="el-icon-lock" placeholder="请输入密码" v-model="loginForm.password" show-password id="pwd" type="text" maxlength="30" clearable></el-input>
                                         <div class="err_msg" id="pwd_err" v-html="passwordInvalid" @mouseover="passwordInvalid= ''"></div>
                                     </div>
                                     <div class="form-submit">
-                                        <button type="button" class="btn btn-primary" id="submitBtn"
-                                                @click="submitForm">立即登录
-                                        </button>
+                                        <el-button size="mini" @click="submitForm" id="submitBtn" class="btn-primary">登录</el-button>
                                     </div>
                                 </div>
                                 <div class="form-foot">
@@ -52,10 +41,8 @@
 <!--                                <div class="form-foot">-->
 <!--                                    <span>没有账户，<router-link to="/fastrunner/register">立即注册</router-link></span>-->
 <!--                                </div>-->
-
                             </div>
                         </form>
-
                     </div>
 
                 </el-col>
@@ -75,7 +62,6 @@
     import {Notification} from "element-ui";
     export default {
         name: "Login",
-
         data() {
             return {
                 loginForm: {
@@ -86,7 +72,6 @@
                 passwordInvalid: ''
             };
         },
-
         methods: {
             validateUserName() {
                 if (this.loginForm.username.replace(/(^\s*)/g, "") === '') {

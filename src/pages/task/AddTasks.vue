@@ -1,6 +1,6 @@
 <template>
     <el-container>
-        <template v-if="!next">
+        <template v-if="listPageShow">
             <el-main style="padding-top: 0">
                 <div style="margin-top: 10px;">
                     <el-col :span="12">
@@ -11,15 +11,15 @@
                             label-width="100px"
                         >
                             <el-form-item label="任务名称" prop="name">
-                                <el-input v-model="ruleForm.name" placeholder="请输入任务名称" clearable=""></el-input>
+                                <el-input v-model="ruleForm.name" placeholder="请输入任务名称" clearable size="medium"></el-input>
                             </el-form-item>
 
-                            <el-form-item label="时间配置" prop="corntab">
-                                <el-input clearable v-model="ruleForm.corntab" placeholder="请输入cortab表达式，例如 2 12 * * *"></el-input>
+                            <el-form-item label="时间配置" prop="crontab">
+                                <el-input clearable v-model="ruleForm.crontab" placeholder="请输入crontab表达式，例如 2 12 * * *" size="medium"></el-input>
                             </el-form-item>
 
-                            <el-form-item label="任务状态" prop="switch">
-                                <el-switch v-model="ruleForm.switch"></el-switch>
+                            <el-form-item label="任务状态" prop="switch" >
+                                <el-switch active-color="#13ce66" inactive-color="#ff4949" v-model="ruleForm.switch" ></el-switch>
                             </el-form-item>
 
                             <el-form-item label="邮件策略" prop="strategy">
@@ -30,19 +30,17 @@
                                 </el-radio-group>
                             </el-form-item>
 
-                            <el-form-item label="邮件接收人列表" prop="receiver">
-                                <el-input type="textarea" v-model="ruleForm.receiver"
-                                          placeholder="多个接收人以;分隔" clearable></el-input>
+                            <el-form-item label="接收邮箱" prop="receiver">
+                                <el-input type="textarea" v-model="ruleForm.receiver" placeholder='多个邮箱以";"分隔' clearable size="medium"></el-input>
                             </el-form-item>
 
-                            <el-form-item label="邮件抄送人列表" prop="copy">
-                                <el-input type="textarea" v-model="ruleForm.copy"
-                                          placeholder="多个抄送人以;分隔" clearable></el-input>
+                            <el-form-item label="抄送邮箱" prop="mail_cc">
+                                <el-input type="textarea" v-model="ruleForm.mail_cc" placeholder='多个邮箱以";"分隔' clearable size="medium"></el-input>
                             </el-form-item>
 
                             <el-form-item>
-                                <el-button type="primary" @click="submitForm('ruleForm')">下一步</el-button>
-                                <el-button @click="resetForm('ruleForm')">重置</el-button>
+                                <el-button size="small" type="primary" @click="submitForm('ruleForm')">下一步</el-button>
+                                <el-button size="small"  @click="resetForm('ruleForm')">重置</el-button>
                             </el-form-item>
                         </el-form>
 
@@ -80,9 +78,7 @@
                             </span>
                         </el-tree>
                     </div>
-
                 </div>
-
             </el-aside>
             <el-main style="padding-top: 0px">
                 <div>
@@ -101,11 +97,9 @@
                             </el-pagination>
                         </el-col>
                         <el-col :span="12">
-                            <el-button type="primary" v-if="testData.length > 0" @click="saveTask">保存</el-button>
-                            <el-button v-if="testData.length > 0" @click="next=false">上一步</el-button>
+                            <el-button size="small" type="primary" v-if="testData.length > 0" @click="saveTask">保存</el-button>
+                            <el-button size="small"   @click="next=false; listPageShow= true">返回</el-button>
                         </el-col>
-
-
                     </el-row>
                 </div>
 
@@ -118,7 +112,6 @@
                                 @dragstart="currentSuite = JSON.parse(JSON.stringify(item))"
                                 style="cursor: pointer; margin-top: 10px; overflow: auto"
                                 :key="index"
-
                             >
                                 <div class="block block_options">
                                     <span class="block-method block_method_options block_method_color">Case</span>
@@ -152,7 +145,18 @@
                                         >
                                         <span
                                             class="block-method block_method_test block_method_color">Tasks</span>
-                                            <span class="block-test-name">{{test.name}}</span>
+                                            <span class="block-test-name" v-if="test.kwargs" >{{test.kwargs.testCaseName}}</span>
+                                            <span class="block-test-name" v-else >{{test.name}}</span>
+                                            <el-button
+                                                style="position: absolute; right: 48px; top: 8px"
+                                                v-show="currentTest === index"
+                                                type="info"
+                                                icon="el-icon-edit"
+                                                circle size="mini"
+                                                @click="handleEditTestCase"
+                                                title="编辑"
+                                            >
+                                            </el-button>
 
                                             <el-button
                                                 style="position: absolute; right: 12px; top: 8px"
@@ -173,26 +177,45 @@
                 </div>
             </el-main>
         </template>
+        <template>
+            <edit-test-case
+                v-if="editTestCaseActivate"
+                :testCase="testData[currentTest]"
+                :next="next"
+                v-on:escEdit="editTestCaseActivate = false; next = true"
+                v-on:KwargsForm="handleNewTestCase"
+            >
+            </edit-test-case>
+        </template>
     </el-container>
-
-
 </template>
 
 <script>
     import draggable from 'vuedraggable'
+    import EditTestCase from './EditTestCase'
 
     export default {
-
         name: "AddTasks",
+        props: {
+            ruleForm: {
+                require: true
+            },
+            args: {
+                require: true
+            },
+            scheduleId:{
+                require: true
+            }
+        },
         watch: {
             filterText(val) {
                 this.$refs.tree2.filter(val);
-            },
+            }
         },
         components: {
+            EditTestCase,
             draggable
         },
-
         data() {
             return {
                 currentTest: '',
@@ -201,6 +224,7 @@
                 currentSuite: '',
                 search: '',
                 next: false,
+                listPageShow: true,
                 node: '',
                 currentPage: 1,
                 filterText: '',
@@ -210,42 +234,47 @@
                     count: 0,
                     results: []
                 },
-                ruleForm: {
-                    name: '',
-                    switch: true,
-                    corntab: '',
-                    strategy: '始终发送',
-                    receiver: '',
-                    copy: ''
-                },
                 rules: {
                     name: [
                         {required: true, message: '请输入任务名称', trigger: 'blur'},
                         {min: 1, max: 50, message: '长度在 1 到 50 个字符', trigger: 'blur'}
                     ],
-                    corntab: [
-                        {required: true, message: '请输入正确的corntab表达式', trigger: 'blur'}
+                    crontab: [
+                        {required: true, message: '请输入正确的crontab表达式', trigger: 'blur'}
                     ]
-
-                }
+                },
+                editTestCaseActivate: false,
             }
         },
         methods: {
+            handleNewTestCase(kwargsForm){
+                this.editTestCaseActivate = false;
+                this.next = true;
+                this.testData[this.currentTest]["kwargs"] = kwargsForm;
+            },
+            handleEditTestCase(){
+                this.editTestCaseActivate = true;
+                this.next = false;
+            },
             saveTask(){
-                var task = [];
-                for(let value of this.testData){
-                    task.push(value.id);
-                }
                 var form = this.ruleForm;
-                form["data"] = task ;
+                form["data"] = this.testData;
                 form["project"] = this.$route.params.id;
-                this.$api.addTask(form).then(resp => {
-                    if(!resp.success){
-                        this.$message.error(resp.msg)
-                    }else{
-                        this.$emit("changeStatus", false);
-                    }
-                })
+                if (this.scheduleId === ''){
+                    this.$api.addTask({project:this.$route.params.id},form).then(resp => {
+                        if (resp.status === 201) {
+                            this.$notify.success('添加定时任务成功');
+                            this.$emit("changeStatus", false);
+                        }
+                    })
+                }else{
+                    this.$api.updateTask(this.scheduleId,{project:this.$route.params.id},form).then( resp =>{
+                        if (resp.status === 200) {
+                            this.$notify.success('更新定时任务成功');
+                            this.$emit("changeStatus", false);
+                        }
+                    })
+                }
             },
             dragEnd(event) {
                 if (this.testData.length > this.length) {
@@ -287,10 +316,12 @@
                 this.$refs[formName].validate((valid) => {
                     if (valid) {
                         this.next = true;
+                        this.listPageShow = false;
                     } else {
                         return false;
                     }
                 });
+                this.testData = this.args;
             },
             resetForm(formName) {
                 this.$refs[formName].resetFields();
@@ -308,7 +339,6 @@
             handleNodeClick(node) {
                 this.node = node.id;
                 this.getTestList();
-
             },
             getTestList() {
                 this.$api.testList({

@@ -8,7 +8,8 @@
                         type="primary"
                         size="small"
                         icon="el-icon-circle-plus-outline"
-                        @click="addTasks=true"
+                        @click="addTasks=true; scheduleId=''"
+                        :disabled="addTasks"
                     >添加任务
                     </el-button>
 
@@ -53,23 +54,20 @@
                         @cell-mouse-enter="cellMouseEnter"
                         @cell-mouse-leave="cellMouseLeave"
                     >
+                        <el-table-column type="selection" width="55"></el-table-column>
 
-                        <el-table-column
-                            label="任务名称"
-                            width="240"
-                        >
+                        <el-table-column label="任务名称" width="240">
                             <template slot-scope="scope">
                                 <div>{{scope.row.name}}</div>
                             </template>
                         </el-table-column>
-
 
                         <el-table-column
                             width="120"
                             label="时间配置"
                         >
                             <template slot-scope="scope">
-                                <div>{{scope.row.kwargs.corntab}}</div>
+                                <div>{{scope.row.summary_kwargs.crontab}}</div>
                             </template>
                         </el-table-column>
 
@@ -78,16 +76,11 @@
                             label="邮件策略"
                         >
                             <template slot-scope="scope">
-                                <div>{{scope.row.kwargs.strategy}}</div>
-
+                                <div>{{scope.row.summary_kwargs.strategy}}</div>
                             </template>
                         </el-table-column>
 
-
-                        <el-table-column
-                            width="80"
-                            label="状态"
-                        >
+                        <el-table-column width="80" label="状态">
                             <template slot-scope="scope">
                                 <el-switch
                                     disabled
@@ -97,36 +90,41 @@
                                 </el-switch>
                             </template>
                         </el-table-column>
-                        <el-table-column
-                            label="接收人"
-                        >
+
+                        <el-table-column label="接收人" show-overflow-tooltip>
                             <template slot-scope="scope">
-                                <div>{{scope.row.kwargs.receiver}}</div>
+                                <div>{{scope.row.summary_kwargs.receiver}}</div>
                             </template>
                         </el-table-column>
-                        <el-table-column
-                            label="抄送人"
-                        >
+                        <el-table-column label="抄送人" show-overflow-tooltip>
                             <template slot-scope="scope">
-                                <div>{{scope.row.kwargs.copy}}</div>
+                                <div>{{scope.row.summary_kwargs.mail_cc}}</div>
                             </template>
                         </el-table-column>
 
-                        <el-table-column
-                            width="200"
-                        >
+                        <el-table-column width="200">
                             <template slot-scope="scope">
                                 <el-row v-show="currentRow === scope.row">
                                     <el-button
                                         type="info"
                                         icon="el-icon-edit"
                                         circle size="mini"
+                                        title="编辑"
+                                        @click="handleEditSchedule(scope.row.id, scope.row)"
+                                    ></el-button>
+                                    <el-button
+                                        type="primary"
+                                        icon="el-icon-caret-right"
+                                        circle size="mini"
+                                        title="运行"
+                                        @click="handleRunSchedule(scope.row.id)"
                                     ></el-button>
                                     <el-button
                                         type="danger"
                                         icon="el-icon-delete"
                                         circle size="mini"
                                         @click="delTasks(scope.row.id)"
+                                        title="删除"
                                     >
                                     </el-button>
                                 </el-row>
@@ -140,6 +138,9 @@
             <add-tasks
                 v-if="addTasks"
                 v-on:changeStatus="changeStatus"
+                :ruleForm="ruleForm"
+                :args = "args"
+                :scheduleId="scheduleId"
             >
             </add-tasks>
         </el-container>
@@ -163,7 +164,17 @@
                     count: 0,
                     results: []
                 },
-                loading: true
+                loading: true,
+                ruleForm: {
+                    switch: true,
+                    crontab: '',
+                    strategy: '始终发送',
+                    receiver: '',
+                    mail_cc: '',
+                    name: ''
+                },
+                args: [],
+                scheduleId: ''
             }
         },
         methods: {
@@ -173,11 +184,17 @@
                     cancelButtonText: '取消',
                     type: 'warning',
                 }).then(() => {
-                    this.$api.deleteTasks(id).then(resp => {
-                        if (resp.success) {
-                            this.getTaskList();
-                        }
+                    this.$api.deleteTasks(id,{params:{project:this.$route.params.id}}).then(resp => {
+                        this.$notify.success('删除定时任务成功');
+                        this.getTaskList();
                     })
+                })
+            },
+            handleRunSchedule(id){
+                this.loading = true;
+                this.$api.runScheduleTest(id).then(resp => {
+                    this.$notify.success('执行成功，请稍后查看报告以及邮件');
+                    this.loading = false;
                 })
             },
             handleCurrentChange(val) {
@@ -190,10 +207,29 @@
                     this.tasksData = resp;
                 })
             },
-
+            handleEditSchedule(id, index_data){
+                this.addTasks = true;
+                this.scheduleId = id;
+                this.ruleForm["crontab"] = index_data.summary_kwargs.crontab;
+                this.ruleForm["strategy"] = index_data.summary_kwargs.strategy;
+                this.ruleForm["receiver"] = index_data.summary_kwargs.receiver;
+                this.ruleForm["mail_cc"] = index_data.summary_kwargs.mail_cc;
+                this.ruleForm["name"] = index_data.name;
+                this.ruleForm["switch"] = index_data.enabled;
+                this.args = index_data.summary_args;
+            },
             changeStatus(value) {
                 this.getTaskList();
                 this.addTasks = value;
+                this.args = [];
+                this.ruleForm = {
+                    switch: true,
+                    crontab: '',
+                    strategy: '始终发送',
+                    receiver: '',
+                    mail_cc: '',
+                    name: ''
+                }
             },
             getTaskList() {
                 this.$api.taskList({params: {project: this.$route.params.id}}).then(resp => {

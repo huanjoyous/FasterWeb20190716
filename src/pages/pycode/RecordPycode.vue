@@ -344,7 +344,7 @@
                         this.editVisible = false;
                         let obj;
                         if (this.pycodefileForm.id === '') {
-                            obj = this.$api.addPycode(this.pycodefileForm);
+                            obj = this.$api.addPycode(this.pycodefileForm,{project: this.$route.params.id});
                         } else {
                             obj = this.$api.updatePycode(this.pycodefileForm.id,{project: this.$route.params.id},this.pycodefileForm);
                         }

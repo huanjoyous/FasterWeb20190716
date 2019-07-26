@@ -24,7 +24,6 @@
             </editor>
         </el-footer>
     </el-container>
-
 </template>
 
 <script>

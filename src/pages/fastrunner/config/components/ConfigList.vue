@@ -170,6 +170,7 @@
                 }).then(() => {
                     this.$api.deleteConfig(index).then(resp => {
                         if (resp.success) {
+                            this.$notify.success('配置删除成功');
                             this.getConfigList();
                         } else {
                             this.$message.error(resp.msg);

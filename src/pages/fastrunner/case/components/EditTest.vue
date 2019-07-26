@@ -164,7 +164,7 @@
                                         type="danger"
                                         icon="el-icon-delete"
                                         circle size="mini"
-                                        @click="testData.splice(index, 1)"
+                                        @click="testData.splice(0, 1)"
                                         title="删除"
                                     >
                                     </el-button>

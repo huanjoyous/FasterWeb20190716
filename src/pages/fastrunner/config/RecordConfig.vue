@@ -8,6 +8,7 @@
                         size="small"
                         icon="el-icon-circle-plus-outline"
                         @click="initResponse = true"
+                        :disabled="addConfigActivate"
                     >新增配置
                     </el-button>
 
@@ -19,6 +20,7 @@
                         size="mini"
                         @click="del= !del"
                         title="批量删除"
+                        :disabled="addConfigActivate"
                     ></el-button>
 
                     <el-button
