@@ -335,6 +335,10 @@ export const addTask = (params, data) => {
     return axios({url:'/api/fastrunner/schedule/', method: 'POST', params:params, data:data})
 };
 
+export const copySchedule = (params, data)  => {
+    return axios({url:'/api/fastrunner/schedule/', method: 'POST', params:params, data:data})
+};
+
 export const updateTask = (url, params, data) => {
     return axios({url:'/api/fastrunner/schedule/' + url + '/', method: 'PATCH', params:params, data:data})
 };
@@ -348,7 +352,9 @@ export const getTaskPaginationBypage = params => {
 export const deleteTasks = (url,params) => {
     return axios.delete('/api/fastrunner/schedule/' + url + '/',params)
 };
-
+export const deleteSelectTasks = (params, data) => {
+    return axios.delete('/api/fastrunner/schedule/-1/', {params:params, data:data})
+};
 export const addHostIP = (params, data) => {
     return axios({url:'/api/fastrunner/host_ip/', method: 'POST', params:params, data:data})
 };

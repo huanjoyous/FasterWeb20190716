@@ -12,7 +12,16 @@
                         :disabled="addTasks"
                     >添加任务
                     </el-button>
-
+                    <el-button
+                        style="margin-left: 20px"
+                        type="danger"
+                        icon="el-icon-delete"
+                        circle
+                        size="mini"
+                        @click="delselectTasks"
+                        title="批量删除"
+                        :disabled="addTasks"
+                    ></el-button>
                     <el-button
                         :disabled="!addTasks"
                         type="text"
@@ -53,6 +62,7 @@
                         height="600px"
                         @cell-mouse-enter="cellMouseEnter"
                         @cell-mouse-leave="cellMouseLeave"
+                        @selection-change="handleSelectionChange"
                     >
                         <el-table-column type="selection" width="55"></el-table-column>
 
@@ -120,6 +130,14 @@
                                         @click="handleRunSchedule(scope.row.id)"
                                     ></el-button>
                                     <el-button
+                                        type="success"
+                                        icon="el-icon-document"
+                                        circle size="mini"
+                                        @click="handleCopySchedule(scope.row.id)"
+                                        title="复制"
+                                    >
+                                    </el-button>
+                                    <el-button
                                         type="danger"
                                         icon="el-icon-delete"
                                         circle size="mini"
@@ -129,9 +147,7 @@
                                     </el-button>
                                 </el-row>
                             </template>
-
                         </el-table-column>
-
                     </el-table>
                 </div>
             </el-main>
@@ -174,10 +190,34 @@
                     name: ''
                 },
                 args: [],
-                scheduleId: ''
+                scheduleId: '',
+                selectTasks:[]
             }
         },
         methods: {
+            handleSelectionChange(val){
+                this.selectTasks = val;
+            },
+            handleCopySchedule(id){
+                this.$prompt('请输入定时任务名称', '提示', {
+                    confirmButtonText: '确定',
+                    inputPattern: /^[\s\S]*.*[^\s][\s\S]*$/,
+                    inputErrorMessage: '定时任务名称不能为空'
+                }).then(({value}) => {
+                    this.$api.copySchedule(
+                        {project: this.$route.params.id},
+                        {
+                            name: value,
+                            id: id
+                        }
+                    ).then(resp => {
+                        if (resp.status === 201){
+                            this.$notify.success('复制定时任务成功');
+                            this.getTaskList();
+                        }
+                    })
+                })
+            },
             delTasks(id) {
                 this.$confirm('此操作将永久删除该定时任务，是否继续?', '提示', {
                     confirmButtonText: '确定',
@@ -185,10 +225,30 @@
                     type: 'warning',
                 }).then(() => {
                     this.$api.deleteTasks(id,{params:{project:this.$route.params.id}}).then(resp => {
-                        this.$notify.success('删除定时任务成功');
-                        this.getTaskList();
+                        if (resp.status === 204){
+                            this.$notify.success('删除定时任务成功');
+                            this.getTaskList();
+                        }
                     })
                 })
+            },
+            delselectTasks(){
+                if (this.selectTasks.length !== 0){
+                    this.$confirm('此操作将永久删除选中定时任务，是否继续?', '提示', {
+                        confirmButtonText: '确定',
+                        cancelButtonText: '取消',
+                        type: 'warning',
+                    }).then(() => {
+                        this.$api.deleteSelectTasks({project:this.$route.params.id},this.selectTasks).then(resp => {
+                            if (resp.status === 204){
+                                this.$notify.success('批量删除定时任务成功');
+                                this.getTaskList();
+                            }
+                        })
+                    })
+                } else{
+                    this.$notify.error('没有勾选定时任务')
+                }
             },
             handleRunSchedule(id){
                 this.loading = true;
@@ -214,6 +274,8 @@
                 this.ruleForm["strategy"] = index_data.summary_kwargs.strategy;
                 this.ruleForm["receiver"] = index_data.summary_kwargs.receiver;
                 this.ruleForm["mail_cc"] = index_data.summary_kwargs.mail_cc;
+                this.ruleForm["fail_count"] = index_data.summary_kwargs.fail_count;
+                this.ruleForm["self_error"] = index_data.summary_kwargs.self_error;
                 this.ruleForm["name"] = index_data.name;
                 this.ruleForm["switch"] = index_data.enabled;
                 this.args = index_data.summary_args;
@@ -228,7 +290,9 @@
                     strategy: '始终发送',
                     receiver: '',
                     mail_cc: '',
-                    name: ''
+                    name: '',
+                    self_error: '',
+                    fail_count: ''
                 }
             },
             getTaskList() {
@@ -240,7 +304,6 @@
             cellMouseEnter(row) {
                 this.currentRow = row;
             },
-
             cellMouseLeave(row) {
                 this.currentRow = '';
             },

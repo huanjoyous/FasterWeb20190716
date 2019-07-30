@@ -87,7 +87,7 @@
                                 </template>
                             </el-table-column>
 
-                            <el-table-column label="用时" width="90" align="center">
+                            <el-table-column label="用时" width="100" align="center">
                                 <template slot-scope="scope">
                                     <div v-text="scope.row.summary.time.duration.toFixed(3)+' 秒'"></div>
                                 </template>
