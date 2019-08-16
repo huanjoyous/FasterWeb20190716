@@ -1,8 +1,7 @@
 <template>
     <div>
         <div class="nav-header">
-
-            <span style="color: white; font-size: 20px; margin-left: 12px">FasterRunner 接口自动化测试平台</span>
+            <span style="color: white; font-size: 20px; margin-left: 12px">&nbsp;{{ $store.state.headTitle }}</span>
             <span class="right">
                 <div style="float: right; color: #d9d9d9; margin-right: 100px">
 
@@ -12,15 +11,12 @@
                     <a style="padding-left: 10px;" @click="handleLogOut">注 销</a>
                 </div>
             </span>
-
         </div>
     </div>
-
-
 </template>
 
 <script>
-
+    import ProjectList1 from '../../project/ProjectList'
     export default {
         methods: {
             handleLogOut () {
@@ -30,7 +26,9 @@
             }
         },
         name: "Header",
-
+        components:{
+            ProjectList1
+        }
     }
 </script>
 
@@ -62,7 +60,7 @@
     }
 
     .nav-header {
-        background: #242F42;
+        background: #242f42;
         margin: 0 auto;
         font-size: 14px;
         width: 100%;

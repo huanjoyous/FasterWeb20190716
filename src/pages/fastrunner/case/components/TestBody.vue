@@ -3,42 +3,26 @@
         <div>
             <div>
                 <el-input
-                    style="width: 600px"
+                    style="width: 60%; min-width: 500px"
                     placeholder="请输入接口名称"
                     v-model="name"
                     clearable
                 >
                     <template slot="prepend">接口信息录入</template>
-                    <el-button
-                        slot="append"
-                        type="success"
-                        plain
-                        @click="save = !save"
-                    >Save
-                    </el-button>
                 </el-input>
-
                 <el-button
                     slot="append"
-                    type="danger"
+                    type="primary"
+                    @click="save = !save"
+                >Save
+                </el-button>
+                <el-button
+                    style="margin-left: 0px"
+                    slot="append"
+                    type="info"
                     @click="esc = !esc"
                 >Back
                 </el-button>
-                <el-tooltip
-                    effect="dark"
-                    content="循环次数"
-                    placement="bottom"
-                    style="width:100px;"
-                >
-                    <el-input-number
-                        v-model="times"
-                        controls-position="right"
-                        :min="1"
-                        :max="100"
-                        style="width: 120px"
-                    >
-                    </el-input-number>
-                </el-tooltip>
             </div>
 
             <div>
@@ -47,7 +31,7 @@
                     placeholder="请输入接口请求地址"
                     v-model="url"
                     clearable
-                    style="width:525px;"
+                    style="width: 40%; min-width: 500px"
                     disabled
                 >
                     <el-select
@@ -69,11 +53,25 @@
                 <el-input
                     placeholder="${skipif()} or boolean"
                     v-model="skipIf"
-                    style="width:400px"
+                    style="width:40%; min-width: 400px"
                     clearable
                 >
                     <template slot="prepend" >skipIf:</template>
                 </el-input>
+                <el-tooltip
+                    effect="dark"
+                    content="循环次数"
+                    placement="bottom"
+                    style="width:10%;"
+                >
+                    <el-input-number
+                        v-model="times"
+                        controls-position="right"
+                        :min="1"
+                        :max="100"
+                    >
+                    </el-input-number>
+                </el-tooltip>
             </div>
         </div>
 
@@ -194,6 +192,7 @@
                 this.tempBody.name = this.name;
                 this.tempBody.times = this.times;
                 this.tempBody.skipIf = this.skipIf;
+                this.tempBody.method = this.method;
                 if (this.validateData()) {
                     const body = {
                         extract: this.extract,

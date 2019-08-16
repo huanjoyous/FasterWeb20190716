@@ -22,7 +22,6 @@
             label="类型"
             width="120">
             <template slot-scope="scope">
-
                 <el-select v-model="scope.row.type" size="medium">
                     <el-option
                         v-for="item in dataTypeOptions"
@@ -32,7 +31,6 @@
                     >
                     </el-option>
                 </el-select>
-
             </template>
         </el-table-column>
 
@@ -40,7 +38,15 @@
             label="变量值"
         >
             <template slot-scope="scope">
-                <el-input clearable v-model="scope.row.value" placeholder="Value" size="medium"></el-input>
+                <el-input v-if="scope.row.type !== 4" clearable v-model="scope.row.value" placeholder="Value" size="medium"></el-input>
+                <el-select v-if="scope.row.type === 4" clearable v-model="scope.row.value" placeholder="Value" size="medium">
+                    <el-option
+                        v-for="item in BoolOptions"
+                        :key="item.value"
+                        :label="item.label"
+                        :value="item.value">
+                    </el-option>
+                </el-select>
             </template>
         </el-table-column>
 
@@ -102,7 +108,7 @@
 
             variables: function () {
                 if (this.variables.length !== 0) {
-                    this.tableData = this.variables;
+                    this.tableData = this.loaderVariables(this.variables);
                 }
             }
         },
@@ -135,7 +141,11 @@
                 const msg = value + ' => ' + this.dataTypeOptions[type - 1].label + ' 转换异常, 该数据自动剔除';
                 switch (type) {
                     case 1:
-                        tempValue = value;
+                        if (String(value).toLowerCase() === 'null' || String(value).toLowerCase() === 'none'){
+                            tempValue = null;
+                        }else {
+                            tempValue = String(value);
+                        }
                         break;
                     case 2:
                         tempValue = parseInt(value);
@@ -144,18 +154,7 @@
                         tempValue = parseFloat(value);
                         break;
                     case 4:
-                        if (value === 'True' || value === 'False') {
-                            let bool = {
-                                'True': true,
-                                'False': false
-                            };
-                            tempValue = bool[value];
-                        } else {
-                            this.$notify.error({
-                                message: '类型转换错误'
-                            });
-                            return 'exception'
-                        }
+                        tempValue = value === 'true';
                         break;
                     case 5:
                         try {
@@ -176,9 +175,7 @@
                 }
 
                 if (tempValue !== 0 && !tempValue && type !== 4 && type !== 1) {
-                    this.$notify.error({
-                        message: '类型转换错误'
-                    });
+                    this.$notify.error(msg);
                     return 'exception'
                 }
                 return tempValue;
@@ -204,6 +201,20 @@
                 }
                 return variables;
             },
+            loaderVariables(response){
+                let obj = [];
+                for (let content of response) {
+                    if (content['type'] === 4) {
+                        if (content['value'] === true){
+                            content['value'] = 'true'
+                        }else{
+                            content['value'] = 'false'
+                        }
+                    }
+                    obj.push(content)
+                }
+                return obj
+            }
         },
         data() {
             return {
@@ -214,7 +225,6 @@
                     type: 1,
                     desc: ''
                 }],
-
                 dataTypeOptions: [{
                     label: 'String',
                     value: 1
@@ -234,7 +244,13 @@
                     label: 'Dict',
                     value: 6
                 }],
-
+                BoolOptions:[{
+                    label: 'true',
+                    value: 'true'
+                },{
+                    label: 'false',
+                    value: 'false'
+                }],
                 dataType: 'data'
             }
         }

@@ -250,6 +250,7 @@
                 }).then(() => {
                     this.$api.deleteVariables(index).then(resp => {
                         if (resp.success) {
+                            this.$notify.success('删除环境变量成功');
                             this.getVariablesList();
                         } else {
                             this.$message.error(resp.msg);

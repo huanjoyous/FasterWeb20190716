@@ -30,21 +30,21 @@
                     <el-dialog
                         v-if="dialogTableVisible"
                         :visible.sync="dialogTableVisible"
-                        width="70%"
+                        width="80%"
                         :modal-append-to-body="false"
                     >
                         <report :summary="summary"></report>
                     </el-dialog>
 
                     <el-dialog
-                        title="Run Case"
+                        title="Run TestCase"
                         :visible.sync="dialogTreeVisible"
                         width="35%"
                         :modal-append-to-body="false"
                     >
                         <div>
                             <el-switch
-                            style="margin-top: 10px"
+                            style="display: block"
                             v-model="asyncs"
                             v-show="isSingleTest"
                             active-color="#13ce66"
@@ -52,14 +52,40 @@
                             active-text="异步执行"
                             inactive-text="同步执行">
                             </el-switch>
+                            <div style="margin-top: 20px">
+                                <span>测试数据:</span>
+                            <el-select
+                                placeholder="请选择"
+                                size="small"
+                                style="width: 180px;"
+                                v-model="testDataExcel"
+                            >
+                                <el-option
+                                    v-for="item in testDataOptions"
+                                    :key="item.id"
+                                    :label="item.name"
+                                    :value="item.name"
+                                >
+                                </el-option>
+                            </el-select>
                             <el-input
                                 size="small"
-                                style="margin-top: 20px"
-                                clearable
-                                placeholder="报告名称,不填默认当前时间"
-                                v-model="reportName"
-                                :disabled="false">
-                            </el-input>
+                                style="width: 180px;"
+                                v-model="testDataSheet"
+                                placeholder="请输入sheet名"
+                            ></el-input>
+                            </div>
+                            <div>
+                                <span>报告名称:</span>
+                                <el-input
+                                    size="small"
+                                    style="margin-top: 20px;width: 365px"
+                                    clearable
+                                    placeholder="默认当前时间"
+                                    v-model="reportName"
+                                    :disabled="false">
+                                </el-input>
+                            </div>
                             <div style="margin-top: 20px" v-show="!isSingleTest">
                                 <el-input
                                     placeholder="输入关键字进行过滤"
@@ -204,12 +230,6 @@
             node: {
                 require: false
             },
-            testDataExcel: {
-                require: true
-            },
-            testDataSheet: {
-                require: true
-            },
             del: Boolean
         },
 
@@ -273,7 +293,10 @@
                 currentPage: 1,
                 loading: true,
                 runtestcaseId: '',
-                runtestcaseName: ''
+                runtestcaseName: '',
+                testDataExcel: '请选择',
+                testDataSheet: '',
+                testDataOptions: []
             }
         },
 
@@ -302,8 +325,6 @@
                 const relation = this.$refs.tree.getCheckedKeys();
                 if (relation.length === 0) {
                     this.$notify.error('请至少选择一个节点');
-                } else if (this.host === '请选择'){
-                    this.$notify.error('请选择环境参数');
                 } else if(this.testDataExcel !== '请选择' && this.testDataSheet === '') {
                     this.$notify.error('选择了数据，sheet名不能为空');
                 }else {
@@ -330,9 +351,7 @@
             },
             runTesecase(){
                 this.dialogTreeVisible = false;
-                if (this.host === '请选择'){
-                    this.$notify.error('请选择环境参数');
-                } else if(this.testDataExcel !== '请选择' && this.testDataSheet === '') {
+                if(this.testDataExcel !== '请选择' && this.testDataSheet === '') {
                     this.$notify.error('选择了数据，sheet名不能为空');
                 } else{
                     this.loading = true;
@@ -429,7 +448,8 @@
                     params: {
                         project: this.project,
                         node: this.node,
-                        search: this.search
+                        search: this.search,
+                        page: this.currentPage
                     }
                 }).then(resp => {
                     this.testData = resp.data;
@@ -439,13 +459,25 @@
             cellMouseEnter(row) {
                 this.currentRow = row;
             },
-
             cellMouseLeave(row) {
                 this.currentRow = '';
+            },
+            getTestData() {
+                this.$api.testdataList({
+                    params: {
+                        project: this.$route.params.id
+                    }
+                }).then(resp => {
+                    this.testDataOptions = resp.results;
+                    this.testDataOptions.push({
+                        name: '请选择'
+                    })
+                })
             }
         },
         mounted() {
-           this.getTestList()
+           this.getTestList();
+           this.getTestData();
         }
     }
 </script>

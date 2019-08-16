@@ -76,7 +76,7 @@
                                 <template slot-scope="scope">
                                     <div
                                         :class="{'pass': scope.row.summary.success, 'fail':!scope.row.summary.success}"
-                                        v-text="scope.row.success === true ? 'Pass' :'Fail'"
+                                        v-text="scope.row.summary.success === true ? 'Pass' :'Fail'"
                                     ></div>
                                 </template>
                             </el-table-column>
@@ -302,6 +302,5 @@
         color: red;
         font-size: 12px;
     }
-
 
 </style>

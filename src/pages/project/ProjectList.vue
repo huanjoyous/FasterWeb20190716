@@ -17,6 +17,7 @@
                                icon="el-icon-d-arrow-left"
                                :disabled="projectData.previous === null "
                                @click="getPagination(projectData.previous)"
+                               v-show="projectData.results.length > 9"
                     >
                         上一页
                     </el-button>
@@ -26,6 +27,7 @@
                                size="small"
                                :disabled="projectData.next === null"
                                @click="getPagination(projectData.next)"
+                               v-show="projectData.results.length > 9"
                     >
                         下一页
                         <i class="el-icon-d-arrow-right"></i>
@@ -54,8 +56,8 @@
                             </el-form-item>
                         </el-form>
                         <span slot="footer" class="dialog-footer">
-                        <el-button @click="dialogVisible = false">取 消</el-button>
-                        <el-button type="primary" @click="handleConfirm('projectForm')">确 定</el-button>
+                        <el-button size="medium" @click="dialogVisible = false">取消</el-button>
+                        <el-button type="primary"  size="medium" @click="handleConfirm('projectForm')">确定</el-button>
                       </span>
                     </el-dialog>
                 </div>
@@ -160,8 +162,8 @@
                                     </el-form-item>
                                 </el-form>
                                 <span slot="footer" class="dialog-footer">
-                        <el-button @click="editVisible = false">取 消</el-button>
-                        <el-button type="primary" @click="handleConfirm('projectForm')">确 定</el-button>
+                        <el-button size="medium" @click="editVisible = false">取消</el-button>
+                        <el-button size="medium" type="primary" @click="handleConfirm('projectForm')">确定</el-button>
                       </span>
                             </el-dialog>
                             <el-button
@@ -176,8 +178,6 @@
             </el-main>
         </el-container>
     </el-container>
-
-
 </template>
 
 <script>
@@ -212,6 +212,7 @@
             handleCellClick(row) {
                 this.$store.commit('setRouterName', 'ProjectDetail');
                 this.setLocalValue("routerName",'ProjectDetail');
+                this.$store.state.headTitle = row.name;
                 this.$router.push({name: 'ProjectDetail', params: {id: row['id']}});
             },
             handleEdit(index, row) {

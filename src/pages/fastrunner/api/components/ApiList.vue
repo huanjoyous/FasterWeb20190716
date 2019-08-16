@@ -403,15 +403,14 @@
                     params: {
                         node: this.node,
                         project: this.project,
-                        search: this.search
+                        search: this.search,
+                        page: this.currentPage
                     }
                 }).then(res => {
                     this.apiData = res;
                     this.loading = false;
                 })
             },
-
-
             handleCurrentChange(val) {
                 this.$api.getPaginationBypage({
                     params: {

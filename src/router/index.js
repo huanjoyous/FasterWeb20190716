@@ -13,8 +13,8 @@ import ReportList from '@/pages/reports/ReportList'
 import RecordConfig from '@/pages/fastrunner/config/RecordConfig'
 import Tasks from '@/pages/task/Tasks'
 import HostAddress from '@/pages/variables/HostAddress'
-import TestData from "../pages/testdata/TestData";
-
+import TestData from "@/pages/testdata/TestData";
+import TaskMeta from "@/pages/reports/TaskMeta";
 Vue.use(Router);
 
 export default new Router({
@@ -143,7 +143,16 @@ export default new Router({
                         title: '测试数据',
                         requireAuth: true
                     }
-                }
+                },
+                {
+                    name: "TaskMeta",
+                    path: 'taskmeta/:id',
+                    component: TaskMeta,
+                    meta: {
+                        title: '异步回执',
+                        requireAuth: true
+                    }
+                },
             ]
         },
 

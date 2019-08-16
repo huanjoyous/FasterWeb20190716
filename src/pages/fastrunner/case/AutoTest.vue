@@ -54,7 +54,7 @@
                         :disabled="currentNode === '' "
                         type="info"
                         size="small"
-                        icon="el-icon-edit-outline"
+                        icon="el-icon-refresh-right"
                         style="margin-left: 0px"
                         @click="renameNode"
                     >重命名
@@ -69,6 +69,29 @@
                         style="margin-left: 0px"
                     >添加用例
                     </el-button>
+
+                    <el-upload
+                        :disabled="!addTestActivate"
+                        class="upload-demo"
+                        :action="fileupload"
+                        :show-file-list="false"
+                        accept=".xlsx, .xls, .jpg, .png"
+                        multiple
+                        :limit="1"
+                        :headers="uploadheader"
+                        :on-exceed="handleExceed"
+                        :file-list="fileList"
+                        :on-error="uploadError"
+                        :on-success="uploadSuccess"
+                        :before-upload="UploadBefore"
+                        :data="filedata"
+                        style="display: inline"
+                    >
+                        <el-button size="small" type="primary" icon="el-icon-upload" title="只能上传jpg/png/xlsx/xls文件" :disabled="!addTestActivate">
+                            上传文件
+                        </el-button>
+                    </el-upload>
+
                     <el-button
                         v-if="addTestActivate"
                         style="margin-left: 30px;"
@@ -95,7 +118,7 @@
                         placeholder="请选择"
                         size="small"
                         v-model="currentHost"
-                        style="width: 120px"
+                        style="width: 150px"
                     >
                         <el-option
                             v-for="item in hostOptions"
@@ -104,45 +127,23 @@
                             :value="item.name">
                         </el-option>
                     </el-select>
-                    &nbsp配置:
-                    <el-select
-                        placeholder="请选择"
-                        size="small"
-                        style="width: 120px"
-                        v-model="currentConfig"
-                        :disabled="addTestActivate"
-                    >
-                        <el-option
-                            v-for="item in configOptions"
-                            :key="item.id"
-                            :label="item.name"
-                            :value="item.name"
+                    <div style="display: inline" v-show="!addTestActivate">
+                        <span>&nbsp配置:</span>
+                        <el-select
+                            placeholder="请选择"
+                            size="small"
+                            style="width: 150px"
+                            v-model="currentConfig"
                         >
-                        </el-option>
-                    </el-select>
-                    &nbsp数据:
-                    <el-select
-                        placeholder="请选择"
-                        size="small"
-                        style="width: 120px"
-                        v-model="currentTestDataExcel"
-                    >
-                        <el-option
-                            v-for="item in testDataOptions"
-                            :key="item.id"
-                            :label="item.name"
-                            :value="item.name"
-                        >
-                        </el-option>
-                    </el-select>
-                    <el-input
-                    size="small"
-                    style="width: 120px;"
-                    v-model="currentTestDataSheet"
-                    placeholder="请输入sheet名"
-                    >
-                    </el-input>
-
+                            <el-option
+                                v-for="item in configOptions"
+                                :key="item.id"
+                                :label="item.name"
+                                :value="item.name"
+                            >
+                            </el-option>
+                        </el-select>
+                    </div>
                     <el-button
                         :disabled="addTestActivate"
                         type="text"
@@ -202,8 +203,6 @@
                     :back="back"
                     :run="run"
                     :host="currentHost"
-                    :testDataExcel="currentTestDataExcel"
-                    :testDataSheet="currentTestDataSheet"
                 >
                 </test-list>
 
@@ -215,8 +214,6 @@
                     :testStepResp="testStepResp"
                     :config="currentConfig"
                     :host="currentHost"
-                    :testDataExcel="currentTestDataExcel"
-                    :testDataSheet="currentTestDataSheet"
                     v-on:addSuccess="handleBackList"
                 >
                 </edit-test>
@@ -230,6 +227,7 @@
 <script>
     import EditTest from './components/EditTest'
     import TestList from './components/TestList'
+    import store from '../../../store/state'
 
     export default {
         computed: {
@@ -272,8 +270,6 @@
                 addTestActivate: true,
                 currentConfig: '请选择',
                 currentHost:'请选择',
-                currentTestDataExcel: '请选择',
-                currentTestDataSheet: '',
                 treeId: '',
                 maxId: '',
                 dialogVisible: false,
@@ -283,7 +279,15 @@
                 expand: '&#xe65f;',
                 dataTree: [],
                 configOptions: [],
-                testDataOptions: []
+                uploadheader: {
+                    Authorization: `JWT ${store.token}`
+                },
+                fileList: [],
+                filedata: {
+                    project: this.$route.params.id,
+                    name: ''
+                },
+                fileupload: this.$api.uploadFile(),
             }
         },
         methods: {
@@ -298,12 +302,35 @@
                     })
                 })
             },
-
+            handleExceed(files, fileList) {
+                this.$notify.warning(`当前限制选择 1 个文件，本次选择了 ${files.length} 个文件，共选择了 ${files.length + fileList.length} 个文件`);
+            },
             handleBackList() {
                 this.addTestActivate = true;
                 this.back = !this.back;
             },
-
+            uploadError(error) {
+                if (error.status === 401) {
+                    this.$notify.error('请先登录');
+                    this.$router.replace({
+                        name: 'Login'
+                    })
+                } else if (error.status === 403) {
+                    this.$notify.error({
+                        title: 'detail',
+                        message: '您没有执行该操作的权限。'
+                    })
+                } else {
+                    this.$notify.error('文件上传失败')
+                }
+            },
+            uploadSuccess(response) {
+                this.fileList = [];
+                this.$notify.success('文件上传成功');
+            },
+            UploadBefore(file) {
+                this.filedata.name = file.name;
+            },
             handleTestStep(resp) {
                 this.testStepResp = resp;
                 this.addTestActivate = false;
@@ -413,25 +440,12 @@
                     })
                 })
             },
-            getTestData() {
-                this.$api.testdataList({
-                    params: {
-                        project: this.$route.params.id
-                    }
-                }).then(resp => {
-                    this.testDataOptions = resp.results;
-                    this.testDataOptions.push({
-                        name: '请选择'
-                    })
-                })
-            }
         },
         name: "AutoTest",
         mounted() {
             this.getTree();
             this.getConfig();
             this.getHost();
-            this.getTestData();
         }
     }
 </script>

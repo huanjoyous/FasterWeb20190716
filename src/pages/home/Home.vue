@@ -27,8 +27,13 @@
         components: {
             HomeHeader,
             HomeSide
-        }
+        },
+        methods:{
+            dasdasd(){
+                alert(3333)
+            }
 
+        }
     }
 </script>
 

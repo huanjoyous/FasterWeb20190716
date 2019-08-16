@@ -67,16 +67,25 @@
 
         <slot v-for="item in summary.details">
             <div>
-                <span style="font-weight: bold; font-size: medium">{{item.name}}</span>
+                <span style="font-weight: bold; font-size: medium;">{{item.name}}</span>
                 <el-popover
-                    placement="top-start"
+                    placement="right"
                     width="400"
+                    style=" position: absolute; right: 50px;margin-top: -10px;height:200px;"
                     trigger="hover"
                 >
-                    <pre class="code-block">{{item.in_out}}</pre>
-                    <el-button slot="reference" round type="text">parameters & output</el-button>
+                    <pre class="code-block">{{item.in_out.in}}</pre>
+                    <el-button slot="reference" round type="text" class="popoverFont">paramsIn</el-button>
                 </el-popover>
-
+                <el-popover
+                    placement="right-start"
+                    width="400"
+                    trigger="hover"
+                    style="position: absolute; right: 0;margin-top: -10px"
+                >
+                    <pre class="code-block">{{item.in_out.out}}</pre>
+                    <el-button slot="reference" round type="text" class="popoverFont">output</el-button>
+                </el-popover>
             </div>
             <el-table
                 :data="item.records"
@@ -117,20 +126,20 @@
 
                 <el-table-column type="expand" fixed>
                     <template slot-scope="props">
-                        <el-tabs>
-                            <el-tab-pane label="Request">
+                        <el-tabs v-model="activeName">
+                            <el-tab-pane label="Request" name="first">
                                 <pre class="code-block" v-html="handleRequest(props.row.meta_data.request)"></pre>
                             </el-tab-pane>
-                            <el-tab-pane label="Content" v-if="props.row.meta_data.response.content !== null">
+                            <el-tab-pane label="Content" name="second" v-if="props.row.meta_data.response.content !== null">
                                 <pre class="code-block" v-text="handleContent(props.row.meta_data.response.content)"></pre>
                             </el-tab-pane>
-                            <el-tab-pane label="Response">
+                            <el-tab-pane label="Response" name="third" >
                                 <pre class="code-block" v-text="handleResponse(props.row.meta_data.response)"></pre>
                             </el-tab-pane>
-                            <el-tab-pane label="Validators" v-if="props.row.meta_data.validators.length !== 0">
+                            <el-tab-pane label="Validators" name="four" v-if="props.row.meta_data.validators.length !== 0">
                                 <pre class="code-block" v-html="props.row.meta_data.validators"></pre>
                             </el-tab-pane>
-                            <el-tab-pane label="Exception" v-if="props.row.attachment !== ''">
+                            <el-tab-pane label="Exception" name="five" v-if="props.row.attachment !== ''">
                                 <pre class="code-block" v-html="props.row.attachment"></pre>
                             </el-tab-pane>
                         </el-tabs>
@@ -174,6 +183,11 @@
                 return response
             }
         },
+        data() {
+            return{
+                activeName: 'third'
+            }
+        },
         props: {
             summary: {
                 require: true
@@ -183,5 +197,8 @@
 </script>
 
 <style scoped>
-
+    .popoverFont {
+        color: forestgreen;
+        font-weight: bold;
+    }
 </style>

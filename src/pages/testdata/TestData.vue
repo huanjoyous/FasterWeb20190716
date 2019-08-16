@@ -190,7 +190,7 @@
 
             uploadSuccess(response) {
                 this.fileList = [];
-                this.$notify.success('文件上传成功')
+                this.$notify.success('文件上传成功');
                 this.getTestdataList()
             },
 

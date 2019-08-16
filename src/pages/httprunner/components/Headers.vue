@@ -52,10 +52,9 @@
 
         <el-table-column
             width="130"
-            :disabled="isDisabled"
         >
             <template slot-scope="scope">
-                <el-row v-show="scope.row === currentRow">
+                <el-row v-show="scope.row === currentRow && !isDisabled">
                     <el-button
                         icon="el-icon-circle-plus-outline"
                         size="mini"
@@ -84,7 +83,7 @@
         props: {
             save: Boolean,
             header: {
-                require: false
+                require: true
             },
             isDisabled: Boolean
         },
@@ -148,7 +147,7 @@
             },
 
             header: function () {
-                if (this.header.length !== 0) {
+                if (this.header) {
                     this.tableData = this.header;
                 }
             }
@@ -166,6 +165,8 @@
                     value: 'User-Agent'
                 },{
                     value: 'X-Requested-With'
+                },{
+                    value: 'Authorization'
                 }],
                 currentRow: '',
                 tableData: [{key: '', value: '', desc: ''}],

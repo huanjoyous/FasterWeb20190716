@@ -1,5 +1,4 @@
 <template>
-
     <el-menu
         class="common-side-bar"
         :default-active="$store.state.routerName"
@@ -7,28 +6,49 @@
         text-color="#BFCBD9"
         active-text-color="#318DF1"
         @select="select"
+        :collapse="true"
     >
-        <el-menu-item index="ProjectList">
-            <i class="iconfont" >&#xe631;</i>&nbsp;&nbsp;首  页
+        <el-menu-item index="ProjectList" @click="$store.state.headTitle = 'FasterRunner 接口自动化测试平台'">
+            <i class="el-icon-s-home"></i>
+            首页
         </el-menu-item>
 
-       <!-- <el-submenu index="ApiTest">
+        <el-menu-item v-for="item of side_menu" :index="item.url" :key="item.url" :disabled="$store.state.routerName === 'ProjectList'">
+            <i :class="item.code"></i>
+            {{item.name}}
+        </el-menu-item>
+        <el-submenu index="1" :disabled="$store.state.routerName === 'ProjectList'">
+            <template slot="title" >
+                <i class="el-icon-caret-right"></i>
+                执行用例
+            </template>
+            <el-menu-item class="submenu-side-bar" v-for="item of run_menu" :index="item.url" :key="item.url">
+                <i :class="item.code"></i>
+                {{item.name}}
+            </el-menu-item>
+        </el-submenu>
+        <el-submenu index="2" :disabled="$store.state.routerName === 'ProjectList'">
             <template slot="title">
-                <i class="el-icon-view"></i>
-                <span slot="title">接口自动化</span>
-            </template>-->
-
-            <!--<el-menu-item-group>-->
-                <el-menu-item v-for="item of side_menu" :index="item.url" :key="item.url" :disabled="$store.state.routerName === 'ProjectList'">
-                    <span class="iconfont" v-html="item.code"></span>&nbsp;&nbsp;{{item.name}}
-                </el-menu-item>
-           <!-- </el-menu-item-group>
-        </el-submenu>-->
-      <!--  <el-menu-item index="Pressure" disabled>
-            &nbsp;<span class="iconfont">&#xe61f;</span>&nbsp;&nbsp;压力测试
-        </el-menu-item>-->
-
-
+                <i class="el-icon-s-tools"></i>
+                参数配置
+            </template>
+            <el-menu-item class="submenu-side-bar" v-for="item of config_menu" :index="item.url" :key="item.url">
+                <i :class="item.code"></i>
+                {{item.name}}
+            </el-menu-item>
+        </el-submenu>
+        <el-submenu  index="3" :disabled="$store.state.routerName === 'ProjectList'">
+            <template slot="title">
+                <i class="el-icon-folder-opened"></i>
+                报告回执
+            </template>
+            <div class="submenu-side-bar">
+            <el-menu-item class="submenu-side-bar" v-for="item of report_menu" :index="item.url" :key="item.url">
+                <i :class="item.code"></i>
+                {{item.name}}
+            </el-menu-item>
+            </div>
+        </el-submenu>
     </el-menu>
 </template>
 
@@ -38,17 +58,24 @@
         data() {
             return {
                 side_menu: [
-                    {name: "项目概况", url: "ProjectDetail", code: "&#xe64a;"},
-                    {name: "API 模板", url: "RecordApi", code: "&#xe74a;"},
-                    {name: "测试用例", url: "AutoTest", code: "&#xe6da;"},
-                    {name: "测试数据", url: "TestData", code: "&#xe782;"},
-                    {name: "配置管理", url: "RecordConfig", code: "&#xee32;"},
-                    {name: "全局变量", url: "GlobalEnv", code: "&#xe692;"},
-                    {name: "域名管理", url: "HostIP", code: "&#xe609;"},
-                    {name: "驱动代码", url: "DebugTalk", code: "&#xe7ca;"},
-                    {name: "定时任务", url: "Task", code: "&#xe61e;"},
-                    {name: "历史报告", url: "Reports", code: "&#xe66e;"}
+                    {name: "项目概况", url: "ProjectDetail", code: "el-icon-data-board"},
+                    {name: "测试数据", url: "TestData", code: "el-icon-s-data"},
+                    {name: "驱动代码", url: "DebugTalk", code: "el-icon-s-opportunity"},
                 ],
+                run_menu:[
+                    {name: "API 模板", url: "RecordApi", code: "el-icon-document"},
+                    {name: "测试用例", url: "AutoTest", code: "el-icon-suitcase"},
+                    {name: "定时任务", url: "Task", code: "el-icon-alarm-clock"}
+                ],
+                config_menu:[
+                    {name: "配置管理", url: "RecordConfig", code: "el-icon-setting"},
+                    {name: "全局变量", url: "GlobalEnv", code: "el-icon-cloudy"},
+                    {name: "域名管理", url: "HostIP", code: "el-icon-news"}
+                ],
+                report_menu:[
+                    {name: "历史报告", url: "Reports", code: "el-icon-reading"},
+                    {name: "异步回执", url: "TaskMeta", code: "el-icon-pie-chart"}
+                ]
             }
         },
         methods:{
@@ -72,4 +99,8 @@
         background-color: #fff;
         display: inline-block;
     }
+    .submenu-side-bar {
+        min-width: 100px;
+    }
 </style>
+

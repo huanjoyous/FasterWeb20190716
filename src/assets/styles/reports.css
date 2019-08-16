@@ -55,7 +55,8 @@
 
 
 .code-block {
-
+    min-height: 0;
+    max-height: 500px;
     border: 1px solid #ebedef;
     border-radius: 4px;
     color: #222 !important;

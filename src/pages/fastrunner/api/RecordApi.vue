@@ -5,6 +5,7 @@
             <div class="nav-api-header">
                 <div style="padding-top: 10px; margin-left: 10px">
                     <el-button
+                        :disabled="addAPIFlag"
                         type="primary"
                         size="small"
                         icon="el-icon-circle-plus"
@@ -42,7 +43,7 @@
                     </el-dialog>
 
                     <el-button
-                        :disabled="currentNode === '' "
+                        :disabled="currentNode === '' || addAPIFlag "
                         type="danger"
                         size="small"
                         icon="el-icon-delete"
@@ -52,10 +53,10 @@
 
 
                     <el-button
-                        :disabled="currentNode === '' "
+                        :disabled="currentNode === '' || addAPIFlag "
                         type="info"
                         size="small"
-                        icon="el-icon-edit-outline"
+                        icon="el-icon-refresh-right"
                         @click="renameNode"
                         style="margin-left: 0px"
                     >重命名
@@ -63,7 +64,7 @@
 
 
                     <el-button
-                        :disabled="currentNode === '' "
+                        :disabled="currentNode === '' || addAPIFlag "
                         type="primary"
                         size="small"
                         icon="el-icon-circle-plus-outline"
@@ -154,7 +155,7 @@
         </el-header>
 
         <el-container>
-            <el-aside style="margin-top: 10px;">
+            <el-aside style="margin-top: 10px;" v-show="!addAPIFlag">
                 <div class="nav-api-side">
                     <div class="api-tree">
                         <el-input
@@ -246,56 +247,6 @@
                 },
                 set(value) {
                     this.addAPIFlag = value;
-                    this.response = {
-                        id: '',
-                        body: {
-                            name: '',
-                            times: 1,
-                            url: '',
-                            method: 'POST',
-                            header: [{
-                                key: "",
-                                value: "",
-                                desc: ""
-                            }],
-                            request: {
-                                data: [{
-                                    key: "",
-                                    value: "",
-                                    desc: "",
-                                    type: 1
-                                }],
-                                params: [{
-                                    key: "",
-                                    value: "",
-                                    desc: "",
-                                    type: 1
-                                }],
-                                json_data: ''
-                            },
-                            validate: [{
-                                expect: "",
-                                actual: "",
-                                comparator: "equals",
-                                type: 1
-                            }],
-                            variables: [{
-                                key: "",
-                                value: "",
-                                desc: "",
-                                type: 1
-                            }],
-                            extract: [{
-                                key: "",
-                                value: "",
-                                desc: ""
-                            }],
-                            hooks: [{
-                                setup: "",
-                                teardown: ""
-                            }]
-                        }
-                    };
                 }
             },
         },
@@ -308,7 +259,56 @@
                 back: false,
                 del: false,
                 run: false,
-                response: '',
+                response: {
+                    id: '',
+                    body: {
+                        name: '',
+                        times: 1,
+                        url: '',
+                        method: 'POST',
+                        header: [{
+                            key: "",
+                            value: "",
+                            desc: ""
+                        }],
+                        request: {
+                            data: [{
+                                key: "",
+                                value: "",
+                                desc: "",
+                                type: 1
+                            }],
+                            params: [{
+                                key: "",
+                                value: "",
+                                desc: "",
+                                type: 1
+                            }],
+                            json_data: ''
+                        },
+                        validate: [{
+                            expect: "",
+                            actual: "",
+                            comparator: "equals",
+                            type: 1
+                        }],
+                        variables: [{
+                            key: "",
+                            value: "",
+                            desc: "",
+                            type: 1
+                        }],
+                        extract: [{
+                            key: "",
+                            value: "",
+                            desc: ""
+                        }],
+                        hooks: [{
+                            setup: "",
+                            teardown: ""
+                        }]
+                    }
+                },
                 nodeForm: {
                     name: '',
                 },

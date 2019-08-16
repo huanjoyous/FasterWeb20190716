@@ -75,52 +75,6 @@
                 },
                 set(value) {
                     this.addConfigActivate = value;
-                    this.respConfig = {
-                        id: '',
-                        body: {
-                            name: '',
-                            base_url: '',
-                            header: [{
-                                key: "",
-                                value: "",
-                                desc: ""
-                            }],
-                            request: {
-                                data: [{
-                                    key: "",
-                                    value: "",
-                                    desc: "",
-                                    type: 1
-                                }],
-                                params: [{
-                                    key: "",
-                                    value: "",
-                                    desc: "",
-                                    type: 1
-                                }],
-                                json_data: ''
-                            },
-                            variables: [{
-                                key: "",
-                                value: "",
-                                desc: "",
-                                type: 1
-                            }],
-                            hooks: [{
-                                setup: "",
-                                teardown: ""
-                            }],
-                            parameters: [{
-                                key: "",
-                                value: "",
-                                desc: ""
-                            }],
-                            outParams: [{
-                                key: "",
-                                desc: ""
-                            }]
-                        }
-                    };
                 }
             },
         },
@@ -129,7 +83,52 @@
                 back: false,
                 del: false,
                 addConfigActivate: false,
-                respConfig: ''
+                respConfig: {
+                    id: '',
+                    body: {
+                        name: '',
+                        base_url: '',
+                        header: [{
+                            key: "",
+                            value: "",
+                            desc: ""
+                        }],
+                        request: {
+                            data: [{
+                                key: "",
+                                value: "",
+                                desc: "",
+                                type: 1
+                            }],
+                            params: [{
+                                key: "",
+                                value: "",
+                                desc: "",
+                                type: 1
+                            }],
+                            json_data: ''
+                        },
+                        variables: [{
+                            key: "",
+                            value: "",
+                            desc: "",
+                            type: 1
+                        }],
+                        hooks: [{
+                            setup: "",
+                            teardown: ""
+                        }],
+                        parameters: [{
+                            key: "",
+                            value: "",
+                            desc: ""
+                        }],
+                        outParams: [{
+                            key: "",
+                            desc: ""
+                        }]
+                    }
+                }
             }
         },
         methods: {

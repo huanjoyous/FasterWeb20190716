@@ -25,4 +25,7 @@
         color: #333;
         font-family: "PingFang SC", "Helvetica Neue", Helvetica, "Hiragino Sans GB", STHeitiSC-Light, "Microsoft YaHei", "微软雅黑", Arial, sans-serif
     }
+    .el-menu--collapse .el-menu .el-submenu, .el-menu--popup{
+        min-width: 140px;
+    }
 </style>

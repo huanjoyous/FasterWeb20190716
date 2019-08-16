@@ -1,61 +1,65 @@
 <template>
     <el-container>
         <template v-if="listPageShow">
-            <el-main style="padding-top: 0">
-                <div style="margin-top: 10px;">
-                    <el-col :span="12">
-                        <el-form
-                            :model="ruleForm"
-                            :rules="rules"
-                            ref="ruleForm"
-                            label-width="100px"
-                        >
-                            <el-form-item label="任务名称" prop="name">
-                                <el-input v-model="ruleForm.name" placeholder="请输入任务名称" clearable size="medium"></el-input>
-                            </el-form-item>
+            <el-main style="padding-top: 0;height: 600px; overflow: auto;">
+                <div style="margin-top: 10px;" >
+                    <el-form
+                        :model="ruleForm"
+                        :rules="rules"
+                        ref="ruleForm"
+                        label-width="100px"
+                        style="width: 60%"
+                    >
+                        <el-form-item label="任务名称" prop="name">
+                            <el-input v-model="ruleForm.name" placeholder="请输入任务名称" clearable size="medium"></el-input>
+                        </el-form-item>
 
-                            <el-form-item label="时间配置" prop="crontab">
-                                <el-input clearable v-model="ruleForm.crontab" placeholder="请输入crontab表达式，例如 2 12 * * *" size="medium"></el-input>
-                            </el-form-item>
+                        <el-form-item label="时间配置" prop="crontab">
+                            <el-input clearable v-model="ruleForm.crontab" placeholder="请输入crontab表达式，例如 2 12 * * *" size="medium"></el-input>
+                        </el-form-item>
 
-                            <el-form-item label="任务状态" prop="switch" >
-                                <el-switch active-color="#13ce66" inactive-color="#ff4949" v-model="ruleForm.switch" ></el-switch>
-                            </el-form-item>
+                        <el-form-item label="任务状态" prop="switch" >
+                            <el-switch active-color="#13ce66" inactive-color="#ff4949" v-model="ruleForm.switch" ></el-switch>
+                        </el-form-item>
 
-                            <el-form-item label="邮件策略" prop="strategy">
-                                <el-radio-group v-model="ruleForm.strategy">
-                                    <el-radio label="始终发送"></el-radio>
-                                    <el-radio label="仅失败发送"></el-radio>
-                                    <el-radio label="从不发送"></el-radio>
-                                    <el-radio label="监控邮件"></el-radio>
-                                </el-radio-group>
-                            </el-form-item>
+                        <el-form-item label="邮件策略" prop="strategy">
+                            <el-radio-group v-model="ruleForm.strategy">
+                                <el-radio label="始终发送"></el-radio>
+                                <el-radio label="仅失败发送"></el-radio>
+                                <el-radio label="从不发送"></el-radio>
+                                <el-radio label="监控邮件"></el-radio>
+                            </el-radio-group>
+                        </el-form-item>
 
-                            <el-form-item label="报警次数" prop="fail_count" v-show="ruleForm.strategy === '监控邮件'" >
-                                <el-input-number v-model="ruleForm.fail_count" :min="1" :max="20" size="small" :precision="0" controls-position="right"></el-input-number>
-                            </el-form-item>
+                        <el-form-item label="报警次数" prop="fail_count" v-show="ruleForm.strategy === '监控邮件'">
+                            <el-input-number v-model="ruleForm.fail_count" :min="1" :max="20" size="small" :precision="0"></el-input-number>
+                        </el-form-item>
 
-                            <el-form-item label="关键字过滤" prop="self_error" v-show="ruleForm.strategy === '监控邮件'">
-                                <el-input type="textarea" v-model="ruleForm.self_error" placeholder='若用例失败的返回报错含有关键字则视为用例通过，多个关键字以";"分隔'
-                                          clearable size="medium" :autosize="{ minRows: 1, maxRows: 4}"></el-input>
-                            </el-form-item>
+                        <el-form-item label="关键字过滤" prop="self_error" v-show="ruleForm.strategy === '监控邮件'">
+                            <el-input type="textarea" v-model="ruleForm.self_error" placeholder='若用例失败的返回报错含有关键字则视为用例通过，多个关键字以";"分隔'
+                                      clearable size="medium" :autosize="{ minRows: 1, maxRows: 4}"></el-input>
+                        </el-form-item>
 
-                            <el-form-item label="接收邮箱" prop="receiver">
-                                <el-input type="textarea" v-model="ruleForm.receiver" placeholder='多个邮箱以";"分隔' clearable size="medium"
-                                          :autosize="{ minRows: 1, maxRows: 4}"></el-input>
-                            </el-form-item>
+                        <el-form-item label="敏感字过滤" prop="sensitive_keys">
+                            <el-input type="textarea" v-model="ruleForm.sensitive_keys" placeholder='将敏感字处理为******，多个敏感字以";"分隔'
+                                      clearable size="medium" :autosize="{ minRows: 1, maxRows: 4}"></el-input>
+                        </el-form-item>
 
-                            <el-form-item label="抄送邮箱" prop="mail_cc">
-                                <el-input type="textarea" v-model="ruleForm.mail_cc" placeholder='多个邮箱以";"分隔' clearable size="medium"
-                                          :autosize="{ minRows: 1, maxRows: 4}"></el-input>
-                            </el-form-item>
+                        <el-form-item label="接收邮箱" prop="receiver">
+                            <el-input type="textarea" v-model="ruleForm.receiver" placeholder='多个邮箱以";"分隔' clearable size="medium"
+                                      :autosize="{ minRows: 1, maxRows: 4}"></el-input>
+                        </el-form-item>
 
-                            <el-form-item>
-                                <el-button size="small" type="primary" @click="submitForm('ruleForm')">下一步</el-button>
-                                <el-button size="small"  @click="resetForm('ruleForm')">重置</el-button>
-                            </el-form-item>
-                        </el-form>
-                    </el-col>
+                        <el-form-item label="抄送邮箱" prop="mail_cc">
+                            <el-input type="textarea" v-model="ruleForm.mail_cc" placeholder='多个邮箱以";"分隔' clearable size="medium"
+                                      :autosize="{ minRows: 1, maxRows: 4}"></el-input>
+                        </el-form-item>
+
+                        <el-form-item>
+                            <el-button size="small" type="primary" @click="submitForm('ruleForm')">下一步</el-button>
+                            <el-button size="small"  @click="resetForm('ruleForm')">重置</el-button>
+                        </el-form-item>
+                    </el-form>
                 </div>
             </el-main>
         </template>

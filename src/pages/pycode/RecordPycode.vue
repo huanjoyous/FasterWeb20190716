@@ -94,7 +94,7 @@
                         :disabled="!PycodedebugActivate"
                         type="text"
                         style="position: absolute; right: 30px;"
-                        @click="PycodedebugActivate=false"
+                        @click="quitEditPycode"
                     >返回列表</el-button>
 
                 </div>
@@ -274,6 +274,15 @@
             }
         },
         methods: {
+            quitEditPycode(){
+                this.$confirm('请确认是否已保存最新代码，是否继续?', '提示', {
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                    type: 'warning',
+                }).then(() => {
+                    this.PycodedebugActivate=false;
+                });
+            },
             cellMouseEnter(row) {
                 this.currentRow = row;
             },

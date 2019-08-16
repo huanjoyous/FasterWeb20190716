@@ -51,16 +51,21 @@
         </el-table-column>
 
 
-        <el-table-column
-            label="期望返回值"
-        >
+        <el-table-column label="期望返回值">
             <template slot-scope="scope">
-                <el-input clearable v-model="scope.row.expect" placeholder="期望返回值" size="medium"></el-input>
+                <el-input v-if="scope.row.type !== 4" clearable v-model="scope.row.expect" placeholder="期望返回值" size="medium"></el-input>
+                <el-select v-if="scope.row.type === 4" clearable v-model="scope.row.expect" placeholder="期望返回值" size="medium">
+                    <el-option
+                        v-for="item in BoolOptions"
+                        :key="item.value"
+                        :label="item.label"
+                        :value="item.value">
+                    </el-option>
+                </el-select>
             </template>
         </el-table-column>
-        <el-table-column
-            width="130"
-        >
+
+        <el-table-column width="130">
             <template slot-scope="scope">
                 <el-row v-show="scope.row === currentRow">
                     <el-button
@@ -105,7 +110,7 @@
 
             validate: function () {
                 if (this.validate.length !== 0) {
-                    this.tableData = this.validate;
+                    this.tableData = this.loaderValidate(this.validate);
                 }
             }
         },
@@ -141,7 +146,7 @@
                         if (String(value).toLowerCase() === 'null' || String(value).toLowerCase() === 'none'){
                             tempValue = null;
                         }else {
-                            tempValue = value;
+                            tempValue = String(value);
                         }
                         break;
                     case 2:
@@ -151,16 +156,7 @@
                         tempValue = parseFloat(value);
                         break;
                     case 4:
-                        if (String(value).toLowerCase() === 'false' || String(value).toLowerCase() === 'true') {
-                            let bool = {
-                                'true': true,
-                                'false': false
-                            };
-                            tempValue = bool[value];
-                        } else {
-                            this.$notify.error(msg);
-                            return 'exception'
-                        }
+                        tempValue = value === 'true';
                         break;
                     case 5:
                         try {
@@ -211,6 +207,20 @@
                     }
                 }
                 return validate;
+            },
+            loaderValidate(response){
+                let obj = [];
+                for (let content of response) {
+                    if (content['type'] === 4) {
+                        if (content['expect'] === true){
+                            content['expect'] = 'true'
+                        }else{
+                            content['expect'] = 'false'
+                        }
+                    }
+                    obj.push(content)
+                }
+                return obj
             }
         },
         data() {
@@ -218,10 +228,10 @@
                 currentValidate: '',
                 currentRow: '',
                 tableData: [{
-                    expect: '',
-                    actual: '',
+                    expect: 200,
+                    actual: 'status_code',
                     comparator: 'eq',
-                    type: 1
+                    type: 2
                 }],
 
                 dataTypeOptions: [{
@@ -298,6 +308,13 @@
                 }, {
                     value: 'endswith',
                     lable: 'endwith'
+                }],
+                BoolOptions:[{
+                    label: 'true',
+                    value: 'true'
+                },{
+                    label: 'false',
+                    value: 'false'
                 }]
             }
         },

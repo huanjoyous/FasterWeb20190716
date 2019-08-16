@@ -50,14 +50,21 @@
                 >
                     <template slot-scope="scope">
                         <el-input
-                            v-show="scope.row.type !== 5"
+                            v-show="scope.row.type !== 5 && scope.row.type !== 4"
                             clearable
                             v-model="scope.row.value"
                             placeholder="Value"
                             size="medium"
                             :disabled="isDisabled"
                         ></el-input>
-
+                        <el-select v-if="scope.row.type === 4" clearable v-model="scope.row.value" placeholder="期望返回值" size="medium" :disabled="isDisabled">
+                            <el-option
+                                v-for="item in BoolOptions"
+                                :key="item.value"
+                                :label="item.label"
+                                :value="item.value">
+                            </el-option>
+                        </el-select>
                         <el-row v-show="scope.row.type === 5">
                             <el-col :span="7">
                                 <el-upload
@@ -99,11 +106,9 @@
                     </template>
                 </el-table-column>
 
-                <el-table-column
-                    width="140"
-                    :disabled="isDisabled">
+                <el-table-column width="140">
                     <template slot-scope="scope">
-                        <el-row v-show="scope.row === currentRow">
+                        <el-row v-show="scope.row === currentRow && !isDisabled">
                             <el-button
                                 icon="el-icon-circle-plus-outline"
                                 size="mini"
@@ -141,7 +146,7 @@
         props: {
             save: Boolean,
             request: {
-                require: false
+                require: true
             },
             isDisabled:Boolean
         },
@@ -169,8 +174,8 @@
             },
 
             request: function () {
-                if (this.request.length !== 0) {
-                    this.formData = this.request.data;
+                if (this.request) {
+                    this.formData = this.loaderRequest(this.request.data);
                     this.jsonData = this.request.json_data;
                     this.paramsData = this.request.params;
                 }
@@ -232,21 +237,13 @@
                     type: 1,
                     desc: ''
                 });
-                if (data.length > 1){
-                    this.IsShowDel = true
-                }else{
-                    this.IsShowDel = false
-                }
+                this.IsShowDel = data.length > 1;
             },
 
             handleDelete(index, row) {
                 const data = this.dataType === 'data' ? this.formData : this.paramsData;
                 data.splice(index, 1);
-                if (data.length > 1){
-                    this.IsShowDel = true
-                }else{
-                    this.IsShowDel = false
-                }
+                this.IsShowDel = data.length > 1;
             },
 
             // 文件格式化
@@ -320,10 +317,14 @@
             // 类型转换
             parseType(type, value) {
                 let tempValue;
-                const msg = value + ' => ' + this.dataTypeOptions[type - 1].label + ' 转换异常, 该数据自动剔除';
+                const msg = String(value) + ' => ' + this.dataTypeOptions[type - 1].label + ' 转换异常, 该数据自动剔除';
                 switch (type) {
                     case 1:
-                        tempValue = value;
+                        if (String(value).toLowerCase() === 'null' || String(value).toLowerCase() === 'none'){
+                            tempValue = null;
+                        }else {
+                            tempValue = String(value);
+                        }
                         break;
                     case 2:
                         tempValue = parseInt(value);
@@ -332,29 +333,30 @@
                         tempValue = parseFloat(value);
                         break;
                     case 4:
-                        if (value === 'False' || value === 'True') {
-                            let bool = {
-                                'True': true,
-                                'False': false
-                            };
-                            tempValue = bool[value];
-                        } else {
-                            this.$notify.error({
-                                message: '类型转换错误'
-                            });
-                            return 'exception'
-                        }
+                        tempValue = value === 'true';
                         break;
                 }
 
                 if (tempValue !== 0 && !tempValue && type !== 4 && type !== 1) {
-                    this.$notify.error({
-                        message: '类型转换错误'
-                    });
+                    this.$notify.error(msg);
                     return 'exception'
                 }
 
                 return tempValue;
+            },
+            loaderRequest(response){
+                let obj = [];
+                for (let content of response) {
+                    if (content['type'] === 4) {
+                        if (content['value'] === true){
+                            content['value'] = 'true'
+                        }else{
+                            content['value'] = 'false'
+                        }
+                    }
+                    obj.push(content)
+                }
+                return obj
             }
         },
 
@@ -403,7 +405,14 @@
                     value: 'params'
                 }],
                 dataType: 'json',
-                IsShowDel: false
+                IsShowDel: false,
+                BoolOptions:[{
+                    label: 'true',
+                    value: 'true'
+                },{
+                    label: 'false',
+                    value: 'false'
+                }]
             }
         }
     }

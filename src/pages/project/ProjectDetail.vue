@@ -1,4 +1,4 @@
-<template>
+F<template>
 
     <div v-loading="loading"
          element-loading-text="正在玩命加载"

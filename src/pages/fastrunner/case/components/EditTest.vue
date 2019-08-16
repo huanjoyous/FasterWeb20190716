@@ -1,6 +1,6 @@
 <template>
     <el-container>
-        <el-aside style="margin-top: 10px;">
+        <el-aside style="margin-top: 10px;" v-show="!editTestStepActivate">
             <div class="nav-api-side">
                 <div class="api-tree">
                     <el-input
@@ -45,6 +45,7 @@
                             layout="total, prev, pager, next, jumper"
                             :total="apiData.count"
                             style="margin-top: 5px; text-align: center"
+                            small
                         >
                         </el-pagination>
                     </el-col>
@@ -54,6 +55,7 @@
                             placeholder="请输入测试用例名称"
                             v-model="testName"
                             clearable
+                            size="medium"
                         >
                             <el-select v-model="testTag" slot="prepend" placeholder="请选择" style="width: 105px">
                                 <el-option
@@ -80,9 +82,9 @@
                     <el-col :span="12">
                         <div
                             v-for="(item,index) in apiData.results"
-                            draggable='true'
+                            draggable="true"
                             @dragstart="currentAPI = JSON.parse(JSON.stringify(item))"
-                            style="cursor: pointer; margin-top: 5px; overflow: auto;"
+                            style="cursor: pointer; margin-top: 5px; overflow: auto"
                             :key="index"
                         >
                             <div class="block block_post" v-if="item.method.toUpperCase() === 'POST' ">
@@ -121,8 +123,7 @@
                                 <span class="block-summary-description">{{item.name}}</span>
                             </div>
 
-                            <div class="block block_options"
-                                 v-if="item.method.toUpperCase()=== 'OPTIONS' ">
+                            <div class="block block_options" v-if="item.method.toUpperCase()=== 'OPTIONS' ">
                                 <span class="block-method block_method_options block_method_color">OPTIONS</span>
                                 <span class="block-method block_url">{{item.url}}</span>
                                 <span class="block-summary-description">{{item.name}}</span>
@@ -131,14 +132,6 @@
 
                     </el-col>
                     <el-col :span="12">
-                        <el-dialog
-                            v-if="dialogTableVisible"
-                            :visible.sync="dialogTableVisible"
-                            width="70%"
-                        >
-                            <report :summary="summary"></report>
-                        </el-dialog>
-
                         <div style="max-height: 600px; overflow: auto"
                              @drop='drop($event)'
                              @dragover='allowDrop($event)'
@@ -146,17 +139,16 @@
                             <div class='test-list'>
                                 <div
                                     v-if="testData.length ===0"
-                                    style="color: red;align-content: center">
-                                    温馨提示：<br/>选择左侧相应API节点显示可拖拽的API<br/>从左边拖拽API至此区域组成业务用例<br/>
-                                    上下拖动此区域接口调整接口调用顺序
+                                    style="color: red; text-align: center; margin-top: 100px">
+                                    温馨提示<br/>选择左侧相应API节点显示可拖拽的API,从左边拖拽API至此区域组成业务用例,上下拖动此区域接口调整接口调用顺序
                                 </div>
                                 <div
                                     v-if="isConfigExist"
                                     class="block block_test"
                                     @mousemove="currentTest = -1"
                                 >
-                                    <span class="block-method block_method_config block_method_color">{{testData[0].body.method}}</span>
-                                    <input class="block-test-name" v-model="testData[0].body.name" disabled/>
+                                    <span class="block-method block_method_config block_method_color">{{testData[0].method}}</span>
+                                    <span class="block-test-name" >{{testData[0].name}}</span>
 
                                     <el-button
                                         style="position: absolute; right: 12px; top: 8px"
@@ -180,14 +172,11 @@
                                         :key="index"
                                         class="block block_test"
                                         @mousemove="currentTest = index"
-                                        v-if="test.body.method !== 'config'"
+                                        v-if="test.method !== 'config'"
                                     >
                                         <span
-                                            class="block-method block_method_test block_method_color">A P I</span>
-                                        <input class="block-test-name"
-                                               v-model="test.body.name"
-                                        />
-
+                                            class="block-method block_method_test block_method_color">{{test.method}}</span>
+                                        <span class="block-test-name" >{{test.name}}</span>
                                         <el-button
                                             style="position: absolute; right: 48px; top: 8px"
                                             v-show="currentTest === index"
@@ -219,6 +208,7 @@
             </div>
 
             <http-runner
+                style="margin-left: -10px; "
                 :host="host"
                 v-if="editTestStepActivate"
                 :response="testData[currentTest]"
@@ -248,10 +238,7 @@
         computed: {
             isConfigExist: {
                 get() {
-                    if (this.testData.length > 0 && this.testData[0].body.method === "config" && this.testData[0].body.name !== '请选择') {
-                        return true;
-                    }
-                    return false;
+                    return this.testData.length > 0 && this.testData[0].body.method === "config" && this.testData[0].body.name !== '请选择';
                 }
             }
         },
@@ -272,12 +259,6 @@
                 require: false
             },
             back: Boolean,
-            testDataExcel: {
-                require: true
-            },
-            testDataSheet: {
-                require: true
-            }
         },
 
         name: "EditTest",
@@ -328,7 +309,6 @@
                 }],
                 suite_loading: false,
                 loading: false,
-                dialogTableVisible: false,
                 editTestStepActivate: false,
                 currentPage: 1,
                 length: 0,
@@ -360,7 +340,9 @@
                     body: body,
                     newBody: newBody,
                     case: step,
-                    id: id
+                    id: id,
+                    name: newBody.name,
+                    method: newBody.method
                 };
             },
             validateData() {
@@ -375,9 +357,7 @@
                     return false
                 }
                 if (this.testData[0].body.method === "config" && this.testData.length === 1) {
-                    this.$notify.warning({
-                        message: '测试用例集至少包含一个接口'
-                    });
+                    this.$notify.warning('测试用例集至少包含一个接口');
                     return false
                 }
                     return true;

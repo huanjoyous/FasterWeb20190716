@@ -45,17 +45,24 @@ axios.interceptors.response.use(function (response) {
             message: 'Not Allowed'
           })
         }else{
-            for (let key in error.response.data){
-                if (error.response.data[key].constructor === Array){
-                    Notification.error({
-                        title: key,
-                        message: error.response.data[key][0]
+            if (error.response.data.constructor === String){
+                Notification.error({
+                    title: 'error',
+                    message: error.response.data
+                })
+            } else {
+                for (let key in error.response.data){
+                    if (error.response.data[key].constructor === Array){
+                        Notification.error({
+                            title: key,
+                            message: error.response.data[key][0]
+                            })
+                    }else if (error.response.data[key].constructor === String){
+                        Notification.error({
+                            title: key,
+                            message: error.response.data[key]
                         })
-                }else if (error.response.data[key].constructor === String){
-                    Notification.error({
-                        title: key,
-                        message: error.response.data[key]
-                    })
+                    }
                 }
             }
         }
@@ -381,4 +388,8 @@ export const copyHost = (params, data)  => {
 
 export const getHostPaginationBypage = params => {
     return axios.get('/api/fastrunner/host_ip/', params).then(res => res.data)
+};
+
+export const getTaskMetaDataList = params => {
+    return axios.get('/api/fastrunner/taskmeta/', params)
 };

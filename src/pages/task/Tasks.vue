@@ -52,6 +52,7 @@
             <el-main style="padding: 0; margin-left: 10px; margin-top: 10px;">
                 <div style="position: fixed; bottom: 0; right:0; left: 178px; top: 150px">
                     <el-table
+                        style="width: 100%; overflow: auto;"
                         v-loading="loading"
                         element-loading-text="正在玩命加载"
                         v-if="!addTasks"
@@ -59,7 +60,6 @@
                         :show-header="tasksData.results.length !== 0 "
                         stripe
                         highlight-current-row
-                        height="600px"
                         @cell-mouse-enter="cellMouseEnter"
                         @cell-mouse-leave="cellMouseLeave"
                         @selection-change="handleSelectionChange"
@@ -187,7 +187,10 @@
                     strategy: '始终发送',
                     receiver: '',
                     mail_cc: '',
-                    name: ''
+                    name: '',
+                    sensitive_keys: '',
+                    self_error: '',
+                    fail_count: 1
                 },
                 args: [],
                 scheduleId: '',
@@ -276,6 +279,7 @@
                 this.ruleForm["mail_cc"] = index_data.summary_kwargs.mail_cc;
                 this.ruleForm["fail_count"] = index_data.summary_kwargs.fail_count;
                 this.ruleForm["self_error"] = index_data.summary_kwargs.self_error;
+                this.ruleForm["sensitive_keys"] = index_data.summary_kwargs.sensitive_keys;
                 this.ruleForm["name"] = index_data.name;
                 this.ruleForm["switch"] = index_data.enabled;
                 this.args = index_data.summary_args;
@@ -292,7 +296,8 @@
                     mail_cc: '',
                     name: '',
                     self_error: '',
-                    fail_count: ''
+                    fail_count: '',
+                    sensitive_keys: ''
                 }
             },
             getTaskList() {

@@ -1,26 +1,24 @@
 <template>
-    <div>
+    <div style="margin-left: 10px">
         <div>
             <div>
                 <el-input
-                    style="width: 600px"
+                    style="width: 60%"
                     placeholder="请输入接口名称"
                     v-model="name"
                     clearable
                 >
                     <template slot="prepend">接口信息录入</template>
-
-                    <el-button
-                        slot="append"
-                        type="success"
-                        plain
-                        @click="save = !save"
-                    >Save
-                    </el-button>
                 </el-input>
-
                 <el-button
+                    slot="append"
                     type="primary"
+                    @click="save = !save"
+                >Save
+                </el-button>
+                <el-button
+                    style="margin-left: 0px"
+                    type="success"
                     @click="reverseStatus"
                     v-loading="loading"
                     :disabled="loading"
@@ -30,7 +28,7 @@
 
             <div>
                 <el-input
-                    style="width: 525px; margin-top: 10px"
+                    style="width: 60%; margin-top: 10px"
                     placeholder="请输入接口请求地址"
                     v-model="url"
                     clearable
@@ -60,11 +58,13 @@
                         v-model="times"
                         controls-position="right"
                         :min="1"
-                        :max="100"
-                        style="width: 88px"
+                        :max="20"
+                        style="width: 12%"
+                        :precision="0"
                     >
                     </el-input-number>
                 </el-tooltip>
+
             </div>
 
         </div>
@@ -140,8 +140,6 @@
             </el-tabs>
 
         </div>
-
-
     </div>
 
 </template>
@@ -180,7 +178,7 @@
                 require: false
             },
             response: {
-                require: false
+                require: true
             },
             testDataExcel:{
                 require: false
@@ -227,16 +225,12 @@
 
             validateData() {
                 if (this.url === '') {
-                    this.$notify.error({
-                        message: '接口请求地址不能为空'
-                    });
+                    this.$notify.error('接口请求地址不能为空');
                     return false;
                 }
 
                 if (this.name === '') {
-                    this.$notify.error({
-                        message: '接口名称不能为空'
-                    });
+                    this.$notify.error('接口名称不能为空');
                     return false;
                 }
                 return true
@@ -308,8 +302,7 @@
                         name: this.name,
                         times: this.times,
                         nodeId: this.nodeId,
-                        project: this.project,
-
+                        project: this.project
                     }).then(resp => {
                         if (resp.success) {
                             this.$notify.success(resp.msg);
@@ -339,7 +332,7 @@
                 url: '',
                 id: '',
                 header: [],
-                request: [],
+                request: {},
                 extract: [],
                 validate: [],
                 variables: [],
