@@ -26,7 +26,6 @@
         </el-table-column>
 
         <el-table-column
-            fixed
             label="实际返回值"
             >
             <template slot-scope="scope">

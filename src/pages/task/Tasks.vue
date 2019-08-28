@@ -8,7 +8,7 @@
                         type="primary"
                         size="small"
                         icon="el-icon-circle-plus-outline"
-                        @click="addTasks=true; scheduleId=''"
+                        @click="handleAddTask"
                         :disabled="addTasks"
                     >添加任务
                     </el-button>
@@ -198,6 +198,21 @@
             }
         },
         methods: {
+            handleAddTask(){
+                this.addTasks = true;
+                this.scheduleId = '';
+                this.ruleForm = {
+                    switch: true,
+                    crontab: '',
+                    strategy: '始终发送',
+                    receiver: '',
+                    mail_cc: '',
+                    name: '',
+                    sensitive_keys: '',
+                    self_error: '',
+                    fail_count: 1
+                };
+            },
             handleSelectionChange(val){
                 this.selectTasks = val;
             },
@@ -254,11 +269,17 @@
                 }
             },
             handleRunSchedule(id){
-                this.loading = true;
-                this.$api.runScheduleTest(id).then(resp => {
-                    this.$notify.success('执行成功，请稍后查看报告以及邮件');
-                    this.loading = false;
-                })
+                this.$confirm('此操作将运行此定时任务并发送邮件, 是否继续?', '提示', {
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                    type: 'warning'
+                }).then(() => {
+                    this.loading = true;
+                    this.$api.runScheduleTest(id).then(resp => {
+                        this.$notify.success('执行成功，请稍后查看报告以及邮件');
+                        this.loading = false;
+                    })
+                });
             },
             handleCurrentChange(val) {
                 this.$api.getTaskPaginationBypage({

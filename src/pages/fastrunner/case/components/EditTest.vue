@@ -165,7 +165,7 @@
                                     v-model="testData"
                                     @end="dragEnd"
                                     @start="length = testData.length"
-                                    :options="{animation:200}"
+                                    animation=200
                                 >
                                     <div
                                         v-for="(test, index) in testData"

@@ -52,6 +52,7 @@
 
         <el-table-column
             width="130"
+            :disabled="isDisabled"
         >
             <template slot-scope="scope">
                 <el-row v-show="scope.row === currentRow && !isDisabled">

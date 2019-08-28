@@ -87,7 +87,7 @@
                         :data="filedata"
                         style="display: inline"
                     >
-                        <el-button size="small" type="primary" icon="el-icon-upload" title="只能上传jpg/png/xlsx/xls文件" :disabled="!addTestActivate">
+                        <el-button size="small" type="warning" icon="el-icon-upload" title="只能上传jpg/png/xlsx/xls文件" :disabled="!addTestActivate">
                             上传文件
                         </el-button>
                     </el-upload>

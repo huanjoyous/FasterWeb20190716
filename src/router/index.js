@@ -1,7 +1,6 @@
 import Vue from 'vue'
 import Router from 'vue-router'
 import Home from '@/pages/home/Home'
-import Register from '@/pages/auth/Register'
 import Login from '@/pages/auth/Login'
 import ProjectList from '@/pages/project/ProjectList'
 import ProjectDetail from '@/pages/project/ProjectDetail'
@@ -15,6 +14,7 @@ import Tasks from '@/pages/task/Tasks'
 import HostAddress from '@/pages/variables/HostAddress'
 import TestData from "@/pages/testdata/TestData";
 import TaskMeta from "@/pages/reports/TaskMeta";
+//import Register from '@/pages/auth/Register'
 Vue.use(Router);
 
 export default new Router({

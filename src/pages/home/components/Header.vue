@@ -1,14 +1,12 @@
 <template>
     <div>
         <div class="nav-header">
-            <span style="color: white; font-size: 20px; margin-left: 12px">&nbsp;{{ $store.state.headTitle }}</span>
+            <span style="color: white; font-size: 20px; margin-left: 24px">{{ $store.state.headTitle }}</span>
             <span class="right">
                 <div style="float: right; color: #d9d9d9; margin-right: 100px">
-
-                    <i class="iconfont">&#xe61c;</i>
-
-                    <span v-text="this.$store.state.user" style="padding-left: 5px; font-size: large"></span>
-                    <a style="padding-left: 10px;" @click="handleLogOut">注 销</a>
+                    <i class="el-icon-user-solid" style="font-size: 16px"></i>
+                    <span v-text="this.$store.state.user" style="font-size: large"></span>
+                    <a style="padding-left: 10px;font-size: 16px" @click="handleLogOut">注 销</a>
                 </div>
             </span>
         </div>

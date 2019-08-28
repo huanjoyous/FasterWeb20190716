@@ -88,7 +88,7 @@
                             <span class="custom-tree-node"
                                   slot-scope="{ node, data }"
                             >
-                                <span><i class="iconfont" v-html="expand"></i>&nbsp;&nbsp;{{ node.label }}</span>
+                                <span><i class="el-icon-suitcase"></i>&nbsp;&nbsp;{{ node.label }}</span>
                             </span>
                         </el-tree>
                     </div>
@@ -149,7 +149,7 @@
                                         v-model="testData"
                                         @end="dragEnd"
                                         @start="length = testData.length"
-                                        :options="{animation:200}"
+                                        animation=200
                                     >
                                         <div
                                             v-for="(test, index) in testData"

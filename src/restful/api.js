@@ -32,7 +32,7 @@ axios.interceptors.response.use(function (response) {
             router.replace({
                 name: 'Login'
             })
-        }else if (error.response.status === 500) {
+        }else if (error.response.status === 500 || error.response.status === 404) {
             Notification.error({
                 message: '服务器内部异常, 请检查'
             })

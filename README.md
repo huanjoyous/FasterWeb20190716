@@ -24,3 +24,9 @@
 
 ### 其他注意点：
 - npm 安装太慢时参考：http://npm.taobao.org/
+- 安装指定版本node: 
+    1.  wget https://nodejs.org/dist/v8.11.4/node-v8.11.4-linux-x64.tar.xz
+    2. tar xf  node-v8.11.4-linux-x64.tar.xz
+    3. sudo ln -s /home/ebao/node-v8.11.4-linux-x64/bin/npm /usr/bin/npm 
+    4. sudo ln -s /home/ebao/node-v8.11.4-linux-x64/bin/node /usr/bin/node
+- 安装指定版本npm: sudo npm install -g npm@5.6.0 

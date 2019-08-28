@@ -7,7 +7,6 @@ F<template>
             <li class="title-li" title="Test API Project">
                 <b>{{projectInfo.name}}</b>
                 <b class="desc-li">{{projectInfo.desc}}</b>
-
             </li>
         </ul>
 

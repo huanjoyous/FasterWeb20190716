@@ -336,9 +336,10 @@
                         'name': value
                     }).then(resp => {
                         if (resp.success) {
+                            this.$notify.success('复制API成功')
                             this.getAPIList();
                         } else {
-                            this.$message.error(resp.msg);
+                            this.$notify.error(resp.msg);
                         }
                     })
                 })
@@ -367,7 +368,7 @@
                         "testDataSheet": this.testDataSheet
                     }).then(resp => {
                         if (resp.hasOwnProperty("status")) {
-                            this.$message.info({
+                            this.$notify.info({
                                 message: resp.msg,
                                 duration: 1500
                             });
@@ -436,7 +437,7 @@
                             this.$notify.success('删除API成功');
                             this.getAPIList();
                         } else {
-                            this.$message.error(resp.msg);
+                            this.$notify.error(resp.msg);
                         }
                     })
                 })
