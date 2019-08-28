@@ -3,6 +3,35 @@
 ![LICENSE](https://img.shields.io/github/license/yinquanwang/FasterRunner.svg)
 > FasterWeb depend on FasterRunner
 
+## 页面展示
+![Image text](https://github.com/weirdohaibo/FasterWeb/pageview/登录.jpg)
+![Image text](https://github.com/weirdohaibo/FasterWeb/pageview/首页页面.jpg)
+![Image text](https://github.com/weirdohaibo/FasterWeb/pageview/项目概况.jpg)
+![Image text](https://github.com/weirdohaibo/FasterWeb/pageview/测试数据.jpg)
+![Image text](https://github.com/weirdohaibo/FasterWeb/pageview/驱动代码.jpg)
+![Image text](https://github.com/weirdohaibo/FasterWeb/pageview/驱动代码1.jpg)
+![Image text](https://github.com/weirdohaibo/FasterWeb/pageview/API模板.jpg)
+![Image text](https://github.com/weirdohaibo/FasterWeb/pageview/API模板1.jpg)
+![Image text](https://github.com/weirdohaibo/FasterWeb/pageview/测试用例.jpg)
+![Image text](https://github.com/weirdohaibo/FasterWeb/pageview/测试用例1.jpg)
+![Image text](https://github.com/weirdohaibo/FasterWeb/pageview/测试用例2.jpg)
+![Image text](https://github.com/weirdohaibo/FasterWeb/pageview/测试用例3.jpg)
+![Image text](https://github.com/weirdohaibo/FasterWeb/pageview/定时任务.jpg)
+![Image text](https://github.com/weirdohaibo/FasterWeb/pageview/定时任务1.jpg)
+![Image text](https://github.com/weirdohaibo/FasterWeb/pageview/定时任务2.jpg)
+![Image text](https://github.com/weirdohaibo/FasterWeb/pageview/定时任务3.jpg)
+![Image text](https://github.com/weirdohaibo/FasterWeb/pageview/环境变量.jpg)
+![Image text](https://github.com/weirdohaibo/FasterWeb/pageview/参数配置.jpg)
+![Image text](https://github.com/weirdohaibo/FasterWeb/pageview/参数配置1.jpg)
+![Image text](https://github.com/weirdohaibo/FasterWeb/pageview/域名管理.jpg)
+![Image text](https://github.com/weirdohaibo/FasterWeb/pageview/域名管理1.jpg)
+![Image text](https://github.com/weirdohaibo/FasterWeb/pageview/历史报告.jpg)
+![Image text](https://github.com/weirdohaibo/FasterWeb/pageview/excel报告.jpg)
+![Image text](https://github.com/weirdohaibo/FasterWeb/pageview/异步回执.jpg)
+![Image text](https://github.com/weirdohaibo/FasterWeb/pageview/弹出报告.jpg)
+![Image text](https://github.com/weirdohaibo/FasterWeb/pageview/测试报告页面.jpg)
+![Image text](https://github.com/weirdohaibo/FasterWeb/pageview/后台管理系统.jpg)
+
 ## Docker 部署nginx模式
 ``` 
 1. 修改default.conf配置文件 server_name的ip(宿主机IP), 端口默认8080
