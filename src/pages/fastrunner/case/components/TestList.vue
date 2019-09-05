@@ -171,7 +171,9 @@
 
                                     <el-popover
                                         style="margin-left: 10px"
-                                        v-model="visible">
+                                        v-model="scope.row.visible"
+
+                                        >
                                         <div style="text-align: center">
                                             <el-button
                                                 type="success"
@@ -198,7 +200,7 @@
                                             >
                                             </el-button>
                                         </div>
-                                        <el-button icon="el-icon-more" title="更多" circle size="mini" slot="reference"></el-button>
+                                        <el-button icon="el-icon-more" title="更多" circle size="mini" slot="reference" @click="scope.row.visible=!scope.row.visible"></el-button>
                                     </el-popover>
 
                                 </el-row>
@@ -454,7 +456,12 @@
                         page: this.currentPage
                     }
                 }).then(resp => {
-                    this.testData = resp.data;
+                    if (resp.data){
+                        for (let rowData of resp.data.results){
+                            rowData["visible"] = false
+                        }
+                        this.testData = resp.data;
+                    }
                     this.loading = false;
                 })
             },
