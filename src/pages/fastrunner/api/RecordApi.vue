@@ -121,28 +121,6 @@
                         >
                         </el-option>
                     </el-select>
-                    &nbsp数据:
-                    <el-select
-                        placeholder="请选择"
-                        size="small"
-                        style="width: 120px"
-                        v-model="currentTestDataExcel"
-                    >
-                        <el-option
-                            v-for="item in testDataOptions"
-                            :key="item.id"
-                            :label="item.name"
-                            :value="item.name"
-                        >
-                        </el-option>
-                    </el-select>
-                    <el-input
-                        size="small"
-                        style="width: 120px;"
-                        v-model="currentTestDataSheet"
-                        placeholder="请输入sheet名"
-                    >
-                    </el-input>
 
                     <el-button
                         :disabled="!addAPIFlag"
@@ -199,8 +177,6 @@
                     v-on:addSuccess="handleAddSuccess"
                     :config="currentConfig"
                     :host="currentHost"
-                    :testDataExcel="currentTestDataExcel"
-                    :testDataSheet="currentTestDataSheet"
                 >
                 </api-body>
 
@@ -214,8 +190,6 @@
                     :del="del"
                     :back="back"
                     :run="run"
-                    :testDataExcel="currentTestDataExcel"
-                    :testDataSheet="currentTestDataSheet"
                 >
                 </api-list>
 
@@ -377,10 +351,7 @@
                 data: '',
                 filterText: '',
                 expand: '&#xe65f;',
-                dataTree: [],
-                testDataOptions: [],
-                currentTestDataExcel: '请选择',
-                currentTestDataSheet: '',
+                dataTree: []
             }
         },
         methods: {
@@ -511,28 +482,13 @@
                     this.$set(data, 'children', []);
                 }
                 data.children.push(newChild);
-            },
-
-            getTestData() {
-                this.$api.testdataList({
-                    params: {
-                        project: this.$route.params.id
-                    }
-                }).then(resp => {
-                    this.testDataOptions = resp.results;
-                    this.testDataOptions.push({
-                        name: '请选择'
-                    })
-                })
             }
-
         },
         name: "RecordApi",
         mounted() {
             this.getTree();
             this.getConfig();
             this.getHost();
-            this.getTestData();
         }
     }
 </script>

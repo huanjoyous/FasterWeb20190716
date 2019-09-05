@@ -1,7 +1,7 @@
 <template>
     <div>
         <div style="margin-left: 200px;">
-            <el-radio-group v-model="dataType">
+            <el-radio-group v-model="dataType" @change="handleChangeRadio">
                 <el-radio
                     v-for="item of dataOptions"
                     :label="item.label"
@@ -16,7 +16,7 @@
                 :cell-style="{paddingTop: '4px', paddingBottom: '4px'}"
                 strpe
                 :height="height"
-                :data="dataType === 'data' ? formData: paramsData"
+                :data="dataType === 'forms' ? formData: paramsData"
                 style="width: 100%;"
                 @cell-mouse-enter="cellMouseEnter"
                 @cell-mouse-leave="cellMouseLeave"
@@ -178,10 +178,20 @@
                     this.formData = this.loaderRequest(this.request.data);
                     this.jsonData = this.request.json_data;
                     this.paramsData = this.request.params;
+
                 }
             }
         },
         methods: {
+            handleChangeRadio(){
+                if (this.dataType === 'forms' && this.formData.length > 1){
+                    this.IsShowDel = true;
+                } else if (this.dataType === 'params' && this.paramsData.length > 1){
+                    this.IsShowDel = true;
+                } else {
+                    this.IsShowDel = false;
+                }
+            },
             editorInit() {
                 require('brace/ext/language_tools');
                 require('brace/mode/json');
@@ -230,7 +240,7 @@
             },
 
             handleEdit(index, row) {
-                const data = this.dataType === 'data' ? this.formData : this.paramsData;
+                const data = this.dataType === 'forms' ? this.formData : this.paramsData;
                 data.push({
                     key: '',
                     value: '',
@@ -241,7 +251,7 @@
             },
 
             handleDelete(index, row) {
-                const data = this.dataType === 'data' ? this.formData : this.paramsData;
+                const data = this.dataType === 'forms' ? this.formData : this.paramsData;
                 data.splice(index, 1);
                 this.IsShowDel = data.length > 1;
             },
@@ -306,9 +316,7 @@
                         json = JSON.parse(this.jsonData);
                     }
                     catch (err) {
-                        this.$notify.error({
-                            message: 'json数据格式错误'
-                        });
+                        this.$notify.error('json数据格式错误');
                     }
                 }
                 return json;
@@ -395,8 +403,8 @@
                     value: 5
                 }],
                 dataOptions: [{
-                    label: 'data',
-                    value: '表单',
+                    label: 'forms',
+                    value: 'forms',
                 }, {
                     label: 'json',
                     value: 'json',

@@ -251,13 +251,7 @@
             project: {
                 require: true
             },
-            del: Boolean,
-            testDataExcel:{
-                require: false
-            },
-            testDataSheet:{
-                require: false
-            }
+            del: Boolean
         },
         data() {
             return {
@@ -363,9 +357,7 @@
                         "relation": relation,
                         "async": this.asyncs,
                         "name": this.reportName,
-                        "config": this.config,
-                        "testDataExcel": this.testDataExcel,
-                        "testDataSheet": this.testDataSheet
+                        "config": this.config
                     }).then(resp => {
                         if (resp.hasOwnProperty("status")) {
                             this.$notify.info({
@@ -459,9 +451,7 @@
                 this.$api.runAPIByPk(id, {
                     params: {
                         host:this.host,
-                        config: this.config,
-                        testDataExcel: this.testDataExcel,
-                        testDataSheet: this.testDataSheet
+                        config: this.config
                     }
                 }).then(resp => {
                     this.summary = resp;

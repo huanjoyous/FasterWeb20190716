@@ -179,12 +179,6 @@
             },
             response: {
                 require: true
-            },
-            testDataExcel:{
-                require: false
-            },
-            testDataSheet:{
-                require: false
             }
         },
         methods: {
@@ -275,9 +269,7 @@
                         times: this.times,
                         project: this.project,
                         config: this.config,
-                        host:this.host,
-                        testDataExcel: this.testDataExcel,
-                        testDataSheet: this.testDataSheet
+                        host:this.host
                     }).then(resp => {
                         this.summary = resp;
                         this.dialogTableVisible = true;

@@ -320,7 +320,12 @@
                         title: 'detail',
                         message: '您没有执行该操作的权限。'
                     })
-                } else {
+                } else if (error.status === 406) {
+                    this.$notify.error({
+                        title: 'detail',
+                        message: '该文件被已被锁定，无法更新或删除。'
+                    })
+                }else {
                     this.$notify.error('文件上传失败')
                 }
             },

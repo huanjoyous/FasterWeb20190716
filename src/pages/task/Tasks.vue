@@ -212,6 +212,7 @@
                     self_error: '',
                     fail_count: 1
                 };
+                this.args = [];
             },
             handleSelectionChange(val){
                 this.selectTasks = val;

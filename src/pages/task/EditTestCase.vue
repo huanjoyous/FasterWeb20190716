@@ -13,8 +13,8 @@
                                   type="textarea" :autosize="{ minRows: 1, maxRows: 8}"></el-input>
                     </el-form-item>
 
-                    <el-form-item label="域名参数">
-                        <el-select placeholder="请选择" size="medium" v-model="kwargsForm.hostInfo" style="width: 45%;">
+                    <el-form-item label="域名参数" >
+                        <el-select placeholder="请选择" size="medium" v-model="kwargsForm.hostInfo" style="width: 50%;">
                             <el-option
                                 v-for="item in hostOptions"
                                 :key="item.id"
@@ -24,29 +24,17 @@
                         </el-select>
                     </el-form-item>
 
-                    <el-form-item label="数据选择">
-                        <el-select
-                            placeholder="请选择"
-                            style="width: 45%;"
-                            size="medium"
-                            v-model="kwargsForm.currentTestDataExcel"
-                        >
-                            <el-option
-                                v-for="item in testDataOptions"
-                                :key="item.id"
-                                :label="item.name"
-                                :value="item.name"
-                            >
-                            </el-option>
-                        </el-select>
-                        <el-input
-                            style="width: 50%;"
-                            size="medium"
-                            v-model="kwargsForm.currentTestDataSheet"
-                            placeholder="请输入sheet名"
+                    <el-form-item label="数据选择" width="300px">
+                        <el-cascader
+                            :options="excelTreeOptions"
+                            collapse-tags
+                            placeholder="试试搜索"
                             clearable
-                        >
-                        </el-input>
+                            filterable
+                            v-model="kwargsForm.excelTreeData"
+                            size="medium"
+                            style="width: 50%;"
+                        ></el-cascader>
                     </el-form-item>
 
                     <el-form-item>
@@ -89,10 +77,12 @@
             },
             getTestData() {
                 this.$api.testdataList({params: {project: this.$route.params.id}}).then(resp => {
-                    this.testDataOptions = resp.results;
-                    this.testDataOptions.push({
-                        name: '请选择'
-                    })
+                    this.excelTreeOptions = [];
+                    for (let excelTree of resp.results){
+                        if (excelTree["excel_tree"]){
+                            this.excelTreeOptions.push(excelTree["excel_tree"])
+                        }
+                    }
                 })
             }
         },
@@ -103,15 +93,14 @@
         },
         data() {
             return {
+                excelTreeOptions: [],
                 esc: false,
-                testDataOptions: [],
                 hostOptions:[],
                 testCaseName: this.testCase.name,
                 kwargsForm: {
                     testCaseName: '',
                     hostInfo: '',
-                    currentTestDataExcel: '',
-                    currentTestDataSheet: '',
+                    excelTreeData: ''
                 },
                 rules:{
                     testCaseName: [

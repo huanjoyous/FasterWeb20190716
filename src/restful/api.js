@@ -225,6 +225,10 @@ export const coptTest = (params, data) => {
     return axios({url:'/api/fastrunner/testcase/', method: 'POST', params:params, data:data})
 };
 
+export const SyncTestCase = (url, params) => {
+    return axios({url:'/api/fastrunner/TestCaseSync/' + url + '/', method:'PATCH',params:params})
+};
+
 export const editTest = (url,params) => {
     return axios.get('/api/fastrunner/testcase/' + url + '/', params)
 };
@@ -392,4 +396,8 @@ export const getHostPaginationBypage = params => {
 
 export const getTaskMetaDataList = params => {
     return axios.get('/api/fastrunner/taskmeta/', params)
+};
+
+export const lockFile = (params, data) => {
+    return axios({url:'/api/fastrunner/lock_file/',method:'POST', params:params,data:data})
 };

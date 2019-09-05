@@ -52,31 +52,21 @@
                             active-text="异步执行"
                             inactive-text="同步执行">
                             </el-switch>
-                            <div style="margin-top: 20px">
-                                <span>测试数据:</span>
-                            <el-select
-                                placeholder="请选择"
-                                size="small"
-                                style="width: 180px;"
-                                v-model="testDataExcel"
-                            >
-                                <el-option
-                                    v-for="item in testDataOptions"
-                                    :key="item.id"
-                                    :label="item.name"
-                                    :value="item.name"
-                                >
-                                </el-option>
-                            </el-select>
-                            <el-input
-                                size="small"
-                                style="width: 180px;"
-                                v-model="testDataSheet"
-                                placeholder="请输入sheet名"
-                            ></el-input>
+                            <div >
+                                <span class="demonstration">测试数据:</span>
+                                <el-cascader
+                                    :options="excelTreeOptions"
+                                    collapse-tags
+                                    placeholder="试试搜索"
+                                    clearable
+                                    filterable
+                                    v-model="excelTreeData"
+                                    size="small"
+                                    style="margin-top: 20px;"
+                                ></el-cascader>
                             </div>
                             <div>
-                                <span>报告名称:</span>
+                                <span class="demonstration">报告名称:</span>
                                 <el-input
                                     size="small"
                                     style="margin-top: 20px;width: 365px"
@@ -160,7 +150,7 @@
                             </template>
                         </el-table-column>
 
-                        <el-table-column width="180px">
+                        <el-table-column width="150px">
                             <template slot-scope="scope">
                                 <el-row v-show="currentRow === scope.row">
                                     <el-button
@@ -179,23 +169,38 @@
                                         @click="handleRunTest(scope.row.id, scope.row.name)"
                                     ></el-button>
 
-                                    <el-button
-                                        type="success"
-                                        icon="el-icon-document"
-                                        circle size="mini"
-                                        title="复制"
-                                        @click="handleCopyTest(scope.row.id)"
-                                    >
-                                    </el-button>
+                                    <el-popover
+                                        style="margin-left: 10px"
+                                        v-model="visible">
+                                        <div style="text-align: center">
+                                            <el-button
+                                                type="success"
+                                                icon="el-icon-document"
+                                                circle size="mini"
+                                                title="复制"
+                                                @click="handleCopyTest(scope.row.id)"
+                                            >
+                                            </el-button>
+                                            <el-button
+                                                type="warning"
+                                                icon="el-icon-refresh"
+                                                circle size="mini"
+                                                title="同步"
+                                                @click="handleSyncTest(scope.row.id)"
+                                            >
+                                            </el-button>
+                                            <el-button
+                                                type="danger"
+                                                icon="el-icon-delete"
+                                                circle size="mini"
+                                                title="删除"
+                                                @click="handleDelTest(scope.row.id)"
+                                            >
+                                            </el-button>
+                                        </div>
+                                        <el-button icon="el-icon-more" title="更多" circle size="mini" slot="reference"></el-button>
+                                    </el-popover>
 
-                                    <el-button
-                                        type="danger"
-                                        icon="el-icon-delete"
-                                        circle size="mini"
-                                        title="删除"
-                                        @click="handleDelTest(scope.row.id)"
-                                    >
-                                    </el-button>
                                 </el-row>
                             </template>
                         </el-table-column>
@@ -212,12 +217,10 @@
     import Report from '../../../reports/DebugReport'
 
     export default {
-
         name: "TestList",
         components: {
             Report
         },
-
         props: {
             run: Boolean,
             back: Boolean,
@@ -232,12 +235,10 @@
             },
             del: Boolean
         },
-
         watch: {
             filterText(val) {
                 this.$refs.tree.filter(val);
             },
-
             run() {
                 this.asyncs = false;
                 this.isSingleTest = false;
@@ -248,11 +249,9 @@
                 this.search = '';
                 this.getTestList();
             },
-
             back() {
                 this.getTestList();
             },
-
             del() {
                 if (this.selectTest.length !== 0) {
                     this.$confirm('此操作将永久删除测试用例集，是否继续?', '提示', {
@@ -274,6 +273,9 @@
         },
         data() {
             return {
+                excelTreeData:'',
+                excelTreeOptions: [],
+                visible: false,
                 search: '',
                 reportName: '',
                 asyncs: true,
@@ -294,20 +296,29 @@
                 loading: true,
                 runtestcaseId: '',
                 runtestcaseName: '',
-                testDataExcel: '请选择',
-                testDataSheet: '',
-                testDataOptions: []
             }
         },
-
         methods: {
+            handleSyncTest(id){
+                this.$confirm('此操作将同步API模板的request/header信息，是否继续?', '提示', {
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                    type: 'warning',
+                }).then(() => {
+                    this.$api.SyncTestCase(id,{project: this.$route.params.id}).then(resp => {
+                        if (resp.status === 200){
+                            this.getTestList();
+                            this.$notify.success('同步成功')
+                        }
+                    })
+                })
+            },
             getTree() {
                 this.$api.getTree(this.$route.params.id, {params: {type: 2}}).then(resp => {
                     this.dataTree = resp.tree;
                     this.dialogTreeVisible = true;
                 })
             },
-
             filterNode(value, data) {
                 if (!value) return true;
                 return data.label.indexOf(value) !== -1;
@@ -325,16 +336,12 @@
                 const relation = this.$refs.tree.getCheckedKeys();
                 if (relation.length === 0) {
                     this.$notify.error('请至少选择一个节点');
-                } else if(this.testDataExcel !== '请选择' && this.testDataSheet === '') {
-                    this.$notify.error('选择了数据，sheet名不能为空');
-                }else {
+                } else {
                     this.$api.runSuiteTree({
                         "host":this.host,
                         "project": this.project,
                         "relation": relation,
-                        "name": this.reportName,
-                        "testDataExcel": this.testDataExcel,
-                        "testDataSheet": this.testDataSheet
+                        "name": this.reportName
                     }).then(resp => {
                         if (resp.hasOwnProperty("status")) {
                             this.$notify.info(resp.msg);
@@ -342,8 +349,8 @@
                     })
                 }
             },
-
             handleRunTest(id, name) {
+                this.getTestData();
                 this.runtestcaseId = id;
                 this.runtestcsaeName = name;
                 this.isSingleTest = true;
@@ -351,41 +358,36 @@
             },
             runTesecase(){
                 this.dialogTreeVisible = false;
-                if(this.testDataExcel !== '请选择' && this.testDataSheet === '') {
-                    this.$notify.error('选择了数据，sheet名不能为空');
-                } else{
-                    this.loading = true;
-                    this.$api.runTestByPk(
-                        this.runtestcaseId,
-                        {
-                        project: this.project,
-                        name: this.runtestcsaeName,
-                        host:this.host,
-                        reportName: this.reportName,
-                        async: this.asyncs,
-                        testDataExcel: this.testDataExcel,
-                        testDataSheet: this.testDataSheet
-                        }
-                    ).then(resp => {
-                        if (resp.hasOwnProperty("status")) {
-                            this.loading = false;
-                            this.$notify.info(resp.msg);
-                        } else {
-                            this.loading = false;
-                            this.summary = resp;
-                            if (this.summary.details.length <= 5) {
-                                this.dialogTableVisible = true;
-                            } else {
-                                this.$notify.success({
-                                    title: '提示',
-                                    message: '执行结束，请在历史报告里查看结果'
-                                })
-                            }
-                        }
-                    }).catch(error =>{
+                this.loading = true;
+                this.$api.runTestByPk(
+                    this.runtestcaseId,
+                    {
+                    project: this.project,
+                    name: this.runtestcsaeName,
+                    host:this.host,
+                    reportName: this.reportName,
+                    async: this.asyncs,
+                    excelTreeData: this.excelTreeData
+                    }
+                ).then(resp => {
+                    if (resp.hasOwnProperty("status")) {
                         this.loading = false;
-                    })
-                }
+                        this.$notify.info(resp.msg);
+                    } else {
+                        this.loading = false;
+                        this.summary = resp;
+                        if (this.summary.details.length <= 5) {
+                            this.dialogTableVisible = true;
+                        } else {
+                            this.$notify.success({
+                                title: '提示',
+                                message: '执行结束，请在历史报告里查看结果'
+                            })
+                        }
+                    }
+                }).catch(error =>{
+                    this.loading = false;
+                })
             },
             handleCurrentChange(val) {
                 this.$api.getTestPaginationBypage({
@@ -468,16 +470,17 @@
                         project: this.$route.params.id
                     }
                 }).then(resp => {
-                    this.testDataOptions = resp.results;
-                    this.testDataOptions.push({
-                        name: '请选择'
-                    })
+                    this.excelTreeOptions = [];
+                    for (let excelTree of resp.results){
+                        if (excelTree["excel_tree"]){
+                            this.excelTreeOptions.push(excelTree["excel_tree"])
+                        }
+                    }
                 })
             }
         },
         mounted() {
            this.getTestList();
-           this.getTestData();
         }
     }
 </script>
