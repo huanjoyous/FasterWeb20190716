@@ -37,7 +37,7 @@
                         @cell-mouse-leave="cellMouseLeave"
                         @selection-change="handleSelectionChange"
                     >
-                        <el-table-column type="selection" width="40"></el-table-column>
+                        <el-table-column type="selection" width="50"></el-table-column>
 
                         <el-table-column label="状态" width="150">
                             <template slot-scope="scope">

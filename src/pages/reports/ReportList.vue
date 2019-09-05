@@ -57,8 +57,9 @@
                             @cell-mouse-enter="cellMouseEnter"
                             @cell-mouse-leave="cellMouseLeave"
                             @selection-change="handleSelectionChange"
+                            show-overflow-tooltip
                         >
-                            <el-table-column type="selection" width="40"></el-table-column>
+                            <el-table-column type="selection" width="50"></el-table-column>
 
                             <el-table-column label="类型" width="80" align="center">
                                 <template slot-scope="scope">
