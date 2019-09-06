@@ -2,9 +2,9 @@
     <el-menu
         class="common-side-bar"
         :default-active="$store.state.routerName"
-        background-color="#304056"
+        background-color="#2e3138"
         text-color="#BFCBD9"
-        active-text-color="#318DF1"
+        active-text-color="#1dbe89"
         @select="select"
         :collapse="true"
     >

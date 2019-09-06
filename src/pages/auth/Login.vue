@@ -1,22 +1,7 @@
 <template>
-
-    <el-container class="login">
-        <el-header>
-            <el-row>
-                <el-col
-                    :span="4"
-                    :offset="1"
-                >
-                </el-col>
-            </el-row>
-        </el-header>
+    <el-container class="login note" :style ="note">
         <el-main style="padding: 100px">
             <el-row>
-                <el-col :span="7">
-                    <div class="bottom-left">
-                        <img src="~@/assets/images/bottom-left.png">
-                    </div>
-                </el-col>
                 <el-col :span="24">
                     <div >
                         <form id="submit-form">
@@ -46,22 +31,19 @@
                     </div>
 
                 </el-col>
-                <el-col :span="7">
-                    <div class="bottom-right">
-                        <img src="~@/assets/images/bottom-right.png">
-                    </div>
-                </el-col>
             </el-row>
-
         </el-main>
     </el-container>
-
 </template>
 
 <script>
     import {Notification} from "element-ui";
     export default {
         name: "Login",
+        mounted() {
+            const myview = this.getViewportSize();
+            this.note.height = String(myview["height"]) + 'px';
+        },
         data() {
             return {
                 loginForm: {
@@ -69,7 +51,14 @@
                     password: '',
                 },
                 usernameInvalid: '',
-                passwordInvalid: ''
+                passwordInvalid: '',
+                note: {
+                    backgroundImage: "url(" + require("../../assets/images/background.jpg") + ")",
+                    backgroundPosition: "center center",
+                    backgroundRepeat: "no-repeat",
+                    backgroundSize: "cover",
+                    height: '600px'
+                }
             };
         },
         methods: {

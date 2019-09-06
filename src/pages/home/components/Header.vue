@@ -58,7 +58,7 @@
     }
 
     .nav-header {
-        background: #242f42;
+        background: #01101A;
         margin: 0 auto;
         font-size: 14px;
         width: 100%;
