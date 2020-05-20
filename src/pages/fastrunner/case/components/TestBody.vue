@@ -3,49 +3,42 @@
         <div>
             <div>
                 <el-input
-                    style="width: 600px"
-                    placeholder="请输入用例名称"
+                    style="width: 60%; min-width: 500px"
+                    placeholder="请输入接口名称"
                     v-model="name"
                     clearable
                 >
-                    <template slot="prepend">用例信息录入</template>
-
-                    <el-button
-                        slot="append"
-                        type="success"
-                        plain
-                        @click="save = !save"
-                    >Save
-                    </el-button>
-                    <el-button
-                        slot="append"
-                        type="warning"
-                        plain
-                        @click="esc = !esc"
-                    >Back
-                    </el-button>
+                    <template slot="prepend">接口信息录入</template>
                 </el-input>
-
                 <el-button
+                    slot="append"
                     type="primary"
-                    @click="handleRun"
-                    v-loading="loading"
-                >Run
+                    @click="save = !save"
+                >Save
                 </el-button>
-
+                <el-button
+                    style="margin-left: 0px"
+                    slot="append"
+                    type="info"
+                    @click="esc = !esc"
+                >Back
+                </el-button>
             </div>
-            <div>
 
+            <div>
                 <el-input
                     class="input-with-select"
                     placeholder="请输入接口请求地址"
                     v-model="url"
-                    clearable=""
+                    clearable
+                    style="width: 40%; min-width: 500px"
+                    disabled
                 >
                     <el-select
                         slot="prepend"
                         v-model="method"
                         size="small"
+                        disabled
                     >
                         <el-option
                             v-for="item of httpOptions"
@@ -57,28 +50,29 @@
                     </el-select>
                 </el-input>
 
+                <el-input
+                    placeholder="${skipif()} or boolean"
+                    v-model="skipIf"
+                    style="width:40%; min-width: 400px"
+                    clearable
+                >
+                    <template slot="prepend" >skipIf:</template>
+                </el-input>
                 <el-tooltip
                     effect="dark"
                     content="循环次数"
                     placement="bottom"
+                    style="width:10%;"
                 >
                     <el-input-number
                         v-model="times"
                         controls-position="right"
                         :min="1"
                         :max="100"
-                        style="width: 120px"
                     >
                     </el-input-number>
                 </el-tooltip>
             </div>
-            <el-dialog
-                v-if="dialogTableVisible"
-                :visible.sync="dialogTableVisible"
-                width="70%"
-            >
-                <report :summary="summary"></report>
-            </el-dialog>
         </div>
 
         <div class="request">
@@ -91,6 +85,7 @@
                         :save="save"
                         v-on:header="handleHeader"
                         :header="header"
+                        :isDisabled="isDisabled"
                     >
                     </headers>
                 </el-tab-pane>
@@ -100,6 +95,7 @@
                         :save="save"
                         v-on:request="handleRequest"
                         :request="request"
+                        :isDisabled="isDisabled"
                     >
                     </request>
                 </el-tab-pane>
@@ -119,7 +115,6 @@
                         v-on:validate="handleValidate"
                         :validate="validate"
                     >
-
                     </validate>
                 </el-tab-pane>
 
@@ -129,7 +124,6 @@
                         v-on:variables="handleVariables"
                         :variables="variables"
                     >
-
                     </variables>
                 </el-tab-pane>
 
@@ -154,7 +148,6 @@
     import Validate from '../../../httprunner/components/Validate'
     import Variables from '../../../httprunner/components/Variables'
     import Hooks from '../../../httprunner/components/Hooks'
-    import Report from '../../../reports/DebugReport'
 
     export default {
         components: {
@@ -163,29 +156,23 @@
             Extract,
             Validate,
             Variables,
-            Hooks,
-            Report
-
+            Hooks
         },
 
         props: {
             response: {
                 require: true
+            },
+            host: {
+                require: true
             }
         },
         methods: {
-            handleRun() {
-                this.run = true;
-                this.save = !this.save;
-            },
-
             handleHeader(header, value) {
-                this.header = value;
-                this.tempBody.header = header;
+              this.header = value;
             },
             handleRequest(request, value) {
-                this.request = value;
-                this.tempBody.request = request;
+              this.request = value;
             },
             handleValidate(validate, value) {
                 this.validate = value;
@@ -201,61 +188,36 @@
             },
             handleHooks(hooks, value) {
                 this.hooks = value;
-
                 this.tempBody.hooks = hooks;
-                this.tempBody.url = this.url;
-                this.tempBody.method = this.method;
                 this.tempBody.name = this.name;
                 this.tempBody.times = this.times;
-
+                this.tempBody.skipIf = this.skipIf;
+                this.tempBody.method = this.method;
                 if (this.validateData()) {
                     const body = {
-                        header: this.header,
-                        request: this.request,
                         extract: this.extract,
                         validate: this.validate,
                         variables: this.variables,
                         hooks: this.hooks,
-                        url: this.url,
-                        method: this.method,
                         name: this.name,
-                        times: this.times
+                        times: this.times,
+                        skipIf: this.skipIf
                     };
-                    if (this.run === true) {
-                        this.loading = true;
-                        this.$api.runSingleTest({
-                            body: {newBody: this.tempBody},
-                            project:this.$route.params.id
-                        }).then(resp => {
-                            this.summary = resp;
-                            this.dialogTableVisible = true;
-                            this.loading = false;
-                        }).catch(resp => {
-                            this.loading = false;
-                        })
-                    } else {
-                        this.$emit('getNewBody', body, this.tempBody);
-                    }
-                    this.run = false;
+                    this.$emit('getNewBody', body, this.tempBody);
                 }
-
             },
 
             validateData() {
                 if (this.url === '') {
                     this.$notify.error({
-                        title: 'url错误',
-                        message: '接口请求地址不能为空',
-                        duration: 1500
+                        message: '接口请求地址不能为空'
                     });
                     return false;
                 }
 
                 if (this.name === '') {
                     this.$notify.error({
-                        title: 'name错误',
-                        message: '用例名称不能为空',
-                        duration: 1500
+                        message: '接口名称不能为空'
                     });
                     return false;
                 }
@@ -270,12 +232,12 @@
         },
         data() {
             return {
-                loading:false,
-                run: false,
                 esc: false,
                 times: this.response.body.times,
                 name: this.response.body.name,
                 url: this.response.body.url,
+                skipIf: this.response.body.skipIf,
+                method: this.response.body.method,
                 header: [],
                 request: [],
                 extract: [],
@@ -283,11 +245,10 @@
                 variables: [],
                 hooks: [],
                 tempBody: {},
-                method: this.response.body.method,
+                isDisabled: true,
                 save: false,
-                summary: {},
                 dialogTableVisible: false,
-                activeTag: 'first',
+                activeTag: 'second',
                 httpOptions: [{
                     label: 'GET',
                 }, {

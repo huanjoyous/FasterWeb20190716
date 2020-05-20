@@ -10,8 +10,7 @@
                         icon="el-icon-circle-plus"
                         @click="dialogVisible = true"
                         :disabled="!addTestActivate"
-                    >
-                        新建分组
+                    >新建分组
                     </el-button>
 
                     <el-dialog
@@ -37,9 +36,9 @@
                         </el-radio-group>
 
                         <span slot="footer" class="dialog-footer">
-                        <el-button @click="dialogVisible = false">取 消</el-button>
-                        <el-button type="primary" @click="handleConfirm('nodeForm')">确 定</el-button>
-                      </span>
+                          <el-button size="small" @click="dialogVisible = false">取 消</el-button>
+                          <el-button size="small" type="primary" @click="handleConfirm('nodeForm')">确 定</el-button>
+                        </span>
                     </el-dialog>
 
                     <el-button
@@ -55,42 +54,48 @@
                         :disabled="currentNode === '' "
                         type="info"
                         size="small"
-                        icon="el-icon-edit-outline"
+                        icon="el-icon-refresh-right"
+                        style="margin-left: 0px"
                         @click="renameNode"
-                    >节点重命名
+                    >重命名
                     </el-button>
-
 
                     <el-button
                         type="primary"
                         size="small"
-                        style="margin-left: 100px"
                         icon="el-icon-circle-plus-outline"
                         @click="buttonActivate=false"
                         :disabled="buttonActivate"
-                    >添加用例集
+                        style="margin-left: 0px"
+                    >添加用例
                     </el-button>
 
-                    <el-button
-                        type="primary"
-                        plain
-                        size="small"
-                        icon="el-icon-upload"
-                        :disabled="buttonActivate"
-                    >导入用例
-                    </el-button>
+                    <el-upload
+                        :disabled="!addTestActivate"
+                        class="upload-demo"
+                        :action="fileupload"
+                        :show-file-list="false"
+                        accept=".xlsx, .xls, .jpg, .png"
+                        multiple
+                        :limit="1"
+                        :headers="uploadheader"
+                        :on-exceed="handleExceed"
+                        :file-list="fileList"
+                        :on-error="uploadError"
+                        :on-success="uploadSuccess"
+                        :before-upload="UploadBefore"
+                        :data="filedata"
+                        style="display: inline"
+                    >
+                        <el-button size="small" type="warning" icon="el-icon-upload" title="只能上传jpg/png/xlsx/xls文件" :disabled="!addTestActivate">
+                            上传文件
+                        </el-button>
+                    </el-upload>
 
                     <el-button
-                        type="info"
-                        plain
-                        size="small"
-                        icon="el-icon-download"
-                        :disabled="buttonActivate"
-                    >导出用例
-                    </el-button>
-
-                    <el-button
-                        style="margin-left: 20px"
+                        v-if="addTestActivate"
+                        style="margin-left: 30px;"
+                        title="运行用例"
                         type="primary"
                         icon="el-icon-caret-right"
                         circle
@@ -99,41 +104,46 @@
                     ></el-button>
 
                     <el-button
-                        style="margin-left: 20px"
+                        v-if="addTestActivate"
+                        style="margin-left: 10px"
                         type="danger"
+                        title="批量删除"
                         icon="el-icon-delete"
                         circle
                         size="mini"
-                        :disabled="buttonActivate"
                         @click="del = !del"
                     ></el-button>
-
-
-                    <el-tooltip
-                        class="item"
-                        effect="dark"
-                        content="可选配置"
-                        placement="top-start"
-                    >
-                        <el-button plain size="small" icon="el-icon-view"></el-button>
-                    </el-tooltip>
-
-
+                    &nbsp环境:
                     <el-select
                         placeholder="请选择"
                         size="small"
-                        tyle="margin-left: -6px"
-                        v-model="currentConfig"
-                        :disabled="addTestActivate"
+                        v-model="currentHost"
+                        style="width: 150px"
                     >
                         <el-option
-                            v-for="item in configOptions"
+                            v-for="item in hostOptions"
                             :key="item.id"
                             :label="item.name"
                             :value="item.name">
                         </el-option>
                     </el-select>
-
+                    <div style="display: inline" v-show="!addTestActivate">
+                        <span>&nbsp配置:</span>
+                        <el-select
+                            placeholder="请选择"
+                            size="small"
+                            style="width: 150px"
+                            v-model="currentConfig"
+                        >
+                            <el-option
+                                v-for="item in configOptions"
+                                :key="item.id"
+                                :label="item.name"
+                                :value="item.name"
+                            >
+                            </el-option>
+                        </el-select>
+                    </div>
                     <el-button
                         :disabled="addTestActivate"
                         type="text"
@@ -141,12 +151,11 @@
                         @click="handleBackList"
                     >返回列表
                     </el-button>
-
                 </div>
             </div>
         </el-header>
 
-        <el-container>
+        <el-container >
             <el-aside
                 style="margin-top: 10px;"
                 v-show="addTestActivate"
@@ -180,11 +189,8 @@
                                 <span><i class="iconfont" v-html="expand"></i>&nbsp;&nbsp;{{ node.label }}</span>
                             </span>
                         </el-tree>
-
                     </div>
                 </div>
-
-
             </el-aside>
 
             <el-main style="padding: 0;">
@@ -196,6 +202,7 @@
                     v-on:testStep="handleTestStep"
                     :back="back"
                     :run="run"
+                    :host="currentHost"
                 >
                 </test-list>
 
@@ -206,6 +213,7 @@
                     :node="currentNode.id"
                     :testStepResp="testStepResp"
                     :config="currentConfig"
+                    :host="currentHost"
                     v-on:addSuccess="handleBackList"
                 >
                 </edit-test>
@@ -219,6 +227,7 @@
 <script>
     import EditTest from './components/EditTest'
     import TestList from './components/TestList'
+    import store from '../../../store/state'
 
     export default {
         computed: {
@@ -253,12 +262,14 @@
                         {min: 1, max: 50, message: '最多不超过50个字符', trigger: 'blur'}
                     ]
                 },
+                hostOptions:[],
                 back: false,
                 del: false,
                 run: false,
                 radio: '根节点',
                 addTestActivate: true,
                 currentConfig: '请选择',
+                currentHost:'请选择',
                 treeId: '',
                 maxId: '',
                 dialogVisible: false,
@@ -267,7 +278,16 @@
                 filterText: '',
                 expand: '&#xe65f;',
                 dataTree: [],
-                configOptions: []
+                configOptions: [],
+                uploadheader: {
+                    Authorization: `JWT ${store.token}`
+                },
+                fileList: [],
+                filedata: {
+                    project: this.$route.params.id,
+                    name: ''
+                },
+                fileupload: this.$api.uploadFile(),
             }
         },
         methods: {
@@ -282,12 +302,40 @@
                     })
                 })
             },
-
+            handleExceed(files, fileList) {
+                this.$notify.warning(`当前限制选择 1 个文件，本次选择了 ${files.length} 个文件，共选择了 ${files.length + fileList.length} 个文件`);
+            },
             handleBackList() {
                 this.addTestActivate = true;
                 this.back = !this.back;
             },
-
+            uploadError(error) {
+                if (error.status === 401) {
+                    this.$notify.error('请先登录');
+                    this.$router.replace({
+                        name: 'Login'
+                    })
+                } else if (error.status === 403) {
+                    this.$notify.error({
+                        title: 'detail',
+                        message: '您没有执行该操作的权限。'
+                    })
+                } else if (error.status === 406) {
+                    this.$notify.error({
+                        title: 'detail',
+                        message: '该文件被已被锁定，无法更新或删除。'
+                    })
+                }else {
+                    this.$notify.error('文件上传失败')
+                }
+            },
+            uploadSuccess(response) {
+                this.fileList = [];
+                this.$notify.success('文件上传成功');
+            },
+            UploadBefore(file) {
+                this.filedata.name = file.name;
+            },
             handleTestStep(resp) {
                 this.testStepResp = resp;
                 this.addTestActivate = false;
@@ -310,8 +358,9 @@
                     if (resp['success']) {
                         this.dataTree = resp['tree'];
                         this.maxId = resp['max'];
+                        this.$notify.success('更新成功')
                     } else {
-                        this.$message.error(resp['msg']);
+                        this.$notify.error(resp['msg']);
                     }
                 })
             },
@@ -387,13 +436,21 @@
                     this.$set(data, 'children', []);
                 }
                 data.children.push(newChild);
-            }
-
+            },
+            getHost() {
+                this.$api.hostList({params: {project: this.$route.params.id}}).then(resp => {
+                    this.hostOptions = resp.data["results"];
+                    this.hostOptions.push({
+                        name: '请选择'
+                    })
+                })
+            },
         },
         name: "AutoTest",
         mounted() {
             this.getTree();
             this.getConfig();
+            this.getHost();
         }
     }
 </script>

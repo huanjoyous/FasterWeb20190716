@@ -1,7 +1,7 @@
 <template>
     <div>
         <div style="margin-left: 200px;">
-            <el-radio-group v-model="dataType">
+            <el-radio-group v-model="dataType" @change="handleChangeRadio">
                 <el-radio
                     v-for="item of dataOptions"
                     :label="item.label"
@@ -12,20 +12,19 @@
         </div>
         <div style="margin-top: 5px">
             <el-table
+                highlight-current-row
                 :cell-style="{paddingTop: '4px', paddingBottom: '4px'}"
                 strpe
-                height="436"
-                :data="dataType === 'data' ? formData: paramsData"
+                :height="height"
+                :data="dataType === 'forms' ? formData: paramsData"
                 style="width: 100%;"
                 @cell-mouse-enter="cellMouseEnter"
                 @cell-mouse-leave="cellMouseLeave"
                 v-show="dataType !== 'json' "
             >
-                <el-table-column
-                    label="请求Key"
-                    width="250">
+                <el-table-column label="请求Key">
                     <template slot-scope="scope">
-                        <el-input clearable v-model="scope.row.key" placeholder="Key"></el-input>
+                        <el-input clearable v-model="scope.row.key" placeholder="Key" size="medium" :disabled="isDisabled"></el-input>
                     </template>
                 </el-table-column>
 
@@ -34,8 +33,7 @@
                     label="类型"
                     width="120">
                     <template slot-scope="scope">
-
-                        <el-select v-model="scope.row.type">
+                        <el-select v-model="scope.row.type" size="medium" :disabled="isDisabled">
                             <el-option
                                 v-for="item in dataTypeOptions"
                                 :key="item.value"
@@ -44,21 +42,29 @@
                             >
                             </el-option>
                         </el-select>
-
                     </template>
                 </el-table-column>
 
                 <el-table-column
                     label="请求Value"
-                    width="350">
+                >
                     <template slot-scope="scope">
                         <el-input
-                            v-show="scope.row.type !== 5"
+                            v-show="scope.row.type !== 5 && scope.row.type !== 4"
                             clearable
                             v-model="scope.row.value"
                             placeholder="Value"
+                            size="medium"
+                            :disabled="isDisabled"
                         ></el-input>
-
+                        <el-select v-if="scope.row.type === 4" clearable v-model="scope.row.value" placeholder="期望返回值" size="medium" :disabled="isDisabled">
+                            <el-option
+                                v-for="item in BoolOptions"
+                                :key="item.value"
+                                :label="item.label"
+                                :value="item.value">
+                            </el-option>
+                        </el-select>
                         <el-row v-show="scope.row.type === 5">
                             <el-col :span="7">
                                 <el-upload
@@ -94,16 +100,15 @@
 
                 <el-table-column
                     label="描述"
-                    width="200">
+                    width="150">
                     <template slot-scope="scope">
-                        <el-input clearable v-model="scope.row.desc" placeholder="参数简要描述"></el-input>
+                        <el-input clearable v-model="scope.row.desc" placeholder="参数简要描述" size="medium" :disabled="isDisabled"></el-input>
                     </template>
                 </el-table-column>
 
-
-                <el-table-column>
+                <el-table-column width="140">
                     <template slot-scope="scope">
-                        <el-row v-show="scope.row === currentRow">
+                        <el-row v-show="scope.row === currentRow && !isDisabled">
                             <el-button
                                 icon="el-icon-circle-plus-outline"
                                 size="mini"
@@ -115,31 +120,25 @@
                                 icon="el-icon-delete"
                                 size="mini"
                                 type="danger"
-                                v-show="scope.$index !== 0"
+                                v-show="IsShowDel"
                                 @click="handleDelete(scope.$index, scope.row)">
                             </el-button>
                         </el-row>
-
                     </template>
                 </el-table-column>
             </el-table>
-
 
             <editor v-model="jsonData"
                     @init="editorInit"
                     lang="json"
                     theme="github"
                     width="100%"
-                    height="400"
+                    :height="height"
                     v-show="dataType === 'json' "
             >
             </editor>
-
         </div>
-
     </div>
-
-
 </template>
 
 <script>
@@ -147,16 +146,19 @@
         props: {
             save: Boolean,
             request: {
-                require: false
+                require: true
+            },
+            isDisabled:Boolean
+        },
+        computed:{
+            height() {
+                return window.screen.height - 464
             }
         },
-
         name: "Request",
         components: {
             editor: require('vue2-ace-editor'),
         },
-
-
         watch: {
             save: function () {
                 this.$emit('request', {
@@ -172,15 +174,24 @@
             },
 
             request: function () {
-                if (this.request.length !== 0) {
-                    this.formData = this.request.data;
+                if (this.request) {
+                    this.formData = this.loaderRequest(this.request.data);
                     this.jsonData = this.request.json_data;
                     this.paramsData = this.request.params;
+
                 }
             }
         },
-
         methods: {
+            handleChangeRadio(){
+                if (this.dataType === 'forms' && this.formData.length > 1){
+                    this.IsShowDel = true;
+                } else if (this.dataType === 'params' && this.paramsData.length > 1){
+                    this.IsShowDel = true;
+                } else {
+                    this.IsShowDel = false;
+                }
+            },
             editorInit() {
                 require('brace/ext/language_tools');
                 require('brace/mode/json');
@@ -229,18 +240,20 @@
             },
 
             handleEdit(index, row) {
-                const data = this.dataType === 'data' ? this.formData : this.paramsData;
+                const data = this.dataType === 'forms' ? this.formData : this.paramsData;
                 data.push({
                     key: '',
                     value: '',
                     type: 1,
                     desc: ''
                 });
+                this.IsShowDel = data.length > 1;
             },
 
             handleDelete(index, row) {
-                const data = this.dataType === 'data' ? this.formData : this.paramsData;
+                const data = this.dataType === 'forms' ? this.formData : this.paramsData;
                 data.splice(index, 1);
+                this.IsShowDel = data.length > 1;
             },
 
             // 文件格式化
@@ -303,11 +316,7 @@
                         json = JSON.parse(this.jsonData);
                     }
                     catch (err) {
-                        this.$notify.error({
-                            title: 'json错误',
-                            message: '不是标准的json数据格式',
-                            duration: 2000
-                        });
+                        this.$notify.error('json数据格式错误');
                     }
                 }
                 return json;
@@ -316,10 +325,14 @@
             // 类型转换
             parseType(type, value) {
                 let tempValue;
-                const msg = value + ' => ' + this.dataTypeOptions[type - 1].label + ' 转换异常, 该数据自动剔除';
+                const msg = String(value) + ' => ' + this.dataTypeOptions[type - 1].label + ' 转换异常, 该数据自动剔除';
                 switch (type) {
                     case 1:
-                        tempValue = value;
+                        if (String(value).toLowerCase() === 'null' || String(value).toLowerCase() === 'none'){
+                            tempValue = null;
+                        }else {
+                            tempValue = String(value);
+                        }
                         break;
                     case 2:
                         tempValue = parseInt(value);
@@ -328,33 +341,30 @@
                         tempValue = parseFloat(value);
                         break;
                     case 4:
-                        if (value === 'False' || value === 'True') {
-                            let bool = {
-                                'True': true,
-                                'False': false
-                            };
-                            tempValue = bool[value];
-                        } else {
-                            this.$notify.error({
-                                title: '类型转换错误',
-                                message: msg,
-                                duration: 2000
-                            });
-                            return 'exception'
-                        }
+                        tempValue = value === 'true';
                         break;
                 }
 
                 if (tempValue !== 0 && !tempValue && type !== 4 && type !== 1) {
-                    this.$notify.error({
-                        title: '类型转换错误',
-                        message: msg,
-                        duration: 2000
-                    });
+                    this.$notify.error(msg);
                     return 'exception'
                 }
 
                 return tempValue;
+            },
+            loaderRequest(response){
+                let obj = [];
+                for (let content of response) {
+                    if (content['type'] === 4) {
+                        if (content['value'] === true){
+                            content['value'] = 'true'
+                        }else{
+                            content['value'] = 'false'
+                        }
+                    }
+                    obj.push(content)
+                }
+                return obj
             }
         },
 
@@ -376,7 +386,6 @@
                     type: '',
                     desc: ''
                 }],
-
                 dataTypeOptions: [{
                     label: 'String',
                     value: 1
@@ -393,10 +402,9 @@
                     label: 'File',
                     value: 5
                 }],
-
                 dataOptions: [{
-                    label: 'data',
-                    value: '表单',
+                    label: 'forms',
+                    value: 'forms',
                 }, {
                     label: 'json',
                     value: 'json',
@@ -404,7 +412,15 @@
                     label: 'params',
                     value: 'params'
                 }],
-                dataType: 'data'
+                dataType: 'json',
+                IsShowDel: false,
+                BoolOptions:[{
+                    label: 'true',
+                    value: 'true'
+                },{
+                    label: 'false',
+                    value: 'false'
+                }]
             }
         }
     }
@@ -414,7 +430,7 @@
     .ace_editor {
         position: relative;
         overflow: hidden;
-        font: 18px/normal 'Monaco', 'Menlo', 'Ubuntu Mono', 'Consolas', 'source-code-pro', monospace !important;
+        font: 14px/normal 'Monaco', 'Menlo', 'Ubuntu Mono', 'Consolas', 'source-code-pro', monospace !important;
         direction: ltr;
         text-align: left;
         -webkit-tap-highlight-color: rgba(0, 0, 0, 0);

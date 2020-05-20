@@ -1,6 +1,7 @@
 <template>
     <el-table
-        height="460"
+        highlight-current-row
+        :height="height"
         :data="tableData"
         style="width: 100%;"
         :border="false"
@@ -10,29 +11,45 @@
     >
         <el-table-column
             label="数据Key"
-            width="300">
+        >
             <template slot-scope="scope">
-                <el-input clearable v-model="scope.row.key" placeholder="key 、 key-key1"></el-input>
+                <el-input
+                    type="textarea"
+                    :autosize="{ minRows: 2, maxRows: 10}"
+                    clearable
+                    v-model="scope.row.key"
+                    placeholder="key 、 key-key1"
+                    size="medium"
+                ></el-input>
             </template>
         </el-table-column>
 
         <el-table-column
             label="数据内容"
-            width="650">
+        >
             <template slot-scope="scope">
-                <el-input clearable v-model="scope.row.value" placeholder="${ fun() } 、 [ value ] 、 [ [ value1, value2 ] ]"></el-input>
+                <el-input
+                    type="textarea"
+                    :autosize="{ minRows: 2, maxRows: 8}"
+                    clearable
+                    v-model="scope.row.value"
+                    placeholder="${ fun() } 、 [ value ] 、 [ [ value1, value2 ] ]"
+                    size="medium"
+                ></el-input>
             </template>
         </el-table-column>
 
         <el-table-column
             label="参数描述"
-            width="220">
+            width="200">
             <template slot-scope="scope">
-                <el-input clearable v-model="scope.row.desc" placeholder="参数简要描述"></el-input>
+                <el-input clearable v-model="scope.row.desc" placeholder="参数简要描述" size="medium"></el-input>
             </template>
         </el-table-column>
 
-        <el-table-column>
+        <el-table-column
+            width="130"
+        >
             <template slot-scope="scope">
                 <el-row v-show="scope.row === currentRow">
                     <el-button
@@ -46,7 +63,7 @@
                         icon="el-icon-delete"
                         size="mini"
                         type="danger"
-                        v-show="scope.$index !== 0"
+                        v-show="tableData.length > 1"
                         @click="handleDelete(scope.$index, scope.row)">
                     </el-button>
                 </el-row>
@@ -63,6 +80,11 @@
             save: Boolean,
             parameters: {
                 require: false
+            }
+        },
+        computed:{
+            height() {
+                return window.screen.height - 440
             }
         },
         methods: {

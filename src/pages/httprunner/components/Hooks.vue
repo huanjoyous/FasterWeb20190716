@@ -1,8 +1,9 @@
 <template>
     <el-table
+        highlight-current-row
         :cell-style="{paddingTop: '4px', paddingBottom: '4px'}"
         strpe
-        height="460"
+        :height="height"
         :data="tableData"
         style="width: 100%;"
         @cell-mouse-enter="cellMouseEnter"
@@ -10,11 +11,15 @@
     >
         <el-table-column
             label="测试之前执行的方法"
-            width="500">
+        >
             <template slot-scope="scope">
-                <el-input clearable
-                          v-model="scope.row.setup"
-                          placeholder="${ setup_hooks function($request, *args, **kwargs) }"
+                <el-input
+                    type="textarea"
+                    :autosize="{ minRows: 2, maxRows: 8}"
+                    clearable
+                    v-model="scope.row.setup"
+                    placeholder="${ setup_hooks function($request, *args, **kwargs) }"
+                    size="medium"
                 >
                 </el-input>
             </template>
@@ -22,18 +27,24 @@
 
         <el-table-column
             label="测试之后执行的方法"
-            width="500">
+        >
             <template slot-scope="scope">
-                <el-input clearable
-                          v-model="scope.row.teardown"
-                          placeholder="${ teardown_hooks function(response, *args, **kwargs) }"
+                <el-input
+                    type="textarea"
+                    :autosize="{ minRows: 2, maxRows: 8}"
+                    clearable
+                    v-model="scope.row.teardown"
+                    placeholder="${ teardown_hooks function(response, *args, **kwargs) }"
+                    size="medium"
                 >
                 </el-input>
             </template>
         </el-table-column>
 
 
-        <el-table-column>
+        <el-table-column
+            width="130"
+        >
             <template slot-scope="scope">
                 <el-row v-show="scope.row === currentRow">
                     <el-button
@@ -47,7 +58,7 @@
                         icon="el-icon-delete"
                         size="mini"
                         type="danger"
-                        v-show="scope.$index !== 0"
+                        v-show="tableData.length > 1"
                         @click="handleDelete(scope.$index, scope.row)">
                     </el-button>
                 </el-row>
@@ -66,7 +77,11 @@
                 require: false
             }
         },
-
+        computed:{
+            height() {
+                return window.screen.height - 440
+            }
+        },
         watch: {
             save: function () {
                 this.$emit('hooks', this.parse_hooks(), this.tableData);

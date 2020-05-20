@@ -17,6 +17,7 @@
                                icon="el-icon-d-arrow-left"
                                :disabled="projectData.previous === null "
                                @click="getPagination(projectData.previous)"
+                               v-show="projectData.results.length > 9"
                     >
                         上一页
                     </el-button>
@@ -26,6 +27,7 @@
                                size="small"
                                :disabled="projectData.next === null"
                                @click="getPagination(projectData.next)"
+                               v-show="projectData.results.length > 9"
                     >
                         下一页
                         <i class="el-icon-d-arrow-right"></i>
@@ -49,10 +51,13 @@
                             <el-form-item label="项目描述" prop="desc">
                                 <el-input v-model="projectForm.desc" clearable></el-input>
                             </el-form-item>
+                            <el-form-item label="项目主管" prop="desc">
+                                <el-input v-model="projectForm.responsible" clearable></el-input>
+                            </el-form-item>
                         </el-form>
                         <span slot="footer" class="dialog-footer">
-                        <el-button @click="dialogVisible = false">取 消</el-button>
-                        <el-button type="primary" @click="handleConfirm('projectForm')">确 定</el-button>
+                        <el-button size="medium" @click="dialogVisible = false">取消</el-button>
+                        <el-button type="primary"  size="medium" @click="handleConfirm('projectForm')">确定</el-button>
                       </span>
                     </el-dialog>
                 </div>
@@ -62,6 +67,10 @@
         <el-container>
             <el-main style="padding: 0; margin-left: 10px">
                 <el-table
+                    v-loading="loading"
+                    element-loading-text="正在玩命加载"
+                    fullscreenLoading=true
+                    highlight-current-row
                     :data="projectData.results"
                     border
                     stripe
@@ -71,12 +80,12 @@
                 >
                     <el-table-column
                         label="项目名称"
-                        width="250"
+                        width="200"
                         align="center"
                     >
                         <template slot-scope="scope">
                             <span
-                                style="font-size: 18px; font-weight: bold; cursor: pointer;"
+                                style="font-size: 16px; font-weight: bold; cursor: pointer;"
                                 @click="handleCellClick(scope.row)"
                             >{{ scope.row.name }}</span>
                         </template>
@@ -84,58 +93,52 @@
 
                     <el-table-column
                         label="负责人"
-                        width="200"
+                        width="150"
                         align="center"
                     >
                         <template slot-scope="scope">
-                            <div slot="reference" class="name-wrapper">
-                                <el-tag style="font-size: 16px;">{{ scope.row.responsible }}</el-tag>
-                            </div>
+                            <span>{{ scope.row.responsible }}</span>
                         </template>
                     </el-table-column>
 
                     <el-table-column
                         label="项目描述"
-                        width="300"
+                        min-width="200"
                         align="center"
                     >
                         <template slot-scope="scope">
-                            <div slot="reference" class="name-wrapper">
-                                <el-tag type="info" style="font-size: 16px;">{{ scope.row.desc }}</el-tag>
-                            </div>
+                            <span>{{ scope.row.desc }}</span>
                         </template>
                     </el-table-column>
 
                     <el-table-column
                         label="更新时间"
-                        width="260"
+                        width="200"
                         align="center"
                     >
                         <template slot-scope="scope">
-                            <div slot="reference" class="name-wrapper">
-                                <el-tag type="info" style="font-size: 16px;">{{ scope.row.update_time | datetimeFormat
-                                    }}
-                                </el-tag>
-                            </div>
+                            <span>{{ scope.row.update_time | datetimeFormat }}</span>
                         </template>
                     </el-table-column>
 
 
                     <el-table-column
                         label="操作"
+                        width="230"
                         align="center"
                     >
                         <template slot-scope="scope">
                             <el-button
-                                size="medium"
-                                type="primary"
-                                @click="handleCellClick(scope.row)">详情
+                                size="small"
+                                type="success"
+                                @click="handleCellClick(scope.row)">查看
                             </el-button>
 
                             <el-button
-                                size="medium"
-                                type="primary"
-                                @click="handleEdit(scope.$index, scope.row)">编辑
+                                size="small"
+                                type="info"
+                                style = "margin-left:0 !important;"
+                                @click="handleEdit(scope.$index, scope.row)">修改
                             </el-button>
 
                             <el-dialog
@@ -154,14 +157,17 @@
                                     <el-form-item label="项目描述" prop="desc">
                                         <el-input v-model="projectForm.desc" clearable></el-input>
                                     </el-form-item>
+                                    <el-form-item label="项目主管" prop="desc">
+                                        <el-input v-model="projectForm.responsible" clearable></el-input>
+                                    </el-form-item>
                                 </el-form>
                                 <span slot="footer" class="dialog-footer">
-                        <el-button @click="editVisible = false">取 消</el-button>
-                        <el-button type="primary" @click="handleConfirm('projectForm')">确 定</el-button>
+                        <el-button size="medium" @click="editVisible = false">取消</el-button>
+                        <el-button size="medium" type="primary" @click="handleConfirm('projectForm')">确定</el-button>
                       </span>
                             </el-dialog>
                             <el-button
-                                size="medium"
+                                size="small"
                                 type="danger"
                                 @click="handleDelete(scope.$index, scope.row)">删除
                             </el-button>
@@ -172,8 +178,6 @@
             </el-main>
         </el-container>
     </el-container>
-
-
 </template>
 
 <script>
@@ -188,7 +192,7 @@
                 projectForm: {
                     name: '',
                     desc: '',
-                    responsible: this.$store.state.user,
+                    responsible: '',
                     id: ''
                 },
                 rules: {
@@ -200,12 +204,15 @@
                         {required: true, message: '简要描述下该项目', trigger: 'blur'},
                         {min: 1, max: 100, message: '最多不超过100个字符', trigger: 'blur'}
                     ]
-                }
+                },
+                loading: true
             }
         },
         methods: {
             handleCellClick(row) {
-                this.$store.commit('changeBackButton', true);
+                this.$store.commit('setRouterName', 'ProjectDetail');
+                this.setLocalValue("routerName",'ProjectDetail');
+                this.$store.state.headTitle = row.name;
                 this.$router.push({name: 'ProjectDetail', params: {id: row['id']}});
             },
             handleEdit(index, row) {
@@ -213,6 +220,7 @@
                 this.projectForm.name = row['name'];
                 this.projectForm.desc = row['desc'];
                 this.projectForm.id = row['id'];
+                this.projectForm.responsible = row['responsible']
             },
             handleDelete(index, row) {
                 this.$confirm('此操作将永久删除该项目, 是否继续?', '提示', {
@@ -220,12 +228,10 @@
                     cancelButtonText: '取消',
                     type: 'warning'
                 }).then(() => {
-                    this.$api.deleteProject({data: {"id": row["id"]}}).then(resp => {
-                        if (resp['success']) {
-                            this.success(resp);
+                    this.$api.deleteProject(row["id"]).then(resp => {
+                        if (resp.status === 204) {
+                            this.$notify.success('删除项目成功');
                             this.getProjectList();
-                        } else {
-                            this.failure(resp);
                         }
                     })
                 })
@@ -236,23 +242,25 @@
                         this.dialogVisible = false;
                         this.editVisible = false;
                         let obj;
-
                         if (this.projectForm.id === '') {
                             obj = this.$api.addProject(this.projectForm);
                         } else {
-                            obj = this.$api.updateProject(this.projectForm);
+                            obj = this.$api.updateProject(this.projectForm.id, this.projectForm);
                         }
                         obj.then(resp => {
-                            if (resp.success) {
-                                this.success(resp);
-                                this.getProjectList();
-                            } else {
-                                this.failure(resp);
+                            if (String(resp.status).indexOf('2') === 0) {
+                                this.projectForm.name = '';
+                                this.projectForm.desc = '';
+                                this.projectForm.id = '';
+                                this.projectForm.responsible = '';
                             }
-
-                            this.projectForm.name = '';
-                            this.projectForm.desc = '';
-                            this.projectForm.id = '';
+                            if (resp.status === 201) {
+                                this.$notify.success('增加项目成功');
+                                this.getProjectList();
+                            } else if (resp.status === 200) {
+                                this.$notify.success('更新项目成功');
+                                this.getProjectList();
+                            }
                         })
                     } else {
                         if (this.projectForm.id !== '') {
@@ -265,27 +273,15 @@
                 });
 
             },
-            success(resp) {
-                this.$notify({
-                    message: resp["msg"],
-                    type: 'success',
-                    duration: 1000
-                });
-            },
-            failure(resp) {
-                this.$notify.error({
-                    message: resp["msg"],
-                    duration: 1000
-                });
-            },
             getProjectList() {
                 this.$api.getProjectList().then(resp => {
-                    this.projectData = resp;
+                    this.projectData = resp.data;
+                    this.loading = false;
                 })
             },
             getPagination(url) {
                 this.$api.getPagination(url).then(resp => {
-                    this.projectData = resp;
+                    this.projectData = resp.data;
                 })
             },
         },

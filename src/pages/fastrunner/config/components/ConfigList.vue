@@ -1,8 +1,8 @@
-<template>
+<template >
     <el-container>
         <el-header style="padding-top: 10px; height: 50px;">
             <div>
-                <el-row :gutter="50">
+                <el-row>
                     <el-col :span="6" v-if="configData.count > 11">
                         <el-input placeholder="请输入配置名称" clearable v-model="search">
                             <el-button slot="append" icon="el-icon-search" @click="getConfigList"></el-button>
@@ -24,56 +24,42 @@
             </div>
         </el-header>
 
-        <el-container>
+        <el-container >
             <el-main style="padding: 0; margin-left: 10px; margin-top: 10px;">
-                <div style="position: fixed; bottom: 0; right:0; left: 220px; top: 150px">
+                <div style="position: fixed; bottom: 0; right:0; left: 178px; top: 150px">
                     <el-table
+                        v-loading="loading"
+                        element-loading-text="正在玩命加载"
+                        highlight-current-row
                         :data="configData.results"
                         :show-header="configData.results.length !== 0 "
                         stripe
-                        height="calc(100%)"
+                        height="600px"
                         @cell-mouse-enter="cellMouseEnter"
                         @cell-mouse-leave="cellMouseLeave"
                         @selection-change="handleSelectionChange"
                     >
-                        <el-table-column
-                            type="selection"
-                            width="55"
-                        >
-                        </el-table-column>
+                        <el-table-column type="selection" width="55"></el-table-column>
 
-                        <el-table-column
-                            label="配置名称"
-
-                        >
+                        <el-table-column label="配置名称">
                             <template slot-scope="scope">
                                 <div>{{scope.row.name}}</div>
                             </template>
                         </el-table-column>
 
-                        <el-table-column
-
-                            label="配置请求地址"
-                        >
+                        <el-table-column label="请求根地址">
                             <template slot-scope="scope">
-                                <div v-text="scope.row.base_url === '' ? '无' : scope.row.base_url"></div>
-
+                                <div v-text="scope.row.base_url === '' ? '未配置' : scope.row.base_url"></div>
                             </template>
                         </el-table-column>
 
-                        <el-table-column
-
-                            label="更新时间"
-                        >
+                        <el-table-column label="更新时间">
                             <template slot-scope="scope">
                                 <div>{{scope.row.update_time|datetimeFormat}}</div>
-
                             </template>
                         </el-table-column>
 
-                        <el-table-column
-
-                        >
+                        <el-table-column>
                             <template slot-scope="scope">
                                 <el-row v-show="currentRow === scope.row">
                                     <el-button
@@ -81,6 +67,7 @@
                                         icon="el-icon-edit"
                                         circle size="mini"
                                         @click="handleEditConfig(scope.row)"
+                                        title="编辑"
                                     ></el-button>
 
                                     <el-button
@@ -88,6 +75,7 @@
                                         icon="el-icon-document"
                                         circle size="mini"
                                         @click="handleCopyConfig(scope.row.id)"
+                                        title="复制"
                                     >
                                     </el-button>
 
@@ -96,13 +84,12 @@
                                         icon="el-icon-delete"
                                         circle size="mini"
                                         @click="handleDelConfig(scope.row.id)"
+                                        title="删除"
                                     >
                                     </el-button>
                                 </el-row>
                             </template>
-
                         </el-table-column>
-
                     </el-table>
                 </div>
             </el-main>
@@ -129,7 +116,8 @@
                 configData: {
                     count: 0,
                     results: []
-                }
+                },
+                loading: true
             }
         },
         watch: {
@@ -150,9 +138,7 @@
                     })
                 } else {
                     this.$notify.warning({
-                        title: '提示',
-                        message: '请至少勾选一个配置',
-                        duration: 1000
+                        message: '请至少勾选一个配置'
                     })
                 }
             }
@@ -184,6 +170,7 @@
                 }).then(() => {
                     this.$api.deleteConfig(index).then(resp => {
                         if (resp.success) {
+                            this.$notify.success('配置删除成功');
                             this.getConfigList();
                         } else {
                             this.$message.error(resp.msg);
@@ -206,9 +193,10 @@
                         'name': value
                     }).then(resp => {
                         if (resp.success) {
+                            this.$notify.success('配置复制成功');
                             this.getConfigList();
                         } else {
-                            this.$message.error(resp.msg);
+                            this.$notify.error(resp.msg);
                         }
                     })
                 })
@@ -230,6 +218,7 @@
                     }
                 }).then(resp => {
                     this.configData = resp;
+                    this.loading = false
                 })
             },
         },
@@ -241,5 +230,5 @@
 
 <style scoped>
 
-
 </style>
+

@@ -1,7 +1,8 @@
 <template>
     <el-table
+        highlight-current-row
         strpe
-        height="460"
+        :height="height"
         :data="tableData"
         style="width: 100%;"
         @cell-mouse-enter="cellMouseEnter"
@@ -10,29 +11,31 @@
     >
         <el-table-column
             label="变量名"
-            width="300">
+            >
             <template slot-scope="scope">
-                <el-input clearable v-model="scope.row.key" placeholder="接收抽取值后的变量名"></el-input>
+                <el-input clearable v-model="scope.row.key" placeholder="接收抽取值后的变量名" size="medium"></el-input>
             </template>
         </el-table-column>
         <el-table-column
             label="抽取表达式"
-            width="420">
+        >
             <template slot-scope="scope">
-                <el-input clearable v-model="scope.row.value" placeholder="抽取表达式"></el-input>
+                <el-input clearable v-model="scope.row.value" placeholder="抽取表达式" size="medium"></el-input>
 
             </template>
         </el-table-column>
 
         <el-table-column
             label="描述"
-            width="200">
+            width="150">
             <template slot-scope="scope">
-                <el-input clearable v-model="scope.row.desc" placeholder="抽取值简要描述"></el-input>
+                <el-input clearable v-model="scope.row.desc" placeholder="抽取值简要描述" size="medium"></el-input>
             </template>
         </el-table-column>
 
-        <el-table-column>
+        <el-table-column
+            width="130"
+        >
             <template slot-scope="scope">
                 <el-row v-show="scope.row === currentRow">
                     <el-button
@@ -46,7 +49,7 @@
                         icon="el-icon-delete"
                         size="mini"
                         type="danger"
-                        v-show="scope.$index !== 0"
+                        v-show="tableData.length > 1"
                         @click="handleDelete(scope.$index, scope.row)">
                     </el-button>
                 </el-row>
@@ -65,7 +68,11 @@
                 require: false
             }
         },
-
+        computed:{
+            height() {
+                return window.screen.height - 440
+            }
+        },
         watch: {
             save: function () {
                 this.$emit('extract', this.parseExtract(), this.tableData);

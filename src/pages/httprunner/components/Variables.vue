@@ -1,9 +1,10 @@
 <template>
 
     <el-table
+        highlight-current-row
         :cell-style="{paddingTop: '4px', paddingBottom: '4px'}"
         strpe
-        height="460"
+        :height="height"
         :data="tableData"
         style="width: 100%;"
         @cell-mouse-enter="cellMouseEnter"
@@ -11,9 +12,9 @@
     >
         <el-table-column
             label="变量名"
-            width="250">
+            >
             <template slot-scope="scope">
-                <el-input clearable v-model="scope.row.key" placeholder="Key"></el-input>
+                <el-input clearable v-model="scope.row.key" placeholder="Key" size="medium"></el-input>
             </template>
         </el-table-column>
 
@@ -21,36 +22,45 @@
             label="类型"
             width="120">
             <template slot-scope="scope">
-
-                <el-select v-model="scope.row.type">
+                <el-select v-model="scope.row.type" size="medium">
                     <el-option
                         v-for="item in dataTypeOptions"
                         :key="item.value"
                         :label="item.label"
-                        :value="item.value">
+                        :value="item.value"
+                    >
                     </el-option>
                 </el-select>
-
             </template>
         </el-table-column>
 
         <el-table-column
             label="变量值"
-            width="400">
+        >
             <template slot-scope="scope">
-                <el-input clearable v-model="scope.row.value" placeholder="Value"></el-input>
+                <el-input v-if="scope.row.type !== 4" clearable v-model="scope.row.value" placeholder="Value" size="medium"></el-input>
+                <el-select v-if="scope.row.type === 4" clearable v-model="scope.row.value" placeholder="Value" size="medium">
+                    <el-option
+                        v-for="item in BoolOptions"
+                        :key="item.value"
+                        :label="item.label"
+                        :value="item.value">
+                    </el-option>
+                </el-select>
             </template>
         </el-table-column>
 
         <el-table-column
             label="内容"
-            width="200">
+            width="150">
             <template slot-scope="scope">
-                <el-input clearable v-model="scope.row.desc" placeholder="变量简要描述"></el-input>
+                <el-input clearable v-model="scope.row.desc" placeholder="变量简要描述" size="medium"></el-input>
             </template>
         </el-table-column>
 
-        <el-table-column>
+        <el-table-column
+            width="130"
+        >
             <template slot-scope="scope">
                 <el-row v-show="scope.row === currentRow">
                     <el-button
@@ -64,7 +74,7 @@
                         icon="el-icon-delete"
                         size="mini"
                         type="danger"
-                        v-show="scope.$index !== 0"
+                        v-show="tableData.length > 1"
                         @click="handleDelete(scope.$index, scope.row)">
                     </el-button>
                 </el-row>
@@ -85,6 +95,11 @@
                 require: false
             }
         },
+        computed:{
+            height() {
+                return window.screen.height - 440
+            }
+        },
 
         watch: {
             save: function () {
@@ -93,7 +108,7 @@
 
             variables: function () {
                 if (this.variables.length !== 0) {
-                    this.tableData = this.variables;
+                    this.tableData = this.loaderVariables(this.variables);
                 }
             }
         },
@@ -126,7 +141,11 @@
                 const msg = value + ' => ' + this.dataTypeOptions[type - 1].label + ' 转换异常, 该数据自动剔除';
                 switch (type) {
                     case 1:
-                        tempValue = value;
+                        if (String(value).toLowerCase() === 'null' || String(value).toLowerCase() === 'none'){
+                            tempValue = null;
+                        }else {
+                            tempValue = String(value);
+                        }
                         break;
                     case 2:
                         tempValue = parseInt(value);
@@ -135,20 +154,7 @@
                         tempValue = parseFloat(value);
                         break;
                     case 4:
-                        if (value === 'True' || value === 'False') {
-                            let bool = {
-                                'True': true,
-                                'False': false
-                            };
-                            tempValue = bool[value];
-                        } else {
-                            this.$notify.error({
-                                title: '类型转换错误',
-                                message: msg,
-                                duration: 2000
-                            });
-                            return 'exception'
-                        }
+                        tempValue = value === 'true';
                         break;
                     case 5:
                         try {
@@ -169,12 +175,7 @@
                 }
 
                 if (tempValue !== 0 && !tempValue && type !== 4 && type !== 1) {
-                    this.$notify.error({
-                        title: '类型转换错误',
-                        message: msg,
-
-                        duration: 2000
-                    });
+                    this.$notify.error(msg);
                     return 'exception'
                 }
                 return tempValue;
@@ -200,6 +201,20 @@
                 }
                 return variables;
             },
+            loaderVariables(response){
+                let obj = [];
+                for (let content of response) {
+                    if (content['type'] === 4) {
+                        if (content['value'] === true){
+                            content['value'] = 'true'
+                        }else{
+                            content['value'] = 'false'
+                        }
+                    }
+                    obj.push(content)
+                }
+                return obj
+            }
         },
         data() {
             return {
@@ -210,7 +225,6 @@
                     type: 1,
                     desc: ''
                 }],
-
                 dataTypeOptions: [{
                     label: 'String',
                     value: 1
@@ -230,7 +244,13 @@
                     label: 'Dict',
                     value: 6
                 }],
-
+                BoolOptions:[{
+                    label: 'true',
+                    value: 'true'
+                },{
+                    label: 'false',
+                    value: 'false'
+                }],
                 dataType: 'data'
             }
         }

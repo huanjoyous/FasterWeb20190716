@@ -1,26 +1,24 @@
 <template>
-    <div>
+    <div style="margin-left: 10px">
         <div>
             <div>
                 <el-input
-                    style="width: 600px"
+                    style="width: 60%"
                     placeholder="请输入接口名称"
                     v-model="name"
                     clearable
                 >
                     <template slot="prepend">接口信息录入</template>
-
-                    <el-button
-                        slot="append"
-                        type="success"
-                        plain
-                        @click="save = !save"
-                    >Save
-                    </el-button>
                 </el-input>
-
                 <el-button
+                    slot="append"
                     type="primary"
+                    @click="save = !save"
+                >Save
+                </el-button>
+                <el-button
+                    style="margin-left: 0px"
+                    type="success"
                     @click="reverseStatus"
                     v-loading="loading"
                     :disabled="loading"
@@ -30,7 +28,7 @@
 
             <div>
                 <el-input
-                    style="width: 600px; margin-top: 10px"
+                    style="width: 60%; margin-top: 10px"
                     placeholder="请输入接口请求地址"
                     v-model="url"
                     clearable
@@ -60,11 +58,13 @@
                         v-model="times"
                         controls-position="right"
                         :min="1"
-                        :max="100"
-                        style="width: 120px"
+                        :max="20"
+                        style="width: 12%"
+                        :precision="0"
                     >
                     </el-input-number>
                 </el-tooltip>
+
             </div>
 
         </div>
@@ -85,9 +85,9 @@
             >
                 <el-tab-pane label="Header" name="first">
                     <headers
-                            :save="save"
-                             v-on:header="handleHeader"
-                             :header="response ? response.body.header: [] ">
+                        :save="save"
+                        v-on:header="handleHeader"
+                        :header="response ? response.body.header: [] ">
                     </headers>
                 </el-tab-pane>
 
@@ -140,8 +140,6 @@
             </el-tabs>
 
         </div>
-        
-
     </div>
 
 </template>
@@ -164,10 +162,12 @@
             Variables,
             Hooks,
             Report
-
         },
 
         props: {
+            host: {
+                require: false
+            },
             nodeId: {
                 require: false
             },
@@ -178,7 +178,7 @@
                 require: false
             },
             response: {
-                require: false
+                require: true
             }
         },
         methods: {
@@ -219,20 +219,12 @@
 
             validateData() {
                 if (this.url === '') {
-                    this.$notify.error({
-                        title: 'url错误',
-                        message: '接口请求地址不能为空',
-                        duration: 1500
-                    });
+                    this.$notify.error('接口请求地址不能为空');
                     return false;
                 }
 
                 if (this.name === '') {
-                    this.$notify.error({
-                        title: 'name错误',
-                        message: '接口名称不能为空',
-                        duration: 1500
-                    });
+                    this.$notify.error('接口名称不能为空');
                     return false;
                 }
                 return true
@@ -252,12 +244,10 @@
                         times: this.times,
                     }).then(resp => {
                         if (resp.success) {
-                            this.$emit('addSuccess');
+                            this.$notify.success(resp.msg);
+                            this.$emit("addSuccess");
                         } else {
-                            this.$message.error({
-                                message: resp.msg,
-                                duration: 1000
-                            })
+                            this.$notify.error(resp.msg)
                         }
                     })
                 }
@@ -278,10 +268,13 @@
                         name: this.name,
                         times: this.times,
                         project: this.project,
-                        config: this.config
+                        config: this.config,
+                        host:this.host
                     }).then(resp => {
                         this.summary = resp;
                         this.dialogTableVisible = true;
+                        this.loading = false;
+                    }).catch(resp => {
                         this.loading = false;
                     })
                 }
@@ -301,16 +294,13 @@
                         name: this.name,
                         times: this.times,
                         nodeId: this.nodeId,
-                        project: this.project,
-
+                        project: this.project
                     }).then(resp => {
                         if (resp.success) {
-                            this.$emit('addSuccess');
+                            this.$notify.success(resp.msg);
+                            this.$emit("addSuccess");
                         } else {
-                            this.$message.error({
-                                message: resp.msg,
-                                duration: 1000
-                            })
+                            this.$notify.error(resp.msg)
                         }
                     })
                 }
@@ -334,7 +324,7 @@
                 url: '',
                 id: '',
                 header: [],
-                request: [],
+                request: {},
                 extract: [],
                 validate: [],
                 variables: [],
@@ -344,7 +334,7 @@
                 save: false,
                 run: false,
                 summary: {},
-                activeTag: 'first',
+                activeTag: 'second',
                 httpOptions: [{
                     label: 'GET',
                 }, {

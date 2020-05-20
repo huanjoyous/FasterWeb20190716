@@ -1,8 +1,9 @@
 <template>
     <el-table
-        height="460"
+        highlight-current-row
         :data="tableData"
-        style="width: 100%;"
+        :height="height"
+        style='width: 100%;'
         :border="false"
         @cell-mouse-enter="cellMouseEnter"
         @cell-mouse-leave="cellMouseLeave"
@@ -10,38 +11,51 @@
     >
         <el-table-column
             label="标签"
-            width="300">
+            >
             <template slot-scope="scope">
                 <el-autocomplete
                     clearable
                     v-model="scope.row.key"
                     :fetch-suggestions="querySearch"
                     placeholder="头部标签"
+                    size="medium"
+                    style="width:280px"
+                    :disabled="isDisabled"
+                >
+                </el-autocomplete>
+            </template>
+        </el-table-column>
+
+        <el-table-column label="内容">
+            <template slot-scope="scope">
+                <el-autocomplete
+                    clearable
+                    v-model="scope.row.value"
+                    :fetch-suggestions="querySearchContent"
+                    placeholder="头部内容"
+                    size="medium"
+                    style="width:280px"
+                    :disabled="isDisabled"
                 >
                 </el-autocomplete>
             </template>
         </el-table-column>
 
         <el-table-column
-            label="内容"
-            width="400">
+            label="描述"
+            width="200"
+            :disabled="isDisabled">
             <template slot-scope="scope">
-                <el-input clearable v-model="scope.row.value" placeholder="头部内容"></el-input>
+                <el-input clearable v-model="scope.row.desc" placeholder="头部信息简要描述" size="medium"></el-input>
             </template>
         </el-table-column>
 
         <el-table-column
-            label="描述"
-            width="220">
+            width="130"
+            :disabled="isDisabled"
+        >
             <template slot-scope="scope">
-                <el-input clearable v-model="scope.row.desc" placeholder="头部信息简要描述"></el-input>
-
-            </template>
-        </el-table-column>
-
-        <el-table-column>
-            <template slot-scope="scope">
-                <el-row v-show="scope.row === currentRow">
+                <el-row v-show="scope.row === currentRow && !isDisabled">
                     <el-button
                         icon="el-icon-circle-plus-outline"
                         size="mini"
@@ -53,7 +67,7 @@
                         icon="el-icon-delete"
                         size="mini"
                         type="danger"
-                        v-show="scope.$index !== 0"
+                        v-show="tableData.length > 1"
                         @click="handleDelete(scope.$index, scope.row)">
                     </el-button>
                 </el-row>
@@ -70,19 +84,26 @@
         props: {
             save: Boolean,
             header: {
-                require: false
-            }
+                require: true
+            },
+            isDisabled: Boolean
         },
         methods: {
             querySearch(queryString, cb) {
                 let headerOptions = this.headerOptions;
-                let results = queryString ? headerOptions.filter(this.createFilter(queryString)) : headerOptions;
+                let results = queryString ? headerOptions.filter(this.createFilter(queryString, headerOptions)) : headerOptions;
                 cb(results);
             },
 
-            createFilter(queryString) {
-                return (headerOptions) => {
-                    return (headerOptions.value.toLowerCase().indexOf(queryString.toLowerCase()) === 0);
+            querySearchContent(queryString, cb) {
+                let contentOptions = this.contentOptions;
+                let results = queryString ? contentOptions.filter(this.createFilter(queryString, contentOptions)) : contentOptions;
+                cb(results);
+            },
+
+            createFilter(queryString, options) {
+                return (options) => {
+                    return (options.value.toLowerCase().indexOf(queryString.toLowerCase()) === 0);
                 };
             },
 
@@ -127,79 +148,37 @@
             },
 
             header: function () {
-                if (this.header.length !== 0) {
+                if (this.header) {
                     this.tableData = this.header;
                 }
+            }
+        },
+        computed:{
+            height() {
+                return window.screen.height - 440
             }
         },
         data() {
             return {
                 headerOptions: [{
-                    value: 'Accept'
-                }, {
-                    value: 'Accept-Charset'
-                }, {
-                    value: 'Accept-Language'
-                }, {
-                    value: 'Accept-Datetime'
-                }, {
-                    value: 'Authorization'
-                }, {
-                    value: 'Cache-Control'
-                }, {
-                    value: 'Connection'
-                }, {
-                    value: 'Cookie'
-                }, {
-                    value: 'Content-Length'
-                }, {
-                    value: 'Content-MD5'
-                }, {
                     value: 'Content-Type'
                 }, {
-                    value: 'Expect'
-                }, {
-                    value: 'Date'
-                }, {
-                    value: 'From'
-                }, {
-                    value: 'Host'
-                }, {
-                    value: 'If-Match'
-                }, {
-                    value: 'If-Modified-Since'
-                }, {
-                    value: 'If-None-Match'
-                }, {
-                    value: 'If-Range'
-                }, {
-                    value: 'If-Unmodified-Since'
-                }, {
-                    value: 'Max-Forwards'
-                }, {
-                    value: 'Origin'
-                }, {
-                    value: 'Pragma'
-                }, {
-                    value: 'Proxy-Authorization'
-                }, {
-                    value: 'Range'
-                }, {
-                    value: 'Referer'
-                }, {
-                    value: 'TE'
-                }, {
                     value: 'User-Agent'
-                }, {
-                    value: 'Upgrade'
-                }, {
-                    value: 'Via'
-                }, {
-                    value: 'Warning'
+                },{
+                    value: 'X-Requested-With'
+                },{
+                    value: 'Authorization'
                 }],
-
                 currentRow: '',
-                tableData: [{key: '', value: '', desc: ''}]
+                tableData: [{key: '', value: '', desc: ''}],
+                contentOptions: [{
+                    value: 'application/x-www-form-urlencoded'
+                }, {
+                    value: 'application/json;charset=UTF-8'
+                },{
+                    value: 'XMLHttpRequest'
+                }
+                ]
             }
         },
         name: "Header"

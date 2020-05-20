@@ -1,195 +1,183 @@
 <template>
     <el-container>
-        <el-header style="padding: 0; height: 50px; margin-top: 10px">
-            <div style="padding-top: 8px; padding-left: 30px;">
-
-                <el-row>
-                    <el-col :span="6" v-if="reportData.count > 11">
-                        <el-input placeholder="请输入报告名称" clearable v-model="search">
-                            <el-button slot="append" icon="el-icon-search" @click="getReportList"></el-button>
-                        </el-input>
-                    </el-col>
-
-                    <el-col :span="1">
-                        <el-button
-                            v-show="reportData.count !== 0"
-                            style="margin-left: 20px"
-                            type="danger"
-                            icon="el-icon-delete"
-                            circle
-                            size="mini"
-                            @click="delSelectionReports"
-                        ></el-button>
-                    </el-col>
-
-                    <el-col :span="7">
-                        <el-pagination
-                            :page-size="11"
-                            v-show="reportData.count !== 0 "
-                            background
-                            @current-change="handleCurrentChange"
-                            :current-page.sync="currentPage"
-                            layout="total, prev, pager, next, jumper"
-                            :total="reportData.count"
-                        >
-                        </el-pagination>
-                    </el-col>
-
-
-                </el-row>
-
+        <el-header style="background: #fff; padding: 0; height: 50px">
+            <div class="nav-api-header">
+                <div style="padding-top: 10px; margin-left: 20px">
+                    <el-button
+                        v-show="reportData.count !== 0"
+                        style="margin-left: 10px"
+                        type="danger"
+                        icon="el-icon-delete"
+                        circle
+                        size="mini"
+                        @click="delSelectionReports"
+                        title="批量删除"
+                    ></el-button>
+                </div>
             </div>
         </el-header>
-
         <el-container>
-            <el-main style="padding: 0; margin-left: 10px;">
-                <div style="position: fixed; bottom: 0; right:0; left: 220px; top: 120px">
-                    <el-table
-                        :data="reportData.results"
-                        :show-header="reportData.results.length !== 0 "
-                        stripe
-                        height="calc(100%)"
-                        @cell-mouse-enter="cellMouseEnter"
-                        @cell-mouse-leave="cellMouseLeave"
-                        @selection-change="handleSelectionChange"
-                    >
-                        <el-table-column
-                            type="selection"
-                            width="55"
-                        >
-                        </el-table-column>
+            <el-header style="padding-top: 10px;margin-left: 10px;">
+                <div>
+                    <el-row>
+                        <el-col :span="5" v-if="reportData.count > 11">
+                            <el-input placeholder="请输入报告名称" clearable v-model="search" size="small">
+                                <el-button slot="append" icon="el-icon-search" @click="getReportList" size="small" title="搜索"></el-button>
+                            </el-input>
+                        </el-col>
 
-                        <el-table-column
-                            label="报告类型"
-                            width="100"
-                        >
-                            <template slot-scope="scope">
-                                <el-tag color="#2C3E50" style="color: white">{{ scope.row.type }}</el-tag>
-                            </template>
-                        </el-table-column>
-
-                        <el-table-column
-                            label="报告名称"
-                        >
-                            <template slot-scope="scope">
-                                <div>{{scope.row.name}}</div>
-                            </template>
-                        </el-table-column>
-
-                        <el-table-column
-                            label="测试时间"
-                        >
-                            <template slot-scope="scope">
-                                <div>{{scope.row.time.start_at|timestampToTime}}</div>
-
-                            </template>
-                        </el-table-column>
-
-                        <el-table-column
-                            label="持续时间"
-                        >
-                            <template slot-scope="scope">
-                                <div v-text="scope.row.time.duration.toFixed(3)+' 秒'"></div>
-
-                            </template>
-                        </el-table-column>
-
-                        <el-table-column
-                            width="80"
-                            label="总计用例"
-                        >
-                            <template slot-scope="scope">
-                                <el-tag>{{ scope.row.stat.testsRun }}</el-tag>
-                            </template>
-                        </el-table-column>
-
-                        <el-table-column
-                            width="80"
-                            label="通过个数"
-                        >
-                            <template slot-scope="scope">
-                                <el-tag type="success">{{ scope.row.stat.successes }}</el-tag>
-                            </template>
-                        </el-table-column>
-
-                        <el-table-column
-                            width="80"
-                            label="失败个数"
-                        >
-                            <template slot-scope="scope">
-                                <el-tag type="danger">{{ scope.row.stat.failures }}</el-tag>
-                            </template>
-                        </el-table-column>
-
-                        <el-table-column
-                            width="80"
-                            label="异常个数"
-                        >
-                            <template slot-scope="scope">
-                                <el-tag type="warning">{{ scope.row.stat.errors }}</el-tag>
-                            </template>
-                        </el-table-column>
-
-                        <el-table-column
-                            width="80"
-                            label="跳过个数"
-                        >
-                            <template slot-scope="scope">
-                                <el-tag type="info">{{ scope.row.stat.skipped }}</el-tag>
-                            </template>
-                        </el-table-column>
-
-                        <el-table-column
-                            label="系统信息"
-                        >
-                            <template slot-scope="scope">
-                                <el-popover trigger="hover" placement="top">
-                                    <p>HttpRunner: {{ scope.row.platform.httprunner_version }}</p>
-                                    <p>Python: {{ scope.row.platform.python_version }}</p>
-                                    <div slot="reference" class="name-wrapper">
-                                        <el-tag size="medium">{{ scope.row.platform.platform }}</el-tag>
-                                    </div>
-                                </el-popover>
-                            </template>
-                        </el-table-column>
-
-
-                        <el-table-column>
-                            <template slot-scope="scope">
-                                <el-row v-show="currentRow === scope.row">
-                                    <el-button
-                                        type="info"
-                                        icon="el-icon-view"
-                                        circle size="mini"
-                                        @click="handleWatchReports(scope.row.id)"
-                                    >
-                                    </el-button>
-
-                                    <el-button
-                                        type="danger"
-                                        icon="el-icon-delete"
-                                        circle size="mini"
-                                        @click="handleDelReports(scope.row.id)"
-                                    >
-                                    </el-button>
-                                </el-row>
-                            </template>
-
-                        </el-table-column>
-
-                    </el-table>
+                        <el-col :span="7">
+                            <el-pagination
+                                :page-size="11"
+                                v-show="reportData.count !== 0 "
+                                background
+                                @current-change="handleCurrentChange"
+                                :current-page.sync="currentPage"
+                                layout="total, prev, pager, next, jumper"
+                                :total="reportData.count"
+                            >
+                            </el-pagination>
+                        </el-col>
+                    </el-row>
                 </div>
-            </el-main>
+            </el-header>
+
+            <el-container>
+                <el-main style="padding: 0; margin-left: 10px;">
+                    <div style="position: fixed; bottom: 0px; right:0; left: 178px; top: 150px;">
+                        <el-table
+                            v-loading="loading"
+                            size="medium"
+                            element-loading-text="正在玩命加载"
+                            highlight-current-row
+                            :data="reportData.results"
+                            :show-header="reportData.results.length !== 0 "
+                            stripe
+                            height="600px"
+                            @cell-mouse-enter="cellMouseEnter"
+                            @cell-mouse-leave="cellMouseLeave"
+                            @selection-change="handleSelectionChange"
+                            show-overflow-tooltip
+                        >
+                            <el-table-column type="selection" width="50"></el-table-column>
+
+                            <el-table-column label="类型" width="80" align="center">
+                                <template slot-scope="scope">
+                                    <el-tag color="#2C3E50" style="color: white" size="small">{{ scope.row.type }}</el-tag>
+                                </template>
+                            </el-table-column>
+
+                            <el-table-column label="报告名称">
+                                <template slot-scope="scope">
+                                    <div>{{scope.row.name}}</div>
+                                </template>
+                            </el-table-column>
+
+                            <el-table-column label="状态" width="60" align="center">
+                                <template slot-scope="scope">
+                                    <div
+                                        :class="{'pass': scope.row.summary.success, 'fail':!scope.row.summary.success}"
+                                        v-text="scope.row.summary.success === true ? 'Pass' :'Fail'"
+                                    ></div>
+                                </template>
+                            </el-table-column>
+
+                            <el-table-column label="测试时间" width="150" align="center">
+                                <template slot-scope="scope">
+                                    <div>{{scope.row.summary.time.start_at|timestampToTime}}</div>
+                                </template>
+                            </el-table-column>
+
+                            <el-table-column label="用时" width="100" align="center">
+                                <template slot-scope="scope">
+                                    <div v-text="scope.row.summary.time.duration.toFixed(3)+' 秒'"></div>
+                                </template>
+                            </el-table-column>
+
+                            <el-table-column width="60" label="总计" align="center">
+                                <template slot-scope="scope">
+                                    <el-tag size="small">{{ scope.row.summary.stat.testsRun }}</el-tag>
+                                </template>
+                            </el-table-column>
+
+                            <el-table-column width="60" label="通过" align="center">
+                                <template slot-scope="scope">
+                                    <el-tag type="success" size="small"> {{ scope.row.summary.stat.successes }}</el-tag>
+                                </template>
+                            </el-table-column>
+
+                            <el-table-column width="60" label="失败" align="center">
+                                <template slot-scope="scope">
+                                    <el-tag type="danger" size="small">{{ scope.row.summary.stat.failures }}</el-tag>
+                                </template>
+                            </el-table-column>
+
+                            <el-table-column width="60" label="异常" align="center">
+                                <template slot-scope="scope">
+                                    <el-tag type="warning" size="small">{{ scope.row.summary.stat.errors }}</el-tag>
+                                </template>
+                            </el-table-column>
+
+                            <el-table-column width="60" label="跳过" align="center">
+                                <template slot-scope="scope">
+                                    <el-tag type="info" size="small">{{ scope.row.summary.stat.skipped }}</el-tag>
+                                </template>
+                            </el-table-column>
+
+                            <el-table-column label="系统信息" width="135" align="center">
+                                <template slot-scope="scope">
+                                    <el-popover trigger="hover" placement="top">
+                                        <p>{{ scope.row.summary.platform.python_version}}</p>
+                                        <p>Platform: {{ scope.row.summary.platform.platform }}</p>
+                                        <div slot="reference" class="name-wrapper">
+                                            <el-tag size="medium">HttpRunner: {{ scope.row.summary.platform.httprunner_version }}</el-tag>
+                                        </div>
+                                    </el-popover>
+                                </template>
+                            </el-table-column>
+
+                            <el-table-column width="150" align="center">
+                                <template slot-scope="scope">
+                                    <el-row v-show="currentRow === scope.row">
+                                        <el-button
+                                            type="info"
+                                            icon="el-icon-view"
+                                            circle size="mini"
+                                            @click="handleWatchReports(scope.row.id)"
+                                            title="查看"
+                                        >
+                                        </el-button>
+                                        <el-button
+                                            type="success"
+                                            icon="el-icon-download"
+                                            circle size="mini"
+                                            @click="handleDownExcelReport(scope.row.id,scope.row.name)"
+                                            title="下载"
+                                        >
+                                        </el-button>
+                                        <el-button
+                                            type="danger"
+                                            icon="el-icon-delete"
+                                            circle size="mini"
+                                            @click="handleDelReports(scope.row.id)"
+                                            title="删除"
+                                        >
+                                        </el-button>
+                                    </el-row>
+                                </template>
+                            </el-table-column>
+                        </el-table>
+                    </div>
+                </el-main>
+            </el-container>
         </el-container>
     </el-container>
 
 </template>
 
 <script>
-
+    import store from '../../store/state'
     export default {
-
-
         data() {
             return {
                 search: '',
@@ -199,7 +187,8 @@
                 reportData: {
                     count: 0,
                     results: []
-                }
+                },
+                loading: true
             }
         },
         methods: {
@@ -212,15 +201,19 @@
             },
 
             handleWatchReports(index) {
-                window.open(this.$api.baseUrl + "/api/fastrunner/reports/" + index + "/")
-
+                var newwindow = window.open('');
+                window.focus();
+                this.$api.watchSingleReports(index, {params:{project:this.$route.params.id}}).then(resp => {
+                    newwindow.focus();
+                    newwindow.document.open();
+                    newwindow.document.write(resp.data);
+                    newwindow.document.close();
+                })
             },
-
 
             handleSelectionChange(val) {
                 this.selectReports = val;
             },
-
 
             handleCurrentChange(val) {
                 this.$api.getReportsPaginationBypage({
@@ -240,12 +233,9 @@
                     cancelButtonText: '取消',
                     type: 'warning',
                 }).then(() => {
-                    this.$api.deleteReports(index).then(resp => {
-                        if (resp.success) {
-                            this.getReportList();
-                        } else {
-                            this.$message.error(resp.msg);
-                        }
+                    this.$api.deleteReports(index,{params:{project:this.$route.params.id}}).then(resp => {
+                        this.$notify.success('删除报告成功');
+                        this.getReportList();
                     })
                 })
             },
@@ -257,17 +247,31 @@
                         cancelButtonText: '取消',
                         type: 'warning',
                     }).then(() => {
-                        this.$api.delAllReports({data: this.selectReports}).then(resp => {
+                        this.$api.delAllReports(this.selectReports,{project:this.$route.params.id}).then(resp => {
+                            this.$notify.success('批量删除报告成功');
                             this.getReportList();
                         })
                     })
                 } else {
-                    this.$notify.warning({
-                        title: '提示',
-                        message: '请至少勾选一个测试报告',
-                        duration: 1000
-                    })
+                    this.$notify.warning('请至少勾选一个测试报告');
                 }
+            },
+            handleDownExcelReport(index,filename) {
+                this.$api.downloadTestdata({
+                    "fileType": 2,
+                    "id": index,
+                    "project": this.$route.params.id
+                }).then(resp => {
+                    let url = window.URL.createObjectURL(new Blob([resp.data]));
+                    let link = document.createElement('a');
+                    link.style.display = 'none';
+                    link.href = url;
+                    link.setAttribute('download', filename+'.xlsx');
+                    document.body.appendChild(link);
+                    link.click();
+                }).catch(error => {
+                    this.$notify.error('文件下载失败')
+                })
             },
             getReportList() {
                 this.$api.reportList({
@@ -277,6 +281,7 @@
                     }
                 }).then(resp => {
                     this.reportData = resp;
+                    this.loading = false;
                 })
             },
         },
@@ -287,7 +292,16 @@
     }
 </script>
 
-<style>
-
+<style scoped>
+    .pass {
+        font-weight: bold;
+        color: #13ce66;
+        font-size: 12px;
+    }
+    .fail {
+        font-weight: bold;
+        color: red;
+        font-size: 12px;
+    }
 
 </style>

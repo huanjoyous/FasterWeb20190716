@@ -8,7 +8,6 @@
                 clearable
             >
                 <template slot="prepend">配置信息录入</template>
-
                 <el-button
                     slot="append"
                     type="success"
@@ -27,6 +26,17 @@
             >
                 <template slot="prepend">配置请求地址</template>
             </el-input>
+            <el-tooltip :content="'teststep失败后testcase是否中止: '+ failfast" placement="top">
+                <el-switch
+                    style="display: inline"
+                    v-model="failfast"
+                    active-color="#ff4949"
+                    inactive-color="#13ce66"
+                    active-value=false
+                    inactive-value=true
+                >
+                </el-switch>
+            </el-tooltip>
         </div>
 
         <div class="request">
@@ -57,7 +67,6 @@
                         v-on:variables="handleVariables"
                         :variables="response ? response.body.variables : []"
                     >
-
                     </variables>
                 </el-tab-pane>
 
@@ -70,15 +79,23 @@
                     </hooks>
                 </el-tab-pane>
 
+              <el-tab-pane label="outPut" name="six">
+                <Out-params
+                  :save="save"
+                  v-on:outParams="handleOutput"
+                  :outParams="response ? response.body.outParams: []"
+                >
+                </Out-params>
+              </el-tab-pane>
+
                 <el-tab-pane label="Parameters" name="five">
                     <parameters
-                        :save="save"
-                        v-on:parameters="handleParameters"
-                        :parameters="response ? response.body.parameters: []"
+                      :save="save"
+                      v-on:parameters="handleParameters"
+                      :parameters="response ? response.body.parameters: []"
                     >
                     </parameters>
                 </el-tab-pane>
-
             </el-tabs>
         </div>
     </div>
@@ -91,6 +108,7 @@
     import Variables from '../../../httprunner/components/Variables'
     import Hooks from '../../../httprunner/components/Hooks'
     import Parameters from '../../../httprunner/components/Parameters'
+    import OutParams from '../../../httprunner/components/OutParams'
 
     export default {
         components: {
@@ -98,7 +116,8 @@
             Request,
             Variables,
             Hooks,
-            Parameters
+            Parameters,
+            OutParams
         },
 
         props: {
@@ -115,6 +134,11 @@
                 this.name = this.response.body.name;
                 this.baseUrl = this.response.body.base_url;
                 this.id = this.response.id;
+                if (this.response.body.failFast){
+                    this.failfast =  this.response.body.failFast;
+                }else{
+                    this.failfast = true;
+                }
             }
         },
 
@@ -125,7 +149,9 @@
             handleRequest(request) {
                 this.request = request;
             },
-
+            handleOutput(outParams) {
+               this.outParams = outParams;
+            },
             handleVariables(variables) {
                 this.variables = variables;
             },
@@ -152,15 +178,14 @@
                         base_url: this.baseUrl,
                         name: this.name,
                         project: this.project,
-
+                        failFast: this.failfast,
+                        outParams: this.outParams
                     }).then(resp => {
                         if (resp.success) {
                             this.$emit("addSuccess");
+                            this.$notify.success("配置添加成功")
                         } else {
-                            this.$message.error({
-                                message: resp.msg,
-                                duration: 1000
-                            })
+                            this.$message.error(resp.msg)
                         }
                     })
                 }
@@ -176,14 +201,15 @@
                         hooks: this.hooks,
                         base_url: this.baseUrl,
                         name: this.name,
+                        project: this.project,
+                        failFast: this.failfast,
+                        outParams: this.outParams
                     }).then(resp => {
                         if (resp.success) {
                             this.$emit("addSuccess");
+                            this.$notify.success(resp.msg);
                         } else {
-                            this.$message.error({
-                                message: resp.msg,
-                                duration: 1000
-                            })
+                            this.$notify.error(resp.msg)
                         }
                     })
                 }
@@ -191,11 +217,7 @@
 
             validateData() {
                 if (this.name === '') {
-                    this.$notify.error({
-                        title: '参数错误',
-                        message: '配置名称不能为空',
-                        duration: 1500
-                    });
+                    this.$notify.error('配置名称不能为空');
                     return false;
                 }
                 return true
@@ -213,8 +235,10 @@
                 variables: [],
                 hooks: [],
                 parameters: [],
+                outParams:[],
                 save: false,
-                activeTag: 'first',
+                activeTag: 'third',
+                failfast: ''
             }
         },
         name: "ConfigBody"

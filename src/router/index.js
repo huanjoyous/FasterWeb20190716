@@ -1,31 +1,34 @@
 import Vue from 'vue'
 import Router from 'vue-router'
 import Home from '@/pages/home/Home'
-import Register from '@/pages/auth/components/Register'
-import Login from '@/pages/auth/components/Login'
+import Login from '@/pages/auth/Login'
 import ProjectList from '@/pages/project/ProjectList'
-import DataBase from '@/pages/project/DataBase'
 import ProjectDetail from '@/pages/project/ProjectDetail'
-import DebugTalk from '@/pages/httprunner/DebugTalk'
+import DebugTalk from '@/pages/pycode/RecordPycode'
 import RecordApi from '@/pages/fastrunner/api/RecordApi'
 import AutoTest from '@/pages/fastrunner/case/AutoTest'
 import GlobalEnv from '@/pages/variables/GlobalEnv'
 import ReportList from '@/pages/reports/ReportList'
 import RecordConfig from '@/pages/fastrunner/config/RecordConfig'
 import Tasks from '@/pages/task/Tasks'
-
-Vue.use(Router)
+import HostAddress from '@/pages/variables/HostAddress'
+import TestData from "@/pages/testdata/TestData";
+import TaskMeta from "@/pages/reports/TaskMeta";
+//import Register from '@/pages/auth/Register'
+Vue.use(Router);
 
 export default new Router({
+    mode:'history',
     routes: [
+        // {
+        //     path: '/fastrunner/register',
+        //     name: 'Register',
+        //     component: Register,
+        //     meta: {
+        //         title: '用户注册'
+        //     }
+        // },
         {
-            path: '/fastrunner/register',
-            name: 'Register',
-            component: Register,
-            meta: {
-                title: '用户注册'
-            }
-        }, {
             path: '/fastrunner/login',
             name: 'Login',
             component: Login,
@@ -53,13 +56,12 @@ export default new Router({
                 },
                 {
                     name: 'ProjectDetail',
-                    path: 'project/:id/dashbord',
+                    path: 'dashbord/:id',
                     component: ProjectDetail,
                     meta: {
                         title: '项目预览',
                         requireAuth: true,
                     }
-
                 },
                 {
                     name: 'DebugTalk',
@@ -69,7 +71,6 @@ export default new Router({
                         title: '编辑驱动',
                         requireAuth: true,
                     }
-
                 },
                 {
                     name: 'RecordApi',
@@ -79,7 +80,6 @@ export default new Router({
                         title: '接口模板',
                         requireAuth: true
                     }
-
                 },
                 {
                     name: 'AutoTest',
@@ -89,17 +89,15 @@ export default new Router({
                         title: '自动化测试',
                         requireAuth: true
                     }
-
                 },
                 {
                     name: 'RecordConfig',
                     path: 'record_config/:id',
                     component: RecordConfig,
                     meta: {
-                        title: '环境管理',
+                        title: '配置管理',
                         requireAuth: true
                     }
-
                 },
                 {
                     name: 'GlobalEnv',
@@ -109,7 +107,6 @@ export default new Router({
                         title: '全局变量',
                         requireAuth: true
                     }
-
                 },
                 {
                     name: 'Reports',
@@ -119,7 +116,6 @@ export default new Router({
                         title: '历史报告',
                         requireAuth: true
                     }
-
                 },
                 {
                     name: 'Task',
@@ -129,28 +125,34 @@ export default new Router({
                         title: '定时任务',
                         requireAuth: true
                     }
-
                 },
                 {
-                    name: 'Pressure',
-                    path: 'pressure/:id',
-                    component: RecordConfig,
+                    name: 'HostIP',
+                    path: 'host_ip/:id',
+                    component: HostAddress,
                     meta: {
-                        title: '压力测试',
+                        title: 'HOST配置',
                         requireAuth: true
                     }
-
                 },
                 {
-                    name: 'DataBase',
-                    path: 'database',
-                    component: DataBase,
+                    name: "TestData",
+                    path: 'testdata/:id',
+                    component: TestData,
                     meta: {
-                        title: '数据库管理',
+                        title: '测试数据',
                         requireAuth: true
                     }
-
-                }
+                },
+                {
+                    name: "TaskMeta",
+                    path: 'taskmeta/:id',
+                    component: TaskMeta,
+                    meta: {
+                        title: '异步回执',
+                        requireAuth: true
+                    }
+                },
             ]
         },
 

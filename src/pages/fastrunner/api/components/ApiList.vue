@@ -3,15 +3,24 @@
         <el-header style="padding: 0; height: 50px;">
             <div style=" padding-left: 10px;">
                 <el-row :gutter="50">
-                    <el-col :span="6" v-if="apiData.count > 11">
+                    <el-col :span="1">
+                        <el-checkbox
+                            v-if="apiData.count > 0"
+                            v-model="checked"
+                            style="padding-top: 14px; padding-left: 2px"
+                        >
+                        </el-checkbox>
+                    </el-col>
+
+                    <el-col :span="7" v-if="apiData.count > 11" style="margin-left: 0px">
                         <el-input placeholder="请输入接口名称" clearable v-model="search">
                             <el-button slot="append" icon="el-icon-search" @click="getAPIList"></el-button>
                         </el-input>
                     </el-col>
 
-                    <el-col :span="7">
+                    <el-col :span="7" style="margin-left: -10px">
                         <el-pagination
-                            style="margin-top: 5px"
+                            style="margin-top: 5px;"
                             :page-size="11"
                             v-show="apiData.count !== 0 "
                             background
@@ -38,9 +47,9 @@
                 </el-dialog>
 
                 <el-dialog
-                    title="Run API"
+                    title="Run API Tree"
                     :visible.sync="dialogTreeVisible"
-                    width="45%"
+                    width="40%"
                 >
                     <div>
                         <div>
@@ -57,13 +66,13 @@
                                 </el-col>
                                 <el-col :span="10">
                                     <el-input
+                                        size="small"
                                         v-show="asyncs"
                                         clearable
                                         placeholder="请输入报告名称"
                                         v-model="reportName"
                                         :disabled="false">
                                     </el-input>
-
                                 </el-col>
                             </el-row>
                         </div>
@@ -98,15 +107,18 @@
 
                     </div>
                     <span slot="footer" class="dialog-footer">
-                    <el-button @click="dialogTreeVisible = false">取 消</el-button>
-                    <el-button type="primary" @click="runTree">确 定</el-button>
+                    <el-button size="small" @click="dialogTreeVisible = false">取 消</el-button>
+                    <el-button size="small" type="primary" @click="runTree">确 定</el-button>
                   </span>
                 </el-dialog>
 
 
-                <div style="position: fixed; bottom: 0; right:0; left: 500px; top: 160px">
+                <div style="position: fixed; bottom: 0; right:0; left: 460px; top: 160px">
                     <el-table
-                        height="calc(100%)"
+                        v-loading="loading"
+                        element-loading-text="正在玩命加载"
+                        highlight-current-row
+                        height="600px"
                         ref="multipleTable"
                         :data="apiData.results"
                         :show-header="false"
@@ -115,16 +127,14 @@
                         @cell-mouse-leave="cellMouseLeave"
                         style="width: 100%;"
                         @selection-change="handleSelectionChange"
-                        v-loading="loading"
                     >
                         <el-table-column
                             type="selection"
-                            width="40"
+                            width="50"
                         >
                         </el-table-column>
 
                         <el-table-column
-                            min-width="450"
                             align="center"
                         >
                             <template slot-scope="scope">
@@ -173,7 +183,9 @@
                             </template>
                         </el-table-column>
 
-                        <el-table-column>
+                        <el-table-column
+                            width="200"
+                        >
                             <template slot-scope="scope">
                                 <el-row v-show="currentRow === scope.row">
                                     <el-button
@@ -181,29 +193,29 @@
                                         icon="el-icon-edit"
                                         circle size="mini"
                                         @click="handleRowClick(scope.row)"
+                                        title="编辑"
                                     ></el-button>
-
-                                    <el-button
-                                        type="success"
-                                        icon="el-icon-document"
-                                        circle size="mini"
-                                        @click="handleCopyAPI(scope.row.id)"
-                                    >
-                                    </el-button>
-
                                     <el-button
                                         type="primary"
                                         icon="el-icon-caret-right"
                                         circle size="mini"
                                         @click="handleRunAPI(scope.row.id)"
+                                        title="运行"
+                                    ></el-button>
+                                    <el-button
+                                        type="success"
+                                        icon="el-icon-document"
+                                        circle size="mini"
+                                        @click="handleCopyAPI(scope.row.id)"
+                                        title="复制"
                                     ></el-button>
                                     <el-button
                                         type="danger"
                                         icon="el-icon-delete"
                                         circle size="mini"
                                         @click="handleDelApi(scope.row.id)"
-                                    >
-                                    </el-button>
+                                        title="删除"
+                                    ></el-button>
                                 </el-row>
                             </template>
                         </el-table-column>
@@ -225,6 +237,9 @@
         },
         name: "ApiList",
         props: {
+            host: {
+                require: true
+            },
             config: {
                 require: true
             },
@@ -236,16 +251,16 @@
             project: {
                 require: true
             },
-            checked: Boolean,
             del: Boolean
         },
         data() {
             return {
+                checked:false,
                 search: '',
                 reportName: '',
                 asyncs: false,
                 filterText: '',
-                loading: false,
+                loading: true,
                 expand: '&#xe65f;',
                 dataTree: {},
                 dialogTreeVisible: false,
@@ -298,9 +313,7 @@
                     })
                 } else {
                     this.$notify.warning({
-                        title: '提示',
-                        message: '请至少选择一个接口',
-                        duration: 1000
+                        message: '请至少选择一个接口'
                     })
                 }
             }
@@ -317,9 +330,10 @@
                         'name': value
                     }).then(resp => {
                         if (resp.success) {
+                            this.$notify.success('复制API成功')
                             this.getAPIList();
                         } else {
-                            this.$message.error(resp.msg);
+                            this.$notify.error(resp.msg);
                         }
                     })
                 })
@@ -333,13 +347,12 @@
                 this.dialogTreeVisible = false;
                 const relation = this.$refs.tree.getCheckedKeys();
                 if (relation.length === 0) {
-                    this.$notify.error({
-                        title: '提示',
-                        message: '请至少选择一个节点',
-                        duration: 1500
+                    this.$notify.warning({
+                        message: '请至少选择一个节点'
                     });
                 } else {
                     this.$api.runAPITree({
+                        "host": this.host,
                         "project": this.project,
                         "relation": relation,
                         "async": this.asyncs,
@@ -347,7 +360,7 @@
                         "config": this.config
                     }).then(resp => {
                         if (resp.hasOwnProperty("status")) {
-                            this.$message.info({
+                            this.$notify.info({
                                 message: resp.msg,
                                 duration: 1500
                             });
@@ -383,14 +396,14 @@
                     params: {
                         node: this.node,
                         project: this.project,
-                        search: this.search
+                        search: this.search,
+                        page: this.currentPage
                     }
                 }).then(res => {
                     this.apiData = res;
+                    this.loading = false;
                 })
             },
-
-
             handleCurrentChange(val) {
                 this.$api.getPaginationBypage({
                     params: {
@@ -413,9 +426,10 @@
                 }).then(() => {
                     this.$api.delAPI(index).then(resp => {
                         if (resp.success) {
+                            this.$notify.success('删除API成功');
                             this.getAPIList();
                         } else {
-                            this.$message.error(resp.msg);
+                            this.$notify.error(resp.msg);
                         }
                     })
                 })
@@ -427,7 +441,7 @@
                     if (resp.success) {
                         this.$emit('api', resp);
                     } else {
-                        this.$message.error(resp.msg)
+                        this.$notify.error(resp.msg)
                     }
                 })
             },
@@ -436,6 +450,7 @@
                 this.loading = true;
                 this.$api.runAPIByPk(id, {
                     params: {
+                        host:this.host,
                         config: this.config
                     }
                 }).then(resp => {

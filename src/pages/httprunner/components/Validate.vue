@@ -1,8 +1,9 @@
 <template>
     <el-table
+        highlight-current-row
         :cell-style="{paddingTop: '4px', paddingBottom: '4px'}"
         strpe
-        height="460"
+        :height="height"
         :data="tableData"
         style="width: 100%;"
         @cell-mouse-enter="cellMouseEnter"
@@ -10,63 +11,60 @@
     >
         <el-table-column
             label="断言类型"
-            width="250">
+            width="150">
             <template slot-scope="scope">
-                <el-tooltip
-                    effect="dark"
-                    :content="scope.row.comparator"
-                    placement="bottom"
-                    :disabled="scope.row.comparator === '' ? 'disabled' : false"
-                >
-                    <el-autocomplete
-                        clearable
-                        v-model="scope.row.comparator"
-                        :fetch-suggestions="querySearch"
-                        placeholder="请输入断言类型"
+                <el-select v-model="scope.row.comparator" size="medium">
+                    <el-option
+                        v-for="item in validateOptions"
+                        :key="item.value"
+                        :label="item.label"
+                        :value="item.value"
                     >
-                    </el-autocomplete>
-                </el-tooltip>
-
-
+                    </el-option>
+                </el-select>
             </template>
         </el-table-column>
 
         <el-table-column
-            fixed
             label="实际返回值"
-            width="370">
+            >
             <template slot-scope="scope">
-                <el-input clearable v-model="scope.row.actual" placeholder="实际返回值"></el-input>
+                <el-input clearable v-model="scope.row.actual" placeholder="实际返回值" size="medium"></el-input>
             </template>
         </el-table-column>
 
         <el-table-column
             label="期望类型"
-            width="170">
+            width="120">
             <template slot-scope="scope">
-
-                <el-select v-model="scope.row.type">
+                <el-select v-model="scope.row.type" size="medium">
                     <el-option
                         v-for="item in dataTypeOptions"
+                        :key="item.value"
+                        :label="item.label"
+                        :value="item.value"
+                    >
+                    </el-option>
+                </el-select>
+            </template>
+        </el-table-column>
+
+
+        <el-table-column label="期望返回值">
+            <template slot-scope="scope">
+                <el-input v-if="scope.row.type !== 4" clearable v-model="scope.row.expect" placeholder="期望返回值" size="medium"></el-input>
+                <el-select v-if="scope.row.type === 4" clearable v-model="scope.row.expect" placeholder="期望返回值" size="medium">
+                    <el-option
+                        v-for="item in BoolOptions"
                         :key="item.value"
                         :label="item.label"
                         :value="item.value">
                     </el-option>
                 </el-select>
-
             </template>
         </el-table-column>
 
-
-        <el-table-column
-            label="期望返回值"
-            width="400">
-            <template slot-scope="scope">
-                <el-input clearable v-model="scope.row.expect" placeholder="期望返回值"></el-input>
-
-            </template>
-        </el-table-column>
-        <el-table-column>
+        <el-table-column width="130">
             <template slot-scope="scope">
                 <el-row v-show="scope.row === currentRow">
                     <el-button
@@ -80,11 +78,10 @@
                         icon="el-icon-delete"
                         size="mini"
                         type="danger"
-                        v-show="scope.$index !== 0"
+                        v-show="tableData.length > 1"
                         @click="handleDelete(scope.$index, scope.row)">
                     </el-button>
                 </el-row>
-
             </template>
         </el-table-column>
     </el-table>
@@ -99,33 +96,25 @@
                 require: false
             }
         },
+        computed:{
+            height() {
+                return window.screen.height - 440
+            }
+        },
 
         watch: {
             save: function () {
                 this.$emit('validate', this.parseValidate(), this.tableData);
-
             },
 
             validate: function () {
                 if (this.validate.length !== 0) {
-                    this.tableData = this.validate;
+                    this.tableData = this.loaderValidate(this.validate);
                 }
             }
         },
 
         methods: {
-            querySearch(queryString, cb) {
-                let validateOptions = this.validateOptions;
-                let results = queryString ? validateOptions.filter(this.createFilter(queryString)) : validateOptions;
-                cb(results);
-            },
-
-            createFilter(queryString) {
-                return (validateOptions) => {
-                    return (validateOptions.value.toLowerCase().indexOf(queryString.toLowerCase()) === 0);
-                };
-            },
-
             cellMouseEnter(row) {
                 this.currentRow = row;
             },
@@ -138,7 +127,7 @@
                 this.tableData.push({
                     expect: '',
                     actual: '',
-                    comparator: 'equals',
+                    comparator: 'eq',
                     type: 1
                 });
             },
@@ -153,7 +142,11 @@
                 const msg = value + ' => ' + this.dataTypeOptions[type - 1].label + ' 转换异常, 该数据自动剔除';
                 switch (type) {
                     case 1:
-                        tempValue = value;
+                        if (String(value).toLowerCase() === 'null' || String(value).toLowerCase() === 'none'){
+                            tempValue = null;
+                        }else {
+                            tempValue = String(value);
+                        }
                         break;
                     case 2:
                         tempValue = parseInt(value);
@@ -162,24 +155,15 @@
                         tempValue = parseFloat(value);
                         break;
                     case 4:
-                        if (value === 'False' || value === 'True') {
-                            let bool = {
-                                'True': true,
-                                'False': false
-                            };
-                            tempValue = bool[value];
-                        } else {
-                            this.$notify.error({
-                                title: '类型转换错误',
-                                message: msg,
-                                duration: 2000
-                            });
-                            return 'exception'
-                        }
+                        tempValue = value === 'true';
                         break;
                     case 5:
                         try {
-                            tempValue = JSON.parse(value);
+                            if (value === '' || value === '[]'){
+                                tempValue = [];
+                            }else{
+                                tempValue = JSON.parse(value);
+                            }
                         }
                         catch (err) {
                             tempValue = false
@@ -187,21 +171,20 @@
                         break;
                     case 6:
                         try {
-                            tempValue = JSON.parse(value);
+                            if (value === '' || value === '{}'){
+                                tempValue = {};
+                            }else{
+                                tempValue = JSON.parse(value);
+                            }
                         }
                         catch (err) {
                             tempValue = false
                         }
                         break;
-
                 }
 
                 if (tempValue !== 0 && !tempValue && type !== 4 && type !== 1) {
-                    this.$notify.error({
-                        title: '类型转换错误',
-                        message: msg,
-                        duration: 2000
-                    });
+                    this.$notify.error(msg);
                     return 'exception'
                 }
                 return tempValue;
@@ -223,6 +206,20 @@
                     }
                 }
                 return validate;
+            },
+            loaderValidate(response){
+                let obj = [];
+                for (let content of response) {
+                    if (content['type'] === 4) {
+                        if (content['expect'] === true){
+                            content['expect'] = 'true'
+                        }else{
+                            content['expect'] = 'false'
+                        }
+                    }
+                    obj.push(content)
+                }
+                return obj
             }
         },
         data() {
@@ -230,10 +227,10 @@
                 currentValidate: '',
                 currentRow: '',
                 tableData: [{
-                    expect: '',
-                    actual: '',
-                    comparator: 'equals',
-                    type: 1
+                    expect: 200,
+                    actual: 'status_code',
+                    comparator: 'eq',
+                    type: 2
                 }],
 
                 dataTypeOptions: [{
@@ -257,41 +254,66 @@
                 }],
 
                 validateOptions: [{
-                    value: 'equals'
+                    value: 'eq',
+                    lable: 'eq'
                 }, {
-                    value: 'less_than'
+                    value: 'lt',
+                    lable: 'lt'
                 }, {
-                    value: 'less_than_or_equals'
+                    value: 'le',
+                    lable: 'le'
                 }, {
-                    value: 'greater_than'
+                    value: 'gt',
+                    lable: 'gt'
                 }, {
-                    value: 'greater_than_or_equals'
+                    value: 'ge',
+                    lable: 'ge'
                 }, {
-                    value: 'not_equals'
+                    value: 'ne',
+                    lable: 'ne'
                 }, {
-                    value: 'string_equals'
+                    value: 'str_eq',
+                    lable: 'str_eq'
                 }, {
-                    value: 'length_equals'
+                    value: 'len_eq',
+                    lable: 'len_eq'
                 }, {
-                    value: 'length_greater_than'
+                    value: 'len_gt',
+                    lable: 'len_gt'
                 }, {
-                    value: 'length_greater_than_or_equals'
+                    value: 'len_ge',
+                    lable: 'len_ge'
                 }, {
-                    value: 'length_less_than'
+                    value: 'len_lt',
+                    lable: 'len_lt'
                 }, {
-                    value: 'length_less_than_or_equals'
+                    value: 'len_le',
+                    lable: 'len_le'
                 }, {
-                    value: 'contains'
+                    value: 'contains',
+                    lable: 'contains'
                 }, {
-                    value: 'contained_by'
+                    value: 'contained_by',
+                    lable: 'contained_by'
                 }, {
-                    value: 'type_match'
+                    value: 'type_match',
+                    lable: 'type_match'
                 }, {
-                    value: 'regex_match'
+                    value: 'regex_match',
+                    lable: 'regex_match'
                 }, {
-                    value: 'startswith'
+                    value: 'startswith',
+                    lable: 'startswith'
                 }, {
-                    value: 'endswith'
+                    value: 'endswith',
+                    lable: 'endwith'
+                }],
+                BoolOptions:[{
+                    label: 'true',
+                    value: 'true'
+                },{
+                    label: 'false',
+                    value: 'false'
                 }]
             }
         },

@@ -5,6 +5,7 @@
             <div class="nav-api-header">
                 <div style="padding-top: 10px; margin-left: 10px">
                     <el-button
+                        :disabled="addAPIFlag"
                         type="primary"
                         size="small"
                         icon="el-icon-circle-plus"
@@ -36,13 +37,13 @@
                         </el-radio-group>
 
                         <span slot="footer" class="dialog-footer">
-                        <el-button @click="dialogVisible = false">取 消</el-button>
-                        <el-button type="primary" @click="handleConfirm('nodeForm')">确 定</el-button>
+                        <el-button size="small" @click="dialogVisible = false">取 消</el-button>
+                        <el-button size="small" type="primary" @click="handleConfirm('nodeForm')">确 定</el-button>
                       </span>
                     </el-dialog>
 
                     <el-button
-                        :disabled="currentNode === '' "
+                        :disabled="currentNode === '' || addAPIFlag "
                         type="danger"
                         size="small"
                         icon="el-icon-delete"
@@ -52,99 +53,87 @@
 
 
                     <el-button
-                        :disabled="currentNode === '' "
+                        :disabled="currentNode === '' || addAPIFlag "
                         type="info"
                         size="small"
-                        icon="el-icon-edit-outline"
+                        icon="el-icon-refresh-right"
                         @click="renameNode"
-                    >节点重命名
+                        style="margin-left: 0px"
+                    >重命名
                     </el-button>
 
 
                     <el-button
-                        style="margin-left: 100px"
-                        :disabled="currentNode === '' "
+                        :disabled="currentNode === '' || addAPIFlag "
                         type="primary"
                         size="small"
                         icon="el-icon-circle-plus-outline"
                         @click="initResponse = true"
+                        style="margin-left: 0px"
                     >添加接口
                     </el-button>
-
                     <el-button
-                        type="primary"
-                        plain
-                        size="small"
-                        icon="el-icon-upload"
-                        :disabled="currentNode === '' "
-                    >导入接口
-                    </el-button>
-                    <el-button
-                        type="info"
-                        plain
-                        size="small"
-                        icon="el-icon-download"
-                        :disabled="currentNode === '' "
-                    >导出接口
-                    </el-button>
-
-                    <el-tooltip
-                        class="item"
-                        effect="dark"
-                        content="可选配置"
-                        placement="top-start"
-                    >
-                        <el-button plain size="small" icon="el-icon-view"></el-button>
-                    </el-tooltip>
-
-
-                    <el-select
-                        placeholder="请选择"
-                        size="small"
-                        tyle="margin-left: -6px"
-                        v-model="currentConfig"
-                    >
-                        <el-option
-                            v-for="item in configOptions"
-                            :key="item.id"
-                            :label="item.name"
-                            :value="item.name">
-                        </el-option>
-                    </el-select>
-
-                    <el-checkbox
-                        v-model="checked"
-                        style="margin-left: 40px;"
-                        :disabled="currentNode === ''"
-                    >全选
-                    </el-checkbox>
-
-                    <el-button
+                        v-if="!addAPIFlag"
                         style="margin-left: 20px"
                         type="primary"
                         icon="el-icon-caret-right"
                         circle
                         size="mini"
                         @click="run = !run"
+                        title="批量运行"
                     ></el-button>
 
-
                     <el-button
+                        v-if="!addAPIFlag"
                         type="danger"
                         icon="el-icon-delete"
                         circle
                         size="mini"
-                        :disabled="currentNode === ''"
                         @click="del = !del"
+                        title="批量删除"
                     ></el-button>
+                    &nbsp环境:
+                    <el-select
+                        placeholder="请选择"
+                        size="small"
+                        v-model="currentHost"
+                        style="width: 120px"
+                    >
+                        <el-option
+                            v-for="item in hostOptions"
+                            :key="item.id"
+                            :label="item.name"
+                            :value="item.name">
+                        </el-option>
+                    </el-select>
+                    &nbsp配置:
+                    <el-select
+                        placeholder="请选择"
+                        size="small"
+                        style="width: 120px"
+                        v-model="currentConfig"
+                    >
+                        <el-option
+                            v-for="item in configOptions"
+                            :key="item.id"
+                            :label="item.name"
+                            :value="item.name"
+                        >
+                        </el-option>
+                    </el-select>
 
-
+                    <el-button
+                        :disabled="!addAPIFlag"
+                        type="text"
+                        style="position: absolute; right: 30px;"
+                        @click="addAPIFlag=false"
+                    >返回列表</el-button>
                 </div>
             </div>
         </el-header>
 
         <el-container>
-            <el-aside style="margin-top: 10px;">
+            <el-aside style="margin-top: 10px;" v-show="!addAPIFlag">
                 <div class="nav-api-side">
                     <div class="api-tree">
                         <el-input
@@ -187,16 +176,17 @@
                     :response="response"
                     v-on:addSuccess="handleAddSuccess"
                     :config="currentConfig"
+                    :host="currentHost"
                 >
                 </api-body>
 
                 <api-list
                     v-show="!addAPIFlag"
-                    :checked="checked"
                     v-on:api="handleAPI"
                     :node="currentNode !== '' ? currentNode.id : '' "
                     :project="$route.params.id"
                     :config="currentConfig"
+                    :host="currentHost"
                     :del="del"
                     :back="back"
                     :run="run"
@@ -237,7 +227,7 @@
                             name: '',
                             times: 1,
                             url: '',
-                            method: 'GET',
+                            method: 'POST',
                             header: [{
                                 key: "",
                                 value: "",
@@ -287,12 +277,62 @@
         data() {
             return {
                 configOptions: [],
+                hostOptions: [],
                 currentConfig: '请选择',
+                currentHost: '请选择',
                 back: false,
-                checked: false,
                 del: false,
                 run: false,
-                response: '',
+                response: {
+                    id: '',
+                    body: {
+                        name: '',
+                        times: 1,
+                        url: '',
+                        method: 'POST',
+                        header: [{
+                            key: "",
+                            value: "",
+                            desc: ""
+                        }],
+                        request: {
+                            data: [{
+                                key: "",
+                                value: "",
+                                desc: "",
+                                type: 1
+                            }],
+                            params: [{
+                                key: "",
+                                value: "",
+                                desc: "",
+                                type: 1
+                            }],
+                            json_data: ''
+                        },
+                        validate: [{
+                            expect: "",
+                            actual: "",
+                            comparator: "equals",
+                            type: 1
+                        }],
+                        variables: [{
+                            key: "",
+                            value: "",
+                            desc: "",
+                            type: 1
+                        }],
+                        extract: [{
+                            key: "",
+                            value: "",
+                            desc: ""
+                        }],
+                        hooks: [{
+                            setup: "",
+                            teardown: ""
+                        }]
+                    }
+                },
                 nodeForm: {
                     name: '',
                 },
@@ -311,7 +351,7 @@
                 data: '',
                 filterText: '',
                 expand: '&#xe65f;',
-                dataTree: [],
+                dataTree: []
             }
         },
         methods: {
@@ -343,6 +383,16 @@
                     })
                 })
             },
+
+            getHost() {
+                this.$api.hostList({params: {project: this.$route.params.id}}).then(resp => {
+                    this.hostOptions = resp.data["results"];
+                    this.hostOptions.push({
+                        name: '请选择'
+                    })
+                })
+            },
+
             updateTree(mode) {
                 this.$api.updateTree(this.treeId, {
                     body: this.dataTree,
@@ -353,6 +403,7 @@
                     if (resp['success']) {
                         this.dataTree = resp['tree'];
                         this.maxId = resp['max'];
+                        this.$notify.success('更新成功')
                     } else {
                         this.$message.error(resp['msg']);
                     }
@@ -366,16 +417,15 @@
                     type: 'warning'
                 }).then(() => {
                     if (this.currentNode === '') {
-                        this.$message.info('请选择一个节点');
+                        this.$notify.info('请选择一个节点');
                     } else {
                         if (this.currentNode.children.length !== 0) {
-                            this.$message.warning('此节点有子节点，不可删除！');
+                            this.$notify.error('此节点有子节点，不可删除！');
                         } else {
                             this.remove(this.currentNode, this.data);
                             this.updateTree(true);
                         }
                     }
-
                 })
             },
 
@@ -393,7 +443,6 @@
                     this.updateTree(false);
                 });
             },
-
 
             handleConfirm(formName) {
                 this.$refs[formName].validate((valid) => {
@@ -434,12 +483,12 @@
                 }
                 data.children.push(newChild);
             }
-
         },
         name: "RecordApi",
         mounted() {
             this.getTree();
             this.getConfig();
+            this.getHost();
         }
     }
 </script>

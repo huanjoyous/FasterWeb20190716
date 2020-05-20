@@ -2,7 +2,7 @@
 // (runtime-only or standalone) has been set in webpack.base.conf with an alias.
 import Vue from 'vue'
 import ElementUI from 'element-ui'
-import 'element-ui/lib/theme-chalk/index.css'
+import './assets/theme/index.css'
 import App from './App'
 import router from './router'
 import 'styles/iconfont.css'
@@ -13,9 +13,9 @@ import 'styles/reports.css'
 import * as api from './restful/api'
 import store from './store'
 
-Vue.config.productionTip = false
-Vue.use(ElementUI)
-Vue.prototype.$api = api
+Vue.config.productionTip = false;
+Vue.use(ElementUI);
+Vue.prototype.$api = api;
 
 Vue.filter('datetimeFormat', function (time, format = 'YY-MM-DD hh:mm:ss') {
     let date = new Date(time);
@@ -66,7 +66,12 @@ Vue.prototype.getLocalValue = function (name) {
         return '';
     }
 };
-
+Vue.prototype.getViewportSize = function(){
+    return {
+        width: window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth,
+        height: window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight
+    };
+};
 router.beforeEach((to, from, next) => {
     /* 路由发生变化修改页面title */
     setTimeout((res) => {
@@ -103,8 +108,12 @@ new Vue({
         if (this.getLocalValue("user") === null) {
             this.setLocalValue("user", "");
         }
+        if (this.getLocalValue("routerName") === null) {
+            this.setLocalValue("routerName", "ProjectList");
+        }
         this.$store.commit("isLogin", this.getLocalValue("token"));
         this.$store.commit("setUser", this.getLocalValue("user"));
+        this.$store.commit("setRouterName", this.getLocalValue("routerName"));
 
     }
 })

@@ -1,25 +1,20 @@
 <template>
     <div>
         <div class="nav-header">
-           <span class="left">
-               <img src="~@/assets/images/logo-top.png" class="logo">
-           </span>
+            <span style="color: white; font-size: 20px; margin-left: 24px">{{ $store.state.headTitle }}</span>
             <span class="right">
                 <div style="float: right; color: #d9d9d9; margin-right: 100px">
-                    <i class="iconfont">&#xe61c;</i>
-                    <span v-text="this.$store.state.user" style="padding-left: 5px; font-size: large"></span>
-                    <a style="padding-left: 10px;" @click="handleLogOut">注 销</a>
+                    <i class="el-icon-user-solid" style="font-size: 16px"></i>
+                    <span v-text="this.$store.state.user" style="font-size: large"></span>
+                    <a style="padding-left: 10px;font-size: 16px" @click="handleLogOut">注 销</a>
                 </div>
             </span>
-
         </div>
     </div>
-
-
 </template>
 
 <script>
-
+    import ProjectList1 from '../../project/ProjectList'
     export default {
         methods: {
             handleLogOut () {
@@ -29,17 +24,20 @@
             }
         },
         name: "Header",
-
+        components:{
+            ProjectList1
+        }
     }
 </script>
 
 <style scoped>
     .left {
         width: 180px;
+        left: 20px;
         display: inline-block;
         position: fixed;
         z-index: 900;
-        top: 0;
+        top: -5px;
     }
 
     .right {
@@ -60,7 +58,7 @@
     }
 
     .nav-header {
-        background: #333333;
+        background: #01101A;
         margin: 0 auto;
         font-size: 14px;
         width: 100%;

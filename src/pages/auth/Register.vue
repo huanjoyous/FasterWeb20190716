@@ -7,7 +7,6 @@
                     :offset="1"
                 >
                     <div>
-
                     </div>
                 </el-col>
             </el-row>
@@ -22,7 +21,7 @@
                 </el-col>
                 <el-col :span="24">
                     <div>
-                        <div id="form-title">FasterRunner接口测试平台</div>
+                        <div id="form-title">FasterRunner</div>
                         <form id="submit-form">
                             <div id="form-content">
                                 <div id="form-msg">注册账号</div>
@@ -30,7 +29,7 @@
                                     <div class="form-input-div">
                                         <i class="iconfont"
                                            style="position: absolute; bottom: 375px; padding-left: 10px">&#xe61c;</i>
-                                        <input placeholder="用户名或邮箱" type="text" id="user"
+                                        <input placeholder="用户名" type="text" id="user"
                                                v-model="registerForm.username">
                                         <div class="err_msg" id="user_err" v-html="usernameInvalid"
                                              @mouseover="usernameInvalid=''"></div>

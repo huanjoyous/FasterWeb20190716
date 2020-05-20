@@ -1,5 +1,4 @@
 <template>
-
     <el-container>
         <el-header style="background: #fff; padding: 0; height: 50px">
             <div class="nav-api-header">
@@ -9,23 +8,8 @@
                         size="small"
                         icon="el-icon-circle-plus-outline"
                         @click="initResponse = true"
+                        :disabled="addConfigActivate"
                     >新增配置
-                    </el-button>
-
-                    <el-button
-                        type="primary"
-                        plain
-                        size="small"
-                        icon="el-icon-upload"
-                    >导入配置
-                    </el-button>
-
-                    <el-button
-                        type="info"
-                        plain
-                        size="small"
-                        icon="el-icon-download"
-                    >导出配置
                     </el-button>
 
                     <el-button
@@ -35,6 +19,8 @@
                         circle
                         size="mini"
                         @click="del= !del"
+                        title="批量删除"
+                        :disabled="addConfigActivate"
                     ></el-button>
 
                     <el-button
@@ -89,49 +75,6 @@
                 },
                 set(value) {
                     this.addConfigActivate = value;
-                    this.respConfig = {
-                        id: '',
-                        body: {
-                            name: '',
-                            base_url: '',
-                            header: [{
-                                key: "",
-                                value: "",
-                                desc: ""
-                            }],
-                            request: {
-                                data: [{
-                                    key: "",
-                                    value: "",
-                                    desc: "",
-                                    type: 1
-                                }],
-                                params: [{
-                                    key: "",
-                                    value: "",
-                                    desc: "",
-                                    type: 1
-                                }],
-                                json_data: ''
-                            },
-                            variables: [{
-                                key: "",
-                                value: "",
-                                desc: "",
-                                type: 1
-                            }],
-                            hooks: [{
-                                setup: "",
-                                teardown: ""
-                            }],
-                            parameters: [{
-                                key: "",
-                                value: "",
-                                desc: "",
-                            }],
-
-                        }
-                    };
                 }
             },
         },
@@ -140,7 +83,52 @@
                 back: false,
                 del: false,
                 addConfigActivate: false,
-                respConfig: ''
+                respConfig: {
+                    id: '',
+                    body: {
+                        name: '',
+                        base_url: '',
+                        header: [{
+                            key: "",
+                            value: "",
+                            desc: ""
+                        }],
+                        request: {
+                            data: [{
+                                key: "",
+                                value: "",
+                                desc: "",
+                                type: 1
+                            }],
+                            params: [{
+                                key: "",
+                                value: "",
+                                desc: "",
+                                type: 1
+                            }],
+                            json_data: ''
+                        },
+                        variables: [{
+                            key: "",
+                            value: "",
+                            desc: "",
+                            type: 1
+                        }],
+                        hooks: [{
+                            setup: "",
+                            teardown: ""
+                        }],
+                        parameters: [{
+                            key: "",
+                            value: "",
+                            desc: ""
+                        }],
+                        outParams: [{
+                            key: "",
+                            desc: ""
+                        }]
+                    }
+                }
             }
         },
         methods: {
@@ -154,10 +142,7 @@
                 this.addConfigActivate = true;
             }
         },
-        name: "RecordConfig",
-        mounted() {
-
-        }
+        name: "RecordConfig"
     }
 </script>
 

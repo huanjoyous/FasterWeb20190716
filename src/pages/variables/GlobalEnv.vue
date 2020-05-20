@@ -13,6 +13,7 @@
                     </el-button>
 
                     <el-button
+                        v-show="variablesData.count !== 0 "
                         style="margin-left: 20px"
                         type="danger"
                         icon="el-icon-delete"
@@ -34,10 +35,10 @@
                             label-width="100px"
                             class="project">
                             <el-form-item label="变量名" prop="key">
-                                <el-input v-model="variablesForm.key" clearable></el-input>
+                                <el-input v-model="variablesForm.key" clearable placeholder="请输入变量名"></el-input>
                             </el-form-item>
                             <el-form-item label="变量值" prop="value">
-                                <el-input v-model="variablesForm.value" clearable></el-input>
+                                <el-input v-model="variablesForm.value" clearable placeholder="请输入变量值"></el-input>
                             </el-form-item>
                         </el-form>
                         <span slot="footer" class="dialog-footer">
@@ -59,10 +60,10 @@
                             label-width="100px"
                             class="project">
                             <el-form-item label="变量名" prop="key">
-                                <el-input v-model="editVariablesForm.key" clearable></el-input>
+                                <el-input v-model="editVariablesForm.key" clearable placeholder="请输入变量名"></el-input>
                             </el-form-item>
                             <el-form-item label="变量值" prop="value">
-                                <el-input v-model="editVariablesForm.value" clearable></el-input>
+                                <el-input v-model="editVariablesForm.value" clearable placeholder="请输入变量值"></el-input>
                             </el-form-item>
                         </el-form>
                         <span slot="footer" class="dialog-footer">
@@ -102,12 +103,15 @@
 
             <el-container>
                 <el-main style="padding: 0; margin-left: 10px; margin-top: 10px;">
-                    <div style="position: fixed; bottom: 0; right:0; left: 220px; top: 150px">
+                    <div style="position: fixed; bottom: 0; right:0; left: 178px; top: 150px">
                         <el-table
+                            v-loading="loading"
+                            element-loading-text="正在玩命加载"
+                            highlight-current-row
                             :data="variablesData.results"
                             :show-header="variablesData.results.length !== 0 "
                             stripe
-                            height="calc(100%)"
+                            height="600px"
                             @cell-mouse-enter="cellMouseEnter"
                             @cell-mouse-leave="cellMouseLeave"
                             @selection-change="handleSelectionChange"
@@ -156,6 +160,7 @@
 
 
                                         <el-button
+                                            v-show="variablesData.count !== 0"
                                             type="danger"
                                             icon="el-icon-delete"
                                             circle size="mini"
@@ -214,7 +219,8 @@
                         {required: true, message: '请输入变量值', trigger: 'blur'},
                         {min: 1, max: 1024, message: '最多不超过1024个字符', trigger: 'blur'}
                     ]
-                }
+                },
+                loading: true
             }
         },
         methods: {
@@ -244,6 +250,7 @@
                 }).then(() => {
                     this.$api.deleteVariables(index).then(resp => {
                         if (resp.success) {
+                            this.$notify.success('删除环境变量成功');
                             this.getVariablesList();
                         } else {
                             this.$message.error(resp.msg);
@@ -279,9 +286,7 @@
                     })
                 } else {
                     this.$notify.warning({
-                        title: '提示',
                         message: '请至少勾选一个全局变量',
-                        duration: 1000
                     })
                 }
             },
@@ -335,6 +340,7 @@
                     }
                 }).then(resp => {
                     this.variablesData = resp;
+                    this.loading = false
                 })
             },
         },
